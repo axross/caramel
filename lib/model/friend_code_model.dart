@@ -23,9 +23,7 @@ class FriendCodeModel {
         (snapshot) {
           final friendCode = snapshot.documents.length == 0
               ? null
-              : DatabaseFriendCode.fromDocumentSnapshot(
-                  snapshot.documents.first,
-                );
+              : DatabaseFriendCode.fromDocument(snapshot.documents.first);
 
           if (friendCode == null) {
             _issueNewFriendCode();
@@ -38,19 +36,6 @@ class FriendCodeModel {
       );
 
   FriendCode get friendCode => _friendCode;
-
-  // Future<FriendCode> _getFriendCode() async {
-  //   final snapshot = await _database
-  //       .collection('friendCodes')
-  //       .where('user', isEqualTo: _database.document('users/${_user.uid}'))
-  //       .orderBy('issuedAt', descending: true)
-  //       .limit(1)
-  //       .getDocuments();
-
-  //   return snapshot.documents.length == 0
-  //       ? null
-  //       : DatabaseFriendCode.fromDocumentSnapshot(snapshot.documents.first);
-  // }
 
   Future<void> _issueNewFriendCode() async {
     await _database.collection('friendCodes').document().setData({

@@ -6,7 +6,7 @@ class DatabaseFriendCode implements FriendCode {
 
   DatabaseFriendCode._(this.code) : assert(code != null);
 
-  DatabaseFriendCode factory DatabaseFriendCode.fromDocumentSnapshot(
+  DatabaseFriendCode factory DatabaseFriendCode.fromDocument(
       DocumentSnapshot documentSnapshot) {
     final code = documentSnapshot.documentID;
 
