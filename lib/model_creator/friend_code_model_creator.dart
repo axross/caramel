@@ -1,13 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart' show Firestore;
 import 'package:meta/meta.dart';
 import '../entity/user.dart';
 import '../model/friend_code_model.dart';
+import '../service/friend_code_repository_service.dart';
 
 class FriendCodeModelCreator {
-  final Firestore database;
+  final FriendCodeRepositoryService _friendCodeRepositoryService;
 
-  FriendCodeModelCreator({@required this.database}) : assert(database != null);
+  FriendCodeModelCreator(
+      {@required FriendCodeRepositoryService friendCodeRepositoryService})
+      : assert(friendCodeRepositoryService != null),
+        _friendCodeRepositoryService = friendCodeRepositoryService;
 
-  FriendCodeModel createModel(User user) =>
-      FriendCodeModel(user, database: database);
+  FriendCodeModel createModel(User user) => FriendCodeModel(
+        user,
+        friendCodeRepositoryService: _friendCodeRepositoryService,
+      );
 }

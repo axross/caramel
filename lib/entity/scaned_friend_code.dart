@@ -4,14 +4,12 @@ class ScanedFriendCode extends FriendCode {
   ScanedFriendCode._(String code) : super(code);
 
   ScanedFriendCode factory ScanedFriendCode.parseScanedData(String maybeCode) {
-    if (!regexp.hasMatch(maybeCode)) {
+    if (!RegExp(r'^[0-9A-Za-z_\-]{20}$').hasMatch(maybeCode)) {
       throw FriendCodeParsingFailure(maybeCode);
     }
 
     return ScanedFriendCode._(maybeCode);
   }
-
-  static final regexp = RegExp(r'^[\x00-\x7F]{30}$');
 }
 
 class FriendCodeParsingFailure implements Exception {

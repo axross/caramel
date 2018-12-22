@@ -13,6 +13,7 @@ import './model_creator/friend_code_model_creator.dart';
 import './model_creator/friend_list_model_creator.dart';
 import './model_creator/new_friend_model_creator.dart';
 import './screen/friend_list_screen.dart';
+import './service/friend_code_repository_service.dart';
 import './service/friend_code_scan_service.dart';
 import './service/friend_repository_service.dart';
 
@@ -21,6 +22,8 @@ void main() {
   final auth = FirebaseAuth.instance;
   final database = Firestore.instance;
   final storage = FirebaseStorage.instance;
+  final friendCodeRepositoryService =
+      FriendCodeRepositoryService(database: database);
   final friendCodeScanService = FriendCodeScanService();
   final friendRepositoryService = FriendRepositoryService(database: database);
 
@@ -32,6 +35,7 @@ void main() {
       auth: auth,
       database: database,
       storage: storage,
+      friendCodeRepositoryService: friendCodeRepositoryService,
       friendCodeScanService: friendCodeScanService,
       friendRepositoryService: friendRepositoryService,
     ),
@@ -43,6 +47,7 @@ class MyApp extends StatelessWidget {
   final FirebaseAuth auth;
   final Firestore database;
   final FirebaseStorage storage;
+  final FriendCodeRepositoryService friendCodeRepositoryService;
   final FriendCodeScanService friendCodeScanService;
   final FriendRepositoryService friendRepositoryService;
 
@@ -52,12 +57,14 @@ class MyApp extends StatelessWidget {
     @required this.auth,
     @required this.database,
     @required this.storage,
+    @required this.friendCodeRepositoryService,
     @required this.friendCodeScanService,
     @required this.friendRepositoryService,
   })  : assert(analytics != null),
         assert(auth != null),
         assert(database != null),
         assert(storage != null),
+        assert(friendCodeRepositoryService != null),
         assert(friendCodeScanService != null),
         assert(friendRepositoryService != null),
         super(key: key);
@@ -70,7 +77,9 @@ class MyApp extends StatelessWidget {
     );
 
     return Provider(
-      value: FriendCodeModelCreator(database: database),
+      value: FriendCodeModelCreator(
+        friendCodeRepositoryService: friendCodeRepositoryService,
+      ),
       child: Provider(
         value: FriendListModelCreator(
           friendRepositoryService: friendRepositoryService,
