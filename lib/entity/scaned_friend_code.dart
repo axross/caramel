@@ -1,7 +1,7 @@
 import './friend_code.dart';
 
-class ScanedFriendCode extends FriendCode {
-  ScanedFriendCode._(String code) : super(code);
+class ScanedFriendCode implements FriendCode {
+  final String code;
 
   ScanedFriendCode factory ScanedFriendCode.parseScanedData(String maybeCode) {
     if (!RegExp(r'^[0-9A-Za-z_\-]{20}$').hasMatch(maybeCode)) {
@@ -10,6 +10,8 @@ class ScanedFriendCode extends FriendCode {
 
     return ScanedFriendCode._(maybeCode);
   }
+
+  ScanedFriendCode._(this.code);
 }
 
 class FriendCodeParsingFailure implements Exception {
