@@ -7,7 +7,7 @@ import '../entity/friend_code.dart';
 
 abstract class FriendRepositoryService {
   factory FriendRepositoryService({@required Firestore database}) {
-    return _FriendRepositoryServiceImpl(database: database);
+    return _FirestoreFriendRepositoryService(database: database);
   }
 
   Stream<List<Friendship>> subscribeFriendships(User me);
@@ -15,10 +15,10 @@ abstract class FriendRepositoryService {
   Future<void> delete(User me, User friend);
 }
 
-class _FriendRepositoryServiceImpl implements FriendRepositoryService {
+class _FirestoreFriendRepositoryService implements FriendRepositoryService {
   final Firestore _database;
 
-  _FriendRepositoryServiceImpl({@required Firestore database})
+  _FirestoreFriendRepositoryService({@required Firestore database})
       : assert(database != null),
         _database = database;
 

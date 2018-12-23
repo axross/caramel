@@ -6,17 +6,18 @@ import '../entity/user.dart';
 
 abstract class FriendCodeRepositoryService {
   factory FriendCodeRepositoryService({@required Firestore database}) {
-    return _FriendCodeRepositoryServiceImpl(database: database);
+    return _FirestoreFriendCodeRepositoryService(database: database);
   }
 
   Stream<FriendCode> subscribeNewestFriendCode(User me);
   Future<void> issue(User me);
 }
 
-class _FriendCodeRepositoryServiceImpl implements FriendCodeRepositoryService {
+class _FirestoreFriendCodeRepositoryService
+    implements FriendCodeRepositoryService {
   final Firestore _database;
 
-  _FriendCodeRepositoryServiceImpl({@required Firestore database})
+  _FirestoreFriendCodeRepositoryService({@required Firestore database})
       : assert(database != null),
         _database = database;
 
