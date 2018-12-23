@@ -15,4 +15,11 @@ class DatabaseUserReference implements UserReference {
 
     return DatabaseUser.fromDocument(document);
   }
+
+  bool isSameUser(User user) => user.uid == _documentReference.documentID;
+
+  bool operator ==(Object other) =>
+      other is UserReference && other.hashCode == hashCode;
+
+  int get hashCode => _documentReference.hashCode;
 }

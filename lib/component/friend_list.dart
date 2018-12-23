@@ -1,3 +1,4 @@
+import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:meta/meta.dart';
@@ -5,7 +6,7 @@ import '../entity/friendship.dart';
 import '../entity/user.dart';
 import '../model/friend_list_model.dart';
 import '../model_creator/friend_list_model_creator.dart';
-import './firebase_storage_image.dart';
+import '../screen/chat_message_list_screen.dart';
 
 class FriendList extends StatelessWidget {
   final User user;
@@ -107,7 +108,13 @@ class FriendListItem extends StatelessWidget {
                 }
               },
             ),
-            onTap: () => print('tapped'),
+            onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ChatMessageListScreen(
+                          chatReference: friendship.chat,
+                        ),
+                  ),
+                ),
           ),
     );
   }

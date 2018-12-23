@@ -1,5 +1,5 @@
+import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
-import './firebase_storage_image.dart';
 import './friend_code_qr.dart';
 import './friend_code_scan_button.dart';
 import './unsafe_authenticated.dart';

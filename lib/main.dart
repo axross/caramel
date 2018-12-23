@@ -9,10 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' show Provider;
 import './entity/user.dart';
 import './model/authentication_model.dart';
+import './model_creator/chat_model_creator.dart';
 import './model_creator/friend_code_model_creator.dart';
 import './model_creator/friend_list_model_creator.dart';
 import './model_creator/new_friend_model_creator.dart';
 import './screen/friend_list_screen.dart';
+import './service/chat_message_repository_service.dart';
 import './service/friend_code_repository_service.dart';
 import './service/friend_code_scan_service.dart';
 import './service/friend_repository_service.dart';
@@ -22,6 +24,8 @@ void main() {
   final auth = FirebaseAuth.instance;
   final database = Firestore.instance;
   final storage = FirebaseStorage.instance;
+  final chatMessageRepositoryService =
+      ChatMessageRepositoryService(database: database);
   final friendCodeRepositoryService =
       FriendCodeRepositoryService(database: database);
   final friendCodeScanService = FriendCodeScanService();
@@ -35,6 +39,7 @@ void main() {
       auth: auth,
       database: database,
       storage: storage,
+      chatMessageRepositoryService: chatMessageRepositoryService,
       friendCodeRepositoryService: friendCodeRepositoryService,
       friendCodeScanService: friendCodeScanService,
       friendRepositoryService: friendRepositoryService,
@@ -47,6 +52,7 @@ class MyApp extends StatelessWidget {
   final FirebaseAuth auth;
   final Firestore database;
   final FirebaseStorage storage;
+  final ChatMessageRepositoryService chatMessageRepositoryService;
   final FriendCodeRepositoryService friendCodeRepositoryService;
   final FriendCodeScanService friendCodeScanService;
   final FriendRepositoryService friendRepositoryService;
@@ -57,6 +63,7 @@ class MyApp extends StatelessWidget {
     @required this.auth,
     @required this.database,
     @required this.storage,
+    @required this.chatMessageRepositoryService,
     @required this.friendCodeRepositoryService,
     @required this.friendCodeScanService,
     @required this.friendRepositoryService,
@@ -64,6 +71,7 @@ class MyApp extends StatelessWidget {
         assert(auth != null),
         assert(database != null),
         assert(storage != null),
+        assert(chatMessageRepositoryService != null),
         assert(friendCodeRepositoryService != null),
         assert(friendCodeScanService != null),
         assert(friendRepositoryService != null),
@@ -77,38 +85,43 @@ class MyApp extends StatelessWidget {
     );
 
     return Provider(
-      value: FriendCodeModelCreator(
-        friendCodeRepositoryService: friendCodeRepositoryService,
+      value: ChatModelCreator(
+        chatMessageRepositoryService: chatMessageRepositoryService,
       ),
       child: Provider(
-        value: FriendListModelCreator(
-          friendRepositoryService: friendRepositoryService,
+        value: FriendCodeModelCreator(
+          friendCodeRepositoryService: friendCodeRepositoryService,
         ),
         child: Provider(
-          value: NewFriendModelCreator(
+          value: FriendListModelCreator(
             friendRepositoryService: friendRepositoryService,
-            friendCodeScanService: friendCodeScanService,
           ),
           child: Provider(
-            value: authenticationModel,
-            child: StreamBuilder<User>(
-              stream: authenticationModel.onUserChanged,
-              initialData: authenticationModel.user,
-              builder: (_, snapshot) => snapshot.data == null
-                  ? Container()
-                  : MaterialApp(
-                      title: 'Flutter Demo',
-                      theme: ThemeData(
-                        primarySwatch: Colors.blue,
+            value: NewFriendModelCreator(
+              friendRepositoryService: friendRepositoryService,
+              friendCodeScanService: friendCodeScanService,
+            ),
+            child: Provider(
+              value: authenticationModel,
+              child: StreamBuilder<User>(
+                stream: authenticationModel.onUserChanged,
+                initialData: authenticationModel.user,
+                builder: (_, snapshot) => snapshot.data == null
+                    ? Container()
+                    : MaterialApp(
+                        title: 'Flutter Demo',
+                        theme: ThemeData(
+                          primarySwatch: Colors.blue,
+                        ),
+                        initialRoute: '/',
+                        routes: {
+                          '/': (_) => FriendListScreen(),
+                        },
+                        navigatorObservers: [
+                          FirebaseAnalyticsObserver(analytics: analytics),
+                        ],
                       ),
-                      initialRoute: '/',
-                      routes: {
-                        '/': (_) => FriendListScreen(),
-                      },
-                      navigatorObservers: [
-                        FirebaseAnalyticsObserver(analytics: analytics),
-                      ],
-                    ),
+              ),
             ),
           ),
         ),

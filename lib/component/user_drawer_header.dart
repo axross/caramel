@@ -1,6 +1,6 @@
+import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 import './authenticated.dart';
-import './firebase_storage_image.dart';
 
 class UserDrawerHeader extends StatelessWidget {
   @override
