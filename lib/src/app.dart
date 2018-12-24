@@ -1,7 +1,7 @@
-import 'package:caramel/entity.dart';
-import 'package:caramel/model.dart';
-import 'package:caramel/model_creator.dart';
-import 'package:caramel/service.dart';
+import 'package:caramel/entities.dart';
+import 'package:caramel/models.dart';
+import 'package:caramel/model_creators.dart';
+import 'package:caramel/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show Firestore;
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_analytics/firebase_analytics.dart'

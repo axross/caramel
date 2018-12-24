@@ -1,4 +1,4 @@
-import 'package:caramel/entity.dart';
+import 'package:caramel/entities.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 
 class FriendCodeScanService {

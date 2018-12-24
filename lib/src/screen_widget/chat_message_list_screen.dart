@@ -1,6 +1,6 @@
-import 'package:caramel/entity.dart';
-import 'package:caramel/model_creator.dart';
-import 'package:caramel/widget.dart';
+import 'package:caramel/entities.dart';
+import 'package:caramel/model_creators.dart';
+import 'package:caramel/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,4 +1,4 @@
-import 'package:caramel/widget.dart';
+import 'package:caramel/widgets.dart';
 import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 import './authenticated.dart';

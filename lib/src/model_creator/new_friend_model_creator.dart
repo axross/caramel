@@ -1,6 +1,6 @@
-import 'package:caramel/entity.dart';
-import 'package:caramel/model.dart';
-import 'package:caramel/service.dart';
+import 'package:caramel/entities.dart';
+import 'package:caramel/models.dart';
+import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
 class NewFriendModelCreator {

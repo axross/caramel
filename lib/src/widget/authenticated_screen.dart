@@ -1,4 +1,4 @@
-import 'package:caramel/widget.dart';
+import 'package:caramel/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import './authenticated.dart';

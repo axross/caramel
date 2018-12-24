@@ -1,4 +1,4 @@
-import 'package:caramel/entity.dart';
+import 'package:caramel/entities.dart';
 import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 

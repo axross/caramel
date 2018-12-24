@@ -1,5 +1,5 @@
-import 'package:caramel/entity.dart';
-import 'package:caramel/model.dart';
+import 'package:caramel/entities.dart';
+import 'package:caramel/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:meta/meta.dart';

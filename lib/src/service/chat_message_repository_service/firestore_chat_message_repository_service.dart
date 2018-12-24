@@ -1,4 +1,4 @@
-import 'package:caramel/entity.dart';
+import 'package:caramel/entities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
 import './chat_message_repository_service.dart';
@@ -25,11 +25,11 @@ class FirestoreChatMessageRepositoryService
   Future<void> postText({
     @required String text,
     @required Chat chat,
-    @required User me,
+    @required User user,
   }) async {
     _firestore.collection('chats/${chat.id}/messages').document().setData({
       'type': 'TEXT',
-      'from': _firestore.document('users/${me.uid}'),
+      'from': _firestore.document('users/${user.uid}'),
       'sentAt': DateTime.now(),
       'readBy': [],
       'text': text,

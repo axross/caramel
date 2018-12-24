@@ -1,4 +1,4 @@
-import 'package:caramel/widget.dart';
+import 'package:caramel/widgets.dart';
 import 'package:flutter/material.dart';
 import './chat_message_list_screen.dart';
 

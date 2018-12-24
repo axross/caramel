@@ -1,4 +1,4 @@
-import 'package:caramel/model.dart' show ChatModel;
+import 'package:caramel/models.dart' show ChatModel;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

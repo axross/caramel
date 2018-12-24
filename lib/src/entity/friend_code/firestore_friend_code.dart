@@ -1,4 +1,4 @@
-import 'package:caramel/entity.dart';
+import 'package:caramel/entities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
 
 class FirestoreFriendCode implements FriendCode {

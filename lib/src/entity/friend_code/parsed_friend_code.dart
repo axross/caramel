@@ -1,4 +1,4 @@
-import 'package:caramel/entity.dart';
+import 'package:caramel/entities.dart';
 
 class ParsedFriendCode implements FriendCode {
   ParsedFriendCode factory ParsedFriendCode.parse(String maybeCode) {

@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:caramel/entity.dart';
-import 'package:caramel/service.dart';
+import 'package:caramel/entities.dart';
+import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
 class ChatModel {
@@ -20,7 +20,7 @@ class ChatModel {
       await _chatMessageRepositoryService.postText(
         text: text,
         chat: _chat,
-        me: _user,
+        user: _user,
       );
     });
   }
