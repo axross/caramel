@@ -34,8 +34,6 @@ class FirestoreFriendCodeRepositoryService
   Future<void> issue(User user) =>
       _firestore.collection('friendCodes').document().setData({
         'user': _firestore.document('/users/${user.uid}'),
-        // TODO: replace with FieldValueType.serverTimestamp.
-        // this API is available later than v0.8
-        'issuedAt': DateTime.now(),
+        'issuedAt': FieldValueType.serverTimestamp,
       });
 }
