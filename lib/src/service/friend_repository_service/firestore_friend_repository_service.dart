@@ -10,14 +10,13 @@ class FirestoreFriendRepositoryService implements FriendRepositoryService {
 
   final Firestore _firestore;
 
-  Stream<List<Friendship>> subscribeFriendships(User user) => _firestore
+  Stream<Iterable<Friendship>> subscribeFriendships(User user) => _firestore
       .collection('users/${user.uid}/friendships')
       .limit(100)
       .snapshots()
-      .asyncMap<List<Friendship>>(
+      .asyncMap<Iterable<Friendship>>(
         (snapshot) async => snapshot.documents
-            .map((document) => Friendship.fromFirestoreDocument(document))
-            .toList(),
+            .map((document) => Friendship.fromFirestoreDocument(document)),
       );
 
   Future<void> addByFriendCode(User user, FriendCode friendCode) async {

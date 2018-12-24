@@ -5,7 +5,7 @@ import './firestore_chat.dart';
 
 abstract class Chat {
   final String id;
-  final List<UserReference> members;
+  final Iterable<UserReference> members;
 
   Chat({@required this.id, @required this.members})
       : assert(id != null),

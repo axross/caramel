@@ -28,12 +28,12 @@ class ChatModel {
   final ChatMessageRepositoryService _chatMessageRepositoryService;
   final Chat _chat;
   final User _user;
-  List<ChatMessage> _chatMessages;
+  Iterable<ChatMessage> _chatMessages = [];
 
   // input
   StreamController<String> _postingText = StreamController();
 
-  Stream<List<ChatMessage>> get onChange =>
+  Stream<Iterable<ChatMessage>> get onChange =>
       _chatMessageRepositoryService.subscribeChatMessages(_chat)
         ..listen((chatMessages) {
           _chatMessages = chatMessages;
@@ -41,7 +41,7 @@ class ChatModel {
 
   Sink<String> get postingText => _postingText.sink;
 
-  List<ChatMessage> get chatMessages => _chatMessages;
+  Iterable<ChatMessage> get chatMessages => _chatMessages;
 
   void dispose() {
     _postingText.close();

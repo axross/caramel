@@ -9,7 +9,7 @@ abstract class ChatMessageRepositoryService {
   }) =>
       FirestoreChatMessageRepositoryService(firestore: firestore);
 
-  Stream<List<ChatMessage>> subscribeChatMessages(Chat chat);
+  Stream<Iterable<ChatMessage>> subscribeChatMessages(Chat chat);
 
   Future<void> postText({
     @required String text,

@@ -16,14 +16,14 @@ abstract class ChatMessage {
 
   final UserReference from;
   final DateTime sentAt;
-  final List<UserReference> readBy;
+  final Iterable<UserReference> readBy;
 }
 
 abstract class TextChatMessage extends ChatMessage {
   TextChatMessage({
     @required UserReference from,
     @required DateTime sentAt,
-    @required List<UserReference> readBy,
+    @required Iterable<UserReference> readBy,
     @required this.text,
   }) : super(from: from, sentAt: sentAt, readBy: readBy);
 

@@ -4,15 +4,18 @@ import 'package:meta/meta.dart';
 
 class FirestoreChat implements Chat {
   final String id;
-  final List<UserReference> members;
+  final Iterable<UserReference> members;
 
   FirestoreChat factory FirestoreChat.fromDocument(DocumentSnapshot document) {
     final id = document.documentID;
     final maybeMembers = document.data['members'];
 
-    assert(maybeMembers is List);
+    assert(maybeMembers is Iterable);
 
-    final members = (maybeMembers as List).map((maybeMember) => UserReference.fromFirestoreDocumentReference(maybeMember)).toList();
+    final members = (maybeMembers as Iterable)
+      .map((maybeMember) =>
+        UserReference.fromFirestoreDocumentReference(maybeMember),
+      );
 
     return FirestoreChat._(id: id, members: members);
   }

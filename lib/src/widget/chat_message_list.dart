@@ -16,7 +16,8 @@ class ChatMessageList extends StatelessWidget {
     final chatModel = Provider.of<ChatModel>(context);
 
     return StreamBuilder<List<ChatMessage>>(
-      stream: chatModel.onChange,
+      stream: chatModel.onChange.map((iterable) => iterable.toList()),
+      initialData: chatModel.chatMessages.toList(),
       builder: (_, snapshot) => snapshot.hasData
           ? ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),

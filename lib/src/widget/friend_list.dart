@@ -59,8 +59,8 @@ class _FriendListInnerState extends State<_FriendListInner> {
 
   @override
   Widget build(BuildContext context) => StreamBuilder<List<Friendship>>(
-        stream: _friendListModel.onChanged,
-        initialData: _friendListModel.friendships,
+        stream: _friendListModel.onChanged.map((iterable) => iterable.toList()),
+        initialData: _friendListModel.friendships.toList(),
         builder: (_, snapshot) => snapshot.hasData
             ? ListView.separated(
                 padding: EdgeInsets.symmetric(vertical: 16),

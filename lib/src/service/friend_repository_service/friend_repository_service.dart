@@ -9,7 +9,7 @@ abstract class FriendRepositoryService {
   }) =>
       FirestoreFriendRepositoryService(firestore: firestore);
 
-  Stream<List<Friendship>> subscribeFriendships(User user);
+  Stream<Iterable<Friendship>> subscribeFriendships(User user);
   Future<void> addByFriendCode(User user, FriendCode friendCode);
   Future<void> delete(User user, User friend);
 }

@@ -18,12 +18,12 @@ class FriendListModel {
 
   final FriendRepositoryService _friendRepositoryService;
   final User _user;
-  List<Friendship> _friendships;
+  Iterable<Friendship> _friendships = [];
 
   // input
   final StreamController<Friendship> _deletion = StreamController();
 
-  Stream<List<Friendship>> get onChanged =>
+  Stream<Iterable<Friendship>> get onChanged =>
       _friendRepositoryService.subscribeFriendships(_user)
         ..listen((friendships) {
           _friendships = friendships;
@@ -31,7 +31,7 @@ class FriendListModel {
 
   Sink<Friendship> get deletion => _deletion.sink;
 
-  List<Friendship> get friendships => _friendships;
+  Iterable<Friendship> get friendships => _friendships;
 
   void dispose() {
     _deletion.close();

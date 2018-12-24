@@ -11,15 +11,15 @@ class FirestoreChatMessageRepositoryService
 
   final Firestore _firestore;
 
-  Stream<List<ChatMessage>> subscribeChatMessages(Chat chat) => _firestore
+  Stream<Iterable<ChatMessage>> subscribeChatMessages(Chat chat) => _firestore
       .collection('chats/${chat.id}/messages')
       .orderBy('sentAt', descending: true)
       .limit(100)
       .snapshots()
       .map(
-        (query) => query.documents
-            .map((document) => ChatMessage.fromFirestoreDocument(document))
-            .toList(),
+        (query) => query.documents.map(
+              (document) => ChatMessage.fromFirestoreDocument(document),
+            ),
       );
 
   Future<void> postText({

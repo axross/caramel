@@ -40,11 +40,16 @@ abstract class FirestoreChatMessage implements ChatMessage {
   
   final UserReference from;
   final DateTime sentAt;
-  final List<UserReference> readBy;
+  final Iterable<UserReference> readBy;
 }
 
 class FirestoreTextChatMessage extends FirestoreChatMessage implements TextChatMessage  {
-  FirestoreTextChatMessage factory FirestoreTextChatMessage.fromDocument(DocumentSnapshot document, { @required UserReference from, @required DateTime sentAt, @required List<UserReference> readBy, }) {
+  FirestoreTextChatMessage factory FirestoreTextChatMessage.fromDocument(
+    DocumentSnapshot document, {
+      @required UserReference from,
+      @required DateTime sentAt,
+      @required Iterable<UserReference> readBy,
+  }) {
     final maybeText = document.data['text'];
 
     assert(maybeText is String);
@@ -61,7 +66,7 @@ class FirestoreTextChatMessage extends FirestoreChatMessage implements TextChatM
   FirestoreTextChatMessage._({
     @required UserReference from,
     @required DateTime sentAt,
-    @required List<UserReference> readBy,
+    @required Iterable<UserReference> readBy,
     @required this.text,
   })  : assert(text != null),
         super(
