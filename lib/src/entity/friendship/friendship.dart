@@ -6,12 +6,9 @@ import './firestore_friendship.dart';
 abstract class Friendship {
   Friendship({
     @required this.user,
-    @required this.chat,
-  })  : assert(user != null),
-        assert(chat != null);
+  })  : assert(user != null);
 
   Friendship factory Friendship.fromFirestoreDocument(DocumentSnapshot document) => FirestoreFriendship.fromDocument(document);
 
   final UserReference user;
-  final ChatReference chat;
 }

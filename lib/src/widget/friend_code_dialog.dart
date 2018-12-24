@@ -97,7 +97,7 @@ class _FriendCodeScanButtonInnerState
 
   @override
   Widget build(BuildContext context) => IconButton(
-        icon: Icon(Icons.accessible),
+        icon: Icon(CustomIcons.scan),
         onPressed: () => _newFriendModel.scanRequest.add(null),
       );
 }
