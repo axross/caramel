@@ -34,6 +34,6 @@ class FirestoreFriendCodeRepositoryService
   Future<void> issue(User user) =>
       _firestore.collection('friendCodes').document().setData({
         'user': _firestore.document('/users/${user.uid}'),
-        'issuedAt': FieldValueType.serverTimestamp,
+        'issuedAt': FieldValue.serverTimestamp(),
       });
 }

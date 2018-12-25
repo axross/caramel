@@ -30,7 +30,7 @@ class FirestoreChatMessageRepositoryService
     _firestore.collection('chats/${chat.id}/messages').document().setData({
       'type': 'TEXT',
       'from': _firestore.document('users/${user.uid}'),
-      'sentAt': FieldValueType.serverTimestamp,
+      'sentAt': FieldValue.serverTimestamp(),
       'readBy': [],
       'text': text,
     });
