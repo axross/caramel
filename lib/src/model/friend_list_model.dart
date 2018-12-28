@@ -20,7 +20,6 @@ class FriendListModel {
   final User _user;
   Iterable<Friendship> _friendships = [];
 
-  // input
   final StreamController<Friendship> _deletion = StreamController();
 
   Stream<Iterable<Friendship>> get onChanged =>

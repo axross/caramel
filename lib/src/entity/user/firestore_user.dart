@@ -2,7 +2,7 @@ import 'package:caramel/entities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
 import 'package:meta/meta.dart';
 
-class FirestoreUser implements User {
+class FirestoreUser with User {
   FirestoreUser factory FirestoreUser.fromDocument(DocumentSnapshot documentSnapshot) {
     final uid = documentSnapshot.documentID;
     final maybeName = documentSnapshot.data['name'];

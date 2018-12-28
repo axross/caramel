@@ -28,7 +28,6 @@ class NewFriendModel {
   final FriendRepositoryService _friendRepositoryService;
   final User _user;
 
-  // input
   final StreamController<void> _scanRequest = StreamController();
 
   Sink<void> get scanRequest => _scanRequest.sink;

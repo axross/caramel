@@ -1,31 +1,18 @@
 import 'package:caramel/entities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
-import 'package:meta/meta.dart';
 import './firestore_chat_message.dart';
 
 abstract class ChatMessage {
-  ChatMessage({
-    @required this.from,
-    @required this.sentAt,
-    @required this.readBy,
-  })  : assert(from != null),
-        assert(sentAt != null),
-        assert(readBy != null);
-
   ChatMessage factory ChatMessage.fromFirestoreDocument(DocumentSnapshot document) => FirestoreChatMessage.fromDocument(document);
 
-  final UserReference from;
-  final DateTime sentAt;
-  final Iterable<UserReference> readBy;
+  UserReference get from;
+  DateTime get sentAt;
+  Iterable<UserReference> get readBy;
 }
 
-abstract class TextChatMessage extends ChatMessage {
-  TextChatMessage({
-    @required UserReference from,
-    @required DateTime sentAt,
-    @required Iterable<UserReference> readBy,
-    @required this.text,
-  }) : super(from: from, sentAt: sentAt, readBy: readBy);
-
-  final String text;
+abstract class TextChatMessage implements ChatMessage {
+  UserReference get from;
+  DateTime get sentAt;
+  Iterable<UserReference> get readBy;
+  String get text;
 }

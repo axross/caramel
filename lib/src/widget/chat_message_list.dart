@@ -1,49 +1,39 @@
 import 'package:caramel/entities.dart';
-import 'package:caramel/models.dart';
 import 'package:caramel/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ChatMessageList extends StatelessWidget {
-  ChatMessageList({Key key, @required this.user})
-      : assert(user != null),
+  ChatMessageList({
+    Key key,
+    @required this.user,
+    @required this.chatMessages,
+  })  : assert(user != null),
+        assert(chatMessages != null),
         super(key: key);
 
   final User user;
+  final List<ChatMessage> chatMessages;
 
   @override
-  Widget build(BuildContext context) {
-    final chatModel = Provider.of<ChatModel>(context);
+  Widget build(BuildContext context) => ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        reverse: true,
+        itemBuilder: (_, index) {
+          final chatMessage = chatMessages[index];
+          final previous =
+              index == chatMessages.length - 1 ? null : chatMessages[index + 1];
+          final next = index == 0 ? null : chatMessages[index - 1];
 
-    return StreamBuilder<List<ChatMessage>>(
-      stream: chatModel.onChange.map((iterable) => iterable.toList()),
-      initialData: chatModel.chatMessages.toList(),
-      builder: (_, snapshot) => snapshot.hasData
-          ? ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-              reverse: true,
-              itemBuilder: (_, index) {
-                final chatMessage = snapshot.requireData[index];
-                final previous = index == snapshot.requireData.length - 1
-                    ? null
-                    : snapshot.requireData[index + 1];
-                final next =
-                    index == 0 ? null : snapshot.requireData[index - 1];
-
-                return _ChatMessageListItem(
-                  chatMessage: snapshot.requireData[index],
-                  isPreviousAnotherSender:
-                      previous == null || previous.from != chatMessage.from,
-                  isNextAnotherSender:
-                      next == null || next.from != chatMessage.from,
-                  isMine: chatMessage.from.isSameUser(user),
-                );
-              },
-              itemCount: snapshot.requireData.length,
-            )
-          : Container(),
-    );
-  }
+          return _ChatMessageListItem(
+            chatMessage: chatMessage,
+            isPreviousAnotherSender:
+                previous == null || previous.from != chatMessage.from,
+            isNextAnotherSender: next == null || next.from != chatMessage.from,
+            isMine: chatMessage.from.isSameUser(user),
+          );
+        },
+        itemCount: chatMessages.length,
+      );
 }
 
 class _ChatMessageListItem extends StatelessWidget {
@@ -159,7 +149,7 @@ class _TextChatMessageContent extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isMine ? Colors.white : Theme.of(context).accentColor,
           borderRadius: BorderRadius.vertical(
             top: isPreviousAnotherSender
                 ? Radius.circular(16)
@@ -171,6 +161,9 @@ class _TextChatMessageContent extends StatelessWidget {
         child: Text(
           textChatMessage.text,
           style: TextStyle(
+            color: isMine
+                ? Theme.of(context).textTheme.body1.color
+                : Theme.of(context).accentTextTheme.body1.color,
             height: 1.333,
           ),
         ),

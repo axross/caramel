@@ -16,9 +16,12 @@ class CircleAvatarByUserReference extends StatelessWidget {
       builder: (_, snapshot) => snapshot.hasData
           ? CircleAvatar(
               backgroundImage: FirebaseStorageImage(
-                  snapshot.requireData.imageUrl.toString()),
+                snapshot.requireData.imageUrl.toString(),
+              ),
             )
-          : CircleAvatar(),
+          : CircleAvatar(
+              child: Image.asset('assets/images/avatar-loading.gif'),
+            ),
     );
   }
 }

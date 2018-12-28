@@ -11,8 +11,7 @@ abstract class FirestoreChatMessage implements ChatMessage {
 
     assert(maybeFrom is DocumentReference);
     assert(maybeFrom != null);
-    assert(maybeSentAt is DateTime);
-    assert(maybeSentAt != null);
+    assert(maybeSentAt == null || maybeSentAt is DateTime);
     assert(maybeReadBy is List);
     assert(maybeReadBy != null);
     assert(maybeType is String);
@@ -20,31 +19,24 @@ abstract class FirestoreChatMessage implements ChatMessage {
 
     final from = UserReference.fromFirestoreDocumentReference(maybeFrom);
     final readBy = (maybeReadBy as List).map((maybeUserDocumentReference) => UserReference.fromFirestoreDocumentReference(maybeUserDocumentReference)).toList();
+    final sentAt = maybeSentAt == null ? DateTime.now() : maybeSentAt;
 
     switch(maybeType) {
       case 'TEXT':
-        return FirestoreTextChatMessage.fromDocument(document, from: from, sentAt: maybeSentAt, readBy: readBy,);
+        return FirestoreTextChatMessage._fromDocument(document, from: from, sentAt: sentAt, readBy: readBy,);
         break;
     }
 
     throw new Exception();
   }
-
-  FirestoreChatMessage({
-    @required this.from,
-    @required this.sentAt,
-    @required this.readBy,
-  })  : assert(from != null),
-        assert(sentAt != null),
-        assert(readBy != null);
   
   final UserReference from;
   final DateTime sentAt;
   final Iterable<UserReference> readBy;
 }
 
-class FirestoreTextChatMessage extends FirestoreChatMessage implements TextChatMessage  {
-  FirestoreTextChatMessage factory FirestoreTextChatMessage.fromDocument(
+class FirestoreTextChatMessage implements FirestoreChatMessage, TextChatMessage {
+  FirestoreTextChatMessage factory FirestoreTextChatMessage._fromDocument(
     DocumentSnapshot document, {
       @required UserReference from,
       @required DateTime sentAt,
@@ -64,16 +56,14 @@ class FirestoreTextChatMessage extends FirestoreChatMessage implements TextChatM
   }
 
   FirestoreTextChatMessage._({
-    @required UserReference from,
-    @required DateTime sentAt,
-    @required Iterable<UserReference> readBy,
+    @required this.from,
+    @required this.sentAt,
+    @required this.readBy,
     @required this.text,
-  })  : assert(text != null),
-        super(
-    from: from,
-    sentAt: sentAt,
-    readBy: readBy,
-  );
+  })  : assert(from != null),assert(sentAt != null),assert(readBy != null),assert(text != null);
 
+  final UserReference from;
+  final DateTime sentAt;
+  final Iterable<UserReference> readBy;
   final String text;
 }

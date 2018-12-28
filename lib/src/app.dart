@@ -20,6 +20,7 @@ class App extends StatelessWidget {
     @required this.auth,
     @required this.firestore,
     @required this.storage,
+    @required this.chatRepositoryService,
     @required this.chatMessageRepositoryService,
     @required this.friendCodeRepositoryService,
     @required this.friendCodeScanService,
@@ -28,6 +29,7 @@ class App extends StatelessWidget {
         assert(auth != null),
         assert(firestore != null),
         assert(storage != null),
+        assert(chatRepositoryService != null),
         assert(chatMessageRepositoryService != null),
         assert(friendCodeRepositoryService != null),
         assert(friendCodeScanService != null),
@@ -38,6 +40,7 @@ class App extends StatelessWidget {
   final FirebaseAuth auth;
   final Firestore firestore;
   final FirebaseStorage storage;
+  final ChatRepositoryService chatRepositoryService;
   final ChatMessageRepositoryService chatMessageRepositoryService;
   final FriendCodeRepositoryService friendCodeRepositoryService;
   final FriendCodeScanService friendCodeScanService;
@@ -51,42 +54,52 @@ class App extends StatelessWidget {
     );
 
     return Provider(
-      value: ChatModelCreator(
-        chatMessageRepositoryService: chatMessageRepositoryService,
+      value: ChatByFriendshipModelCreator(
+        chatRepositoryService: chatRepositoryService,
       ),
       child: Provider(
-        value: FriendCodeModelCreator(
-          friendCodeRepositoryService: friendCodeRepositoryService,
+        value: ChatListModelCreator(
+          chatRepositoryService: chatRepositoryService,
         ),
         child: Provider(
-          value: FriendListModelCreator(
-            friendRepositoryService: friendRepositoryService,
+          value: ChatModelCreator(
+            chatMessageRepositoryService: chatMessageRepositoryService,
           ),
           child: Provider(
-            value: NewFriendModelCreator(
-              friendRepositoryService: friendRepositoryService,
-              friendCodeScanService: friendCodeScanService,
+            value: FriendCodeModelCreator(
+              friendCodeRepositoryService: friendCodeRepositoryService,
             ),
             child: Provider(
-              value: authenticationModel,
-              child: StreamBuilder<User>(
-                stream: authenticationModel.onUserChanged,
-                initialData: authenticationModel.user,
-                builder: (_, snapshot) => snapshot.data == null
-                    ? Container()
-                    : MaterialApp(
-                        title: 'Flutter Demo',
-                        theme: ThemeData(
-                          primarySwatch: Colors.blue,
-                        ),
-                        initialRoute: '/',
-                        routes: {
-                          '/': (_) => FriendListScreen(),
-                        },
-                        navigatorObservers: [
-                          FirebaseAnalyticsObserver(analytics: analytics),
-                        ],
-                      ),
+              value: FriendListModelCreator(
+                friendRepositoryService: friendRepositoryService,
+              ),
+              child: Provider(
+                value: NewFriendModelCreator(
+                  friendRepositoryService: friendRepositoryService,
+                  friendCodeScanService: friendCodeScanService,
+                ),
+                child: Provider(
+                  value: authenticationModel,
+                  child: StreamBuilder<User>(
+                    stream: authenticationModel.onUserChanged,
+                    initialData: authenticationModel.user,
+                    builder: (_, snapshot) => snapshot.data == null
+                        ? Container()
+                        : MaterialApp(
+                            title: 'Flutter Demo',
+                            theme: ThemeData(
+                              primarySwatch: Colors.blue,
+                            ),
+                            initialRoute: '/',
+                            routes: {
+                              '/': (_) => FriendListScreen(),
+                            },
+                            navigatorObservers: [
+                              FirebaseAnalyticsObserver(analytics: analytics),
+                            ],
+                          ),
+                  ),
+                ),
               ),
             ),
           ),

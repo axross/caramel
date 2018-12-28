@@ -1,5 +1,6 @@
 export './src/widget/authenticated.dart';
 export './src/widget/authenticated_screen.dart';
+export './src/widget/chat_list.dart';
 export './src/widget/chat_message_input.dart';
 export './src/widget/chat_message_list.dart';
 export './src/widget/circle_avatar_by_user_reference.dart';

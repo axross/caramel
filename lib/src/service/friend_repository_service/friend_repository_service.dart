@@ -1,10 +1,10 @@
 import 'package:caramel/entities.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' show Firestore;
 import 'package:meta/meta.dart';
 import './firestore_friend_repository_service.dart';
 
 abstract class FriendRepositoryService {
-  factory FriendRepositoryService.withFirestore({
+  FriendRepositoryService factory FriendRepositoryService.withFirestore({
     @required Firestore firestore,
   }) =>
       FirestoreFriendRepositoryService(firestore: firestore);

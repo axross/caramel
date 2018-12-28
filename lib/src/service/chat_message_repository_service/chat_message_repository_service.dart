@@ -1,10 +1,10 @@
 import 'package:caramel/entities.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' show Firestore;
 import 'package:meta/meta.dart';
 import './firestore_chat_message_repository_service.dart';
 
 abstract class ChatMessageRepositoryService {
-  factory ChatMessageRepositoryService.withFirestore({
+  ChatMessageRepositoryService factory ChatMessageRepositoryService.withFirestore({
     @required Firestore firestore,
   }) =>
       FirestoreChatMessageRepositoryService(firestore: firestore);

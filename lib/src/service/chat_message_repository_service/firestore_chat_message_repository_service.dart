@@ -27,12 +27,42 @@ class FirestoreChatMessageRepositoryService
     @required Chat chat,
     @required User user,
   }) async {
-    _firestore.collection('chats/${chat.id}/messages').document().setData({
-      'type': 'TEXT',
-      'from': _firestore.document('users/${user.uid}'),
-      'sentAt': FieldValue.serverTimestamp(),
-      'readBy': [],
-      'text': text,
-    });
+    // TODO: I can't implement this process like the below.
+    // See: https://github.com/flutter/flutter/issues/24992
+    //
+    // final batch = _firestore.batch();
+    // final chatMessageDocumentReference =
+    //     _firestore.collection('chats/${chat.id}/messages').document();
+
+    // batch.setData(chatMessageDocumentReference, {
+    //   'type': 'TEXT',
+    //   'from': _firestore.document('users/${user.uid}'),
+    //   'sentAt': FieldValue.serverTimestamp(),
+    //   'readBy': [],
+    //   'text': text,
+    // });
+
+    // batch.updateData(_firestore.document('chats/${chat.id}'), {
+    //   'lastChatMessage': chatMessageDocumentReference,
+    // });
+
+    // await batch.commit();
+
+    final chatMessageDocumentReference =
+        _firestore.collection('chats/${chat.id}/messages').document();
+
+    await Future.wait([
+      chatMessageDocumentReference.setData({
+        'type': 'TEXT',
+        'from': _firestore.document('users/${user.uid}'),
+        'sentAt': FieldValue.serverTimestamp(),
+        'readBy': [],
+        'text': text,
+      }),
+      _firestore.document('chats/${chat.id}').updateData({
+        'lastChatMessage': chatMessageDocumentReference,
+        'lastMessageCreatedAt': FieldValue.serverTimestamp(),
+      }),
+    ]);
   }
 }

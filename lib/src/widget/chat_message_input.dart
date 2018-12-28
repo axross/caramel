@@ -1,9 +1,11 @@
-import 'package:caramel/models.dart' show ChatModel;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ChatMessageInput extends StatefulWidget {
-  ChatMessageInput({Key key}) : super(key: key);
+  ChatMessageInput({Key key, @required this.onSubmitted})
+      : assert(onSubmitted != null),
+        super(key: key);
+
+  final ValueChanged<String> onSubmitted;
 
   @override
   State<StatefulWidget> createState() => _ChatMessageInputState();
@@ -16,53 +18,50 @@ class _ChatMessageInputState extends State<ChatMessageInput> {
       TextSelection.collapsed(offset: 0);
 
   @override
-  Widget build(BuildContext context) {
-    final chatModel = Provider.of<ChatModel>(context);
-
-    return Container(
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 4,
-                horizontal: 4,
-              ),
-              child: TextField(
-                controller: _textEditingController,
-                focusNode: _focusNode,
-                textInputAction: TextInputAction.send,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  fillColor: Colors.grey[200],
-                  filled: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 16,
-                  ),
+  Widget build(BuildContext context) => Container(
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 4,
                 ),
-                onSubmitted: (_) => _onSubmitted(chatModel),
+                child: TextField(
+                  controller: _textEditingController,
+                  focusNode: _focusNode,
+                  textInputAction: TextInputAction.send,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    fillColor: Colors.grey[200],
+                    filled: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 16,
+                    ),
+                  ),
+                  onSubmitted: (_) => _onSubmitted(),
+                ),
               ),
             ),
-          ),
-          IconButton(
-            icon: Icon(Icons.send, color: Colors.blue),
-            onPressed: () => _onSubmitted(chatModel),
-          ),
-        ],
-      ),
-    );
-  }
+            IconButton(
+              icon: Icon(Icons.send, color: Colors.blue),
+              onPressed: () => _onSubmitted(),
+            ),
+          ],
+        ),
+      );
 
-  void _onSubmitted(ChatModel chatModel) {
-    final inputtedText = _textEditingController.text;
+  void _onSubmitted() {
+    final inputtedText = _textEditingController.text.trim();
 
-    if (inputtedText.trim().length > 0) {
-      chatModel.postingText.add(_textEditingController.text);
+    if (inputtedText.length > 0) {
+      widget.onSubmitted(inputtedText);
+
       _textEditingController.clear();
       _textEditingController.selection = _defaultTextSelection;
     }

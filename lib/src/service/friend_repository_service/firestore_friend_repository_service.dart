@@ -30,17 +30,46 @@ class FirestoreFriendRepositoryService implements FriendRepositoryService {
       throw new Exception();
     }
 
-    final opponentDoc = await friendCodeDocument.data['user'].get();
-    final opponent = User.fromFirestoreDocument(opponentDoc);
+    final friendDocument = await friendCodeDocument.data['user'].get();
+    final friend = User.fromFirestoreDocument(friendDocument);
 
-    await _firestore
-        .document('users/${user.uid}/friendships/${opponent.uid}')
-        .setData({
-      'user': _firestore.document('users/${opponent.uid}'),
+    final chatDocuments = await Future.wait([
+      _firestore.collection('chats').where('members', isEqualTo: [
+        _firestore.document('users/${user.uid}'),
+        _firestore.document('users/${friend.uid}'),
+      ]).getDocuments(),
+      _firestore.collection('chats').where('members', isEqualTo: [
+        _firestore.document('users/${friend.uid}'),
+        _firestore.document('users/${user.uid}'),
+      ]).getDocuments(),
+    ])
+        .then((snapshots) => snapshots.fold<List<DocumentSnapshot>>(
+            [], (list, snapshot) => list..addAll(snapshot.documents)))
+        .then((documents) => documents.where((document) => document != null));
+
+    final batch = _firestore.batch();
+
+    batch.setData(
+        _firestore.document('users/${user.uid}/friendships/${friend.uid}'), {
+      'user': _firestore.document('users/${friend.uid}'),
     });
+
+    if (chatDocuments.length == 0) {
+      batch.setData(_firestore.collection('chats').document(), {
+        'members': [
+          _firestore.document('users/${user.uid}'),
+          _firestore.document('users/${friend.uid}'),
+        ],
+        'lastChatMessage': null,
+      });
+    }
+
+    await batch.commit();
   }
 
   Future<void> delete(User user, User friend) async {
+    // TODO: Unfollowing both of them should also delete chat document.
+
     final friendDocumentReference =
         _firestore.document('users/${user.uid}/friendships/${friend.uid}');
     final friendshipDocument = await friendDocumentReference.get();

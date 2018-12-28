@@ -15,8 +15,6 @@ class ChatModel {
         _user = user,
         _chatMessageRepositoryService = chatMessageRepositoryService {
     _postingText.stream.listen((text) async {
-      print(text);
-
       await _chatMessageRepositoryService.postText(
         text: text,
         chat: _chat,
@@ -30,10 +28,9 @@ class ChatModel {
   final User _user;
   Iterable<ChatMessage> _chatMessages = [];
 
-  // input
   StreamController<String> _postingText = StreamController();
 
-  Stream<Iterable<ChatMessage>> get onChange =>
+  Stream<Iterable<ChatMessage>> get onChanged =>
       _chatMessageRepositoryService.subscribeChatMessages(_chat)
         ..listen((chatMessages) {
           _chatMessages = chatMessages;

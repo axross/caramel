@@ -17,8 +17,10 @@ class FirestoreUserReference implements UserReference {
 
   bool isSameUser(User user) => user.uid == _documentReference.documentID;
 
+  @override
   bool operator ==(Object other) =>
       other is UserReference && other.hashCode == hashCode;
 
+  @override
   int get hashCode => _documentReference.hashCode;
 }
