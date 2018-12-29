@@ -1,7 +1,7 @@
 import 'package:caramel/entities.dart';
 
 class ParsedFriendCode implements FriendCode {
-  ParsedFriendCode factory ParsedFriendCode.parse(String maybeCode) {
+  factory ParsedFriendCode.parse(String maybeCode) {
     if (!RegExp(r'^[0-9A-Za-z_\-]{20}$').hasMatch(maybeCode)) {
       throw FriendCodeParsingFailure(maybeCode);
     }

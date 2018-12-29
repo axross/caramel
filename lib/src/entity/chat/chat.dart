@@ -13,11 +13,10 @@ mixin ToReferenceMixin on ChatStruct {
 }
 
 abstract class Chat with ChatStruct, ToReferenceMixin {
-  Chat factory Chat.fromFirestoreDocument(DocumentSnapshot document) =>
+  factory Chat.fromFirestoreDocument(DocumentSnapshot document) =>
       FirestoreChat.fromDocument(document);
-  
+
   String get id;
   Iterable<UserReference> get members;
   ChatMessageReference get lastChatMessage;
 }
-

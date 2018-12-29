@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
 import 'package:meta/meta.dart';
 
 class FirestoreUser with User {
-  FirestoreUser factory FirestoreUser.fromDocument(DocumentSnapshot documentSnapshot) {
+  factory FirestoreUser.fromDocument(DocumentSnapshot documentSnapshot) {
     final uid = documentSnapshot.documentID;
     final maybeName = documentSnapshot.data['name'];
     final maybeImageUrlString = documentSnapshot.data['imageUrl'];

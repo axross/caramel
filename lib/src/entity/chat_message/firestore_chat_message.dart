@@ -1,9 +1,10 @@
 import 'package:caramel/entities.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' show DocumentReference, DocumentSnapshot;
+import 'package:cloud_firestore/cloud_firestore.dart'
+    show DocumentReference, DocumentSnapshot;
 import 'package:meta/meta.dart';
 
 abstract class FirestoreChatMessage implements ChatMessage {
-  FirestoreChatMessage factory FirestoreChatMessage.fromDocument(DocumentSnapshot document) {
+  factory FirestoreChatMessage.fromDocument(DocumentSnapshot document) {
     final maybeFrom = document.data['from'];
     final maybeSentAt = document.data['sentAt'];
     final maybeReadBy = document.data['readBy'];
@@ -18,29 +19,39 @@ abstract class FirestoreChatMessage implements ChatMessage {
     assert(maybeType != null);
 
     final from = UserReference.fromFirestoreDocumentReference(maybeFrom);
-    final readBy = (maybeReadBy as List).map((maybeUserDocumentReference) => UserReference.fromFirestoreDocumentReference(maybeUserDocumentReference)).toList();
+    final readBy = (maybeReadBy as List)
+        .map((maybeUserDocumentReference) =>
+            UserReference.fromFirestoreDocumentReference(
+                maybeUserDocumentReference))
+        .toList();
     final sentAt = maybeSentAt == null ? DateTime.now() : maybeSentAt;
 
-    switch(maybeType) {
+    switch (maybeType) {
       case 'TEXT':
-        return FirestoreTextChatMessage._fromDocument(document, from: from, sentAt: sentAt, readBy: readBy,);
+        return FirestoreTextChatMessage._fromDocument(
+          document,
+          from: from,
+          sentAt: sentAt,
+          readBy: readBy,
+        );
         break;
     }
 
     throw new Exception();
   }
-  
+
   final UserReference from;
   final DateTime sentAt;
   final Iterable<UserReference> readBy;
 }
 
-class FirestoreTextChatMessage implements FirestoreChatMessage, TextChatMessage {
-  FirestoreTextChatMessage factory FirestoreTextChatMessage._fromDocument(
+class FirestoreTextChatMessage
+    implements FirestoreChatMessage, TextChatMessage {
+  factory FirestoreTextChatMessage._fromDocument(
     DocumentSnapshot document, {
-      @required UserReference from,
-      @required DateTime sentAt,
-      @required Iterable<UserReference> readBy,
+    @required UserReference from,
+    @required DateTime sentAt,
+    @required Iterable<UserReference> readBy,
   }) {
     final maybeText = document.data['text'];
 
@@ -60,7 +71,10 @@ class FirestoreTextChatMessage implements FirestoreChatMessage, TextChatMessage 
     @required this.sentAt,
     @required this.readBy,
     @required this.text,
-  })  : assert(from != null),assert(sentAt != null),assert(readBy != null),assert(text != null);
+  })  : assert(from != null),
+        assert(sentAt != null),
+        assert(readBy != null),
+        assert(text != null);
 
   final UserReference from;
   final DateTime sentAt;

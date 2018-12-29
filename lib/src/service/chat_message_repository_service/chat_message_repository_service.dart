@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import './firestore_chat_message_repository_service.dart';
 
 abstract class ChatMessageRepositoryService {
-  ChatMessageRepositoryService factory ChatMessageRepositoryService.withFirestore({
+  factory ChatMessageRepositoryService.withFirestore({
     @required Firestore firestore,
   }) =>
       FirestoreChatMessageRepositoryService(firestore: firestore);

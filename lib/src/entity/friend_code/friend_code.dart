@@ -3,8 +3,10 @@ import './firestore_friend_code.dart';
 import './parsed_friend_code.dart';
 
 abstract class FriendCode {
-  FriendCode factory FriendCode.fromFirestoreDocument(DocumentSnapshot document) => FirestoreFriendCode.fromDocument(document);
-  FriendCode factory FriendCode.parse(String string) => ParsedFriendCode.parse(string);
+  factory FriendCode.fromFirestoreDocument(DocumentSnapshot document) =>
+      FirestoreFriendCode.fromDocument(document);
+
+  factory FriendCode.parse(String string) => ParsedFriendCode.parse(string);
 
   String get code;
 }

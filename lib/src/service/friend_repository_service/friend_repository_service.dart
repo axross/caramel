@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import './firestore_friend_repository_service.dart';
 
 abstract class FriendRepositoryService {
-  FriendRepositoryService factory FriendRepositoryService.withFirestore({
+  factory FriendRepositoryService.withFirestore({
     @required Firestore firestore,
   }) =>
       FirestoreFriendRepositoryService(firestore: firestore);

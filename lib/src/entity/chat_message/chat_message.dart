@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
 import './firestore_chat_message.dart';
 
 abstract class ChatMessage {
-  ChatMessage factory ChatMessage.fromFirestoreDocument(DocumentSnapshot document) => FirestoreChatMessage.fromDocument(document);
+  factory ChatMessage.fromFirestoreDocument(DocumentSnapshot document) =>
+      FirestoreChatMessage.fromDocument(document);
 
   UserReference get from;
   DateTime get sentAt;
