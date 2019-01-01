@@ -12,6 +12,7 @@ class FirestoreChatRepositoryService implements ChatRepositoryService {
 
   final Firestore _firestore;
 
+  @override
   Stream<Iterable<Chat>> subscribeChats(User user) => _firestore
       .collection('chats')
       .where(
@@ -25,6 +26,7 @@ class FirestoreChatRepositoryService implements ChatRepositoryService {
             .map((document) => Chat.fromFirestoreDocument(document)),
       );
 
+  @override
   Stream<Chat> subscribeChatByFriendship(User user, Friendship friendship) {
     final streamController = StreamController<Chat>.broadcast();
 
@@ -37,7 +39,9 @@ class FirestoreChatRepositoryService implements ChatRepositoryService {
           ])
           .snapshots()
           .listen((snapshot) {
-            if (snapshot.documents.isEmpty) return;
+            if (snapshot.documents.isEmpty) {
+              return;
+            }
 
             final chat = Chat.fromFirestoreDocument(snapshot.documents.first);
 
@@ -52,7 +56,9 @@ class FirestoreChatRepositoryService implements ChatRepositoryService {
           ])
           .snapshots()
           .listen((snapshot) {
-            if (snapshot.documents.isEmpty) return;
+            if (snapshot.documents.isEmpty) {
+              return;
+            }
 
             final chat = Chat.fromFirestoreDocument(snapshot.documents.first);
 
@@ -61,7 +67,9 @@ class FirestoreChatRepositoryService implements ChatRepositoryService {
     });
 
     streamController.onCancel = () {
-      if (streamController.hasListener) return;
+      if (streamController.hasListener) {
+        return;
+      }
 
       streamController.close();
     };
@@ -69,6 +77,7 @@ class FirestoreChatRepositoryService implements ChatRepositoryService {
     return streamController.stream;
   }
 
+  @override
   Future<void> createChat(User user, User friend) async =>
       await _firestore.collection('chats').document().setData({
         'members': [

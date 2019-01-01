@@ -19,7 +19,8 @@ abstract class FirestoreChatMessage implements ChatMessage {
     assert(maybeType != null);
 
     final from = UserReference.fromFirestoreDocumentReference(maybeFrom);
-    final readBy = (maybeReadBy as List)
+    final List readByList = maybeReadBy;
+    final readBy = readByList
         .map((maybeUserDocumentReference) =>
             UserReference.fromFirestoreDocumentReference(
                 maybeUserDocumentReference))
@@ -37,11 +38,14 @@ abstract class FirestoreChatMessage implements ChatMessage {
         break;
     }
 
-    throw new Exception();
+    throw Exception();
   }
 
+  @override
   final UserReference from;
+  @override
   final DateTime sentAt;
+  @override
   final Iterable<UserReference> readBy;
 }
 
@@ -76,8 +80,12 @@ class FirestoreTextChatMessage
         assert(readBy != null),
         assert(text != null);
 
+  @override
   final UserReference from;
+  @override
   final DateTime sentAt;
+  @override
   final Iterable<UserReference> readBy;
+  @override
   final String text;
 }

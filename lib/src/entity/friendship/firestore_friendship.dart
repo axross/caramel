@@ -18,5 +18,6 @@ class FirestoreFriendship implements Friendship {
     @required this.user,
   }) : assert(user != null);
 
+  @override
   final UserReference user;
 }

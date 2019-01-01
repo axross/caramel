@@ -4,27 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class FriendList extends StatelessWidget {
-  FriendList({Key key, @required this.children})
-      : assert(children != null),
+  const FriendList({
+    @required this.children,
+    Key key,
+  })  : assert(children != null),
         super(key: key);
 
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) => ListView.separated(
-        padding: EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         itemBuilder: (_, index) => children[index],
-        separatorBuilder: (_, __) => Divider(),
+        separatorBuilder: (_, __) => const Divider(),
         itemCount: children.length,
       );
 }
 
 class FriendListItem extends StatelessWidget {
-  FriendListItem({
-    Key key,
+  const FriendListItem({
     @required this.friendship,
     @required this.onTap,
     @required this.onTapChatButton,
+    Key key,
   })  : assert(friendship != null),
         assert(onTap != null),
         assert(onTapChatButton != null),
@@ -40,7 +42,7 @@ class FriendListItem extends StatelessWidget {
         builder: (_, snapshot) => ListTile(
               title: snapshot.hasData
                   ? Text(snapshot.data.name)
-                  : Text('Loading...'),
+                  : const Text('Loading...'),
               leading: CircleAvatar(
                 backgroundImage: snapshot.hasData
                     ? FirebaseStorageImage(
@@ -49,7 +51,7 @@ class FriendListItem extends StatelessWidget {
                     : null,
               ),
               trailing: IconButton(
-                icon: Icon(Icons.chat_bubble),
+                icon: const Icon(Icons.chat_bubble),
                 onPressed: onTapChatButton,
               ),
               onTap: onTap,

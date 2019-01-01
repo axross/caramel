@@ -11,6 +11,7 @@ class FirestoreChatMessageRepositoryService
 
   final Firestore _firestore;
 
+  @override
   Stream<Iterable<ChatMessage>> subscribeChatMessages(Chat chat) => _firestore
       .collection('chats/${chat.id}/messages')
       .orderBy('sentAt', descending: true)
@@ -22,13 +23,14 @@ class FirestoreChatMessageRepositoryService
             ),
       );
 
+  @override
   Future<void> postText({
     @required String text,
     @required Chat chat,
     @required User user,
   }) async {
-    // TODO: I can't implement this process like the below.
-    // See: https://github.com/flutter/flutter/issues/24992
+    // TODO(axross): I can't implement this process like the below.
+    // https://github.com/axross/caramel/issues/2
     //
     // final batch = _firestore.batch();
     // final chatMessageDocumentReference =

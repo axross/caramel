@@ -12,5 +12,6 @@ class FirestoreFriendCode implements FriendCode {
 
   final String id;
 
-  get code => id;
+  @override
+  String get code => id;
 }

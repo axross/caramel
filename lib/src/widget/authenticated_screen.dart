@@ -4,8 +4,10 @@ import 'package:meta/meta.dart';
 import './authenticated.dart';
 
 class AuthenticatedScreen extends StatelessWidget {
-  AuthenticatedScreen({Key key, @required this.builder})
-      : assert(builder != null),
+  const AuthenticatedScreen({
+    @required this.builder,
+    Key key,
+  })  : assert(builder != null),
         super(key: key);
 
   final AuthenticatedBuilder builder;
@@ -21,10 +23,10 @@ class _UnauthenticatedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text('Need to sign in'),
+          title: const Text('Need to sign in'),
         ),
         body: Container(
-          child: Center(
+          child: const Center(
             child: Text('Please sign in.'),
           ),
         ),

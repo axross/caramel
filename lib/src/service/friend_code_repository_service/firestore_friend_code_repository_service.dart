@@ -11,6 +11,7 @@ class FirestoreFriendCodeRepositoryService
 
   final Firestore _firestore;
 
+  @override
   Stream<FriendCode> subscribeNewestFriendCode(User user) => _firestore
           .collection('friendCodes')
           .where('user', isEqualTo: _firestore.document('users/${user.uid}'))
@@ -19,7 +20,7 @@ class FirestoreFriendCodeRepositoryService
           .snapshots()
           .map(
         (snapshot) {
-          final friendCode = snapshot.documents.length == 0
+          final friendCode = snapshot.documents.isEmpty
               ? null
               : FriendCode.fromFirestoreDocument(snapshot.documents.first);
 
@@ -31,6 +32,7 @@ class FirestoreFriendCodeRepositoryService
         },
       );
 
+  @override
   Future<void> issue(User user) =>
       _firestore.collection('friendCodes').document().setData({
         'user': _firestore.document('/users/${user.uid}'),

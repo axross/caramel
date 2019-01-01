@@ -9,5 +9,6 @@ class SynchronousChatReference implements ChatReference {
 
   final Chat _chat;
 
+  @override
   Future<Chat> resolve() => Future.value(_chat);
 }

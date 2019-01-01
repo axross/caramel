@@ -3,10 +3,10 @@ import 'package:caramel/widgets.dart';
 import 'package:flutter/material.dart';
 
 class ChatMessageList extends StatelessWidget {
-  ChatMessageList({
-    Key key,
+  const ChatMessageList({
     @required this.user,
     @required this.chatMessages,
+    Key key,
   })  : assert(user != null),
         assert(chatMessages != null),
         super(key: key);
@@ -16,7 +16,7 @@ class ChatMessageList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         reverse: true,
         itemBuilder: (_, index) {
           final chatMessage = chatMessages[index];
@@ -37,12 +37,12 @@ class ChatMessageList extends StatelessWidget {
 }
 
 class _ChatMessageListItem extends StatelessWidget {
-  _ChatMessageListItem({
-    Key key,
+  const _ChatMessageListItem({
     @required this.chatMessage,
     @required this.isPreviousAnotherSender,
     @required this.isNextAnotherSender,
     @required this.isMine,
+    Key key,
   })  : assert(chatMessage != null),
         assert(isPreviousAnotherSender != null),
         assert(isNextAnotherSender != null),
@@ -57,8 +57,8 @@ class _ChatMessageListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         margin: isPreviousAnotherSender
-            ? EdgeInsets.only(top: 16)
-            : EdgeInsets.only(top: 4),
+            ? const EdgeInsets.only(top: 16)
+            : const EdgeInsets.only(top: 4),
         child: Row(
           children: isMine
               ? [
@@ -78,8 +78,8 @@ class _ChatMessageListItem extends StatelessWidget {
                   isPreviousAnotherSender
                       ? CircleAvatarByUserReference(
                           userReference: chatMessage.from)
-                      : SizedBox(width: 40),
-                  SizedBox(width: 8),
+                      : const SizedBox(width: 40),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: _ChatMessageContent(
                       chatMessage: chatMessage,
@@ -95,12 +95,12 @@ class _ChatMessageListItem extends StatelessWidget {
 }
 
 class _ChatMessageContent extends StatelessWidget {
-  _ChatMessageContent({
-    Key key,
+  const _ChatMessageContent({
     @required this.chatMessage,
     @required this.isPreviousAnotherSender,
     @required this.isNextAnotherSender,
     @required this.isMine,
+    Key key,
   })  : assert(chatMessage != null),
         assert(isPreviousAnotherSender != null),
         assert(isNextAnotherSender != null),
@@ -128,12 +128,12 @@ class _ChatMessageContent extends StatelessWidget {
 }
 
 class _TextChatMessageContent extends StatelessWidget {
-  _TextChatMessageContent({
-    Key key,
+  const _TextChatMessageContent({
     @required this.textChatMessage,
     @required this.isPreviousAnotherSender,
     @required this.isNextAnotherSender,
     @required this.isMine,
+    Key key,
   })  : assert(textChatMessage != null),
         assert(isPreviousAnotherSender != null),
         assert(isNextAnotherSender != null),
@@ -147,15 +147,16 @@ class _TextChatMessageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
           color: isMine ? Colors.white : Theme.of(context).accentColor,
           borderRadius: BorderRadius.vertical(
             top: isPreviousAnotherSender
-                ? Radius.circular(16)
-                : Radius.circular(4),
-            bottom:
-                isNextAnotherSender ? Radius.circular(16) : Radius.circular(4),
+                ? const Radius.circular(16)
+                : const Radius.circular(4),
+            bottom: isNextAnotherSender
+                ? const Radius.circular(16)
+                : const Radius.circular(4),
           ),
         ),
         child: Text(

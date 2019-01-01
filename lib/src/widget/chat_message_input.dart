@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class ChatMessageInput extends StatefulWidget {
-  ChatMessageInput({Key key, @required this.onSubmitted})
-      : assert(onSubmitted != null),
+  const ChatMessageInput({
+    @required this.onSubmitted,
+    Key key,
+  })  : assert(onSubmitted != null),
         super(key: key);
 
   final ValueChanged<String> onSubmitted;
@@ -15,7 +17,7 @@ class _ChatMessageInputState extends State<ChatMessageInput> {
   final TextEditingController _textEditingController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   final TextSelection _defaultTextSelection =
-      TextSelection.collapsed(offset: 0);
+      const TextSelection.collapsed(offset: 0);
 
   @override
   Widget build(BuildContext context) => Container(
@@ -23,7 +25,7 @@ class _ChatMessageInputState extends State<ChatMessageInput> {
           children: [
             Expanded(
               child: Container(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   vertical: 4,
                   horizontal: 4,
                 ),
@@ -39,7 +41,7 @@ class _ChatMessageInputState extends State<ChatMessageInput> {
                     ),
                     fillColor: Colors.grey[200],
                     filled: true,
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       vertical: 10,
                       horizontal: 16,
                     ),
@@ -49,8 +51,8 @@ class _ChatMessageInputState extends State<ChatMessageInput> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.send, color: Colors.blue),
-              onPressed: () => _onSubmitted(),
+              icon: const Icon(Icons.send, color: Colors.blue),
+              onPressed: _onSubmitted,
             ),
           ],
         ),
@@ -59,11 +61,12 @@ class _ChatMessageInputState extends State<ChatMessageInput> {
   void _onSubmitted() {
     final inputtedText = _textEditingController.text.trim();
 
-    if (inputtedText.length > 0) {
+    if (inputtedText.isNotEmpty) {
       widget.onSubmitted(inputtedText);
 
-      _textEditingController.clear();
-      _textEditingController.selection = _defaultTextSelection;
+      _textEditingController
+        ..clear()
+        ..selection = _defaultTextSelection;
     }
 
     FocusScope.of(context).requestFocus(_focusNode);

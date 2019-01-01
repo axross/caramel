@@ -24,7 +24,7 @@ class AuthenticationModel {
           return null;
         }
 
-        DocumentSnapshot userDocument = await _getSelfUser(firebaseUser);
+        var userDocument = await _getSelfUser(firebaseUser);
 
         if (!userDocument.exists) {
           await _registerNewUser(firebaseUser);
@@ -57,12 +57,3 @@ class AuthenticationModel {
   Future<DocumentSnapshot> _getSelfUser(FirebaseUser firebaseUser) async =>
       await _firestore.document('users/${firebaseUser.uid}').get();
 }
-
-final url = Uri.https(
-  'firebasestorage.googleapis.com',
-  '/v0/b/caramel-b3766.appspot.com/o/profile_images%2F0000000000000000000000000000000000000000000000000000000000000000.png',
-  {
-    'alt': 'media',
-    'token': '96813a04-7edc-499d-b1cc-dcf2f3bbabc8',
-  },
-);

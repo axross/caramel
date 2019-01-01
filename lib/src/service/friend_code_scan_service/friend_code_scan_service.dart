@@ -7,7 +7,7 @@ class FriendCodeScanService {
 
     try {
       data = await BarcodeScanner.scan();
-    } catch (error) {
+    } on Exception catch (_) {
       throw ScanCancelled();
     }
 
@@ -18,5 +18,6 @@ class FriendCodeScanService {
 class ScanCancelled implements Exception {
   ScanCancelled();
 
+  @override
   String toString() => 'ScanCancelled: scaning barcode has been cancelled.';
 }

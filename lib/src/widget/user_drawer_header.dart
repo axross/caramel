@@ -5,18 +5,16 @@ import './authenticated.dart';
 
 class UserDrawerHeader extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Authenticated(
-      authenticatedBuilder: (_, user) => UserAccountsDrawerHeader(
-            accountName: Text(user.name),
-            accountEmail: Text(user.uid),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: FirebaseStorageImage(user.imageUrl.toString()),
+  Widget build(BuildContext context) => Authenticated(
+        authenticatedBuilder: (_, user) => UserAccountsDrawerHeader(
+              accountName: Text(user.name),
+              accountEmail: Text(user.uid),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: FirebaseStorageImage(user.imageUrl.toString()),
+              ),
             ),
-          ),
-      unauthenticatedBuilder: (_) => DrawerHeader(
-            child: Container(),
-          ),
-    );
-  }
+        unauthenticatedBuilder: (_) => DrawerHeader(
+              child: Container(),
+            ),
+      );
 }

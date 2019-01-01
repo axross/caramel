@@ -4,10 +4,10 @@ import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 
 class FriendCodeDialog extends StatelessWidget {
-  FriendCodeDialog({
-    Key key,
+  const FriendCodeDialog({
     @required this.user,
     @required this.onScanButtonPressed,
+    Key key,
   })  : assert(user != null),
         assert(onScanButtonPressed != null),
         super(key: key);
@@ -23,12 +23,12 @@ class FriendCodeDialog extends StatelessWidget {
               CircleAvatar(
                 backgroundImage: FirebaseStorageImage(user.imageUrl.toString()),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Text(user.name),
               ),
               IconButton(
-                icon: Icon(CustomIcons.scan),
+                icon: const Icon(CustomIcons.scan),
                 onPressed: onScanButtonPressed,
               ),
             ],
@@ -37,8 +37,8 @@ class FriendCodeDialog extends StatelessWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Scan this to add me to your friends!'),
-            SizedBox(
+            const Text('Scan this to add me to your friends!'),
+            const SizedBox(
               height: 16,
             ),
             FriendCodeQr(user: user),
@@ -46,7 +46,7 @@ class FriendCodeDialog extends StatelessWidget {
         ),
         actions: [
           FlatButton(
-            child: Text('Close'),
+            child: const Text('Close'),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],

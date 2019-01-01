@@ -16,7 +16,10 @@ abstract class Chat with ChatStruct, ToReferenceMixin {
   factory Chat.fromFirestoreDocument(DocumentSnapshot document) =>
       FirestoreChat.fromDocument(document);
 
+  @override
   String get id;
+  @override
   Iterable<UserReference> get members;
+  @override
   ChatMessageReference get lastChatMessage;
 }

@@ -13,7 +13,9 @@ class FirestoreChat with ChatStruct, ToReferenceMixin implements Chat {
     assert(maybeLastChatMessage == null ||
         maybeLastChatMessage is DocumentReference);
 
-    final members = (maybeMembers as Iterable).map(
+    final Iterable membersAsIterable = maybeMembers;
+
+    final members = membersAsIterable.map(
       (maybeMember) =>
           UserReference.fromFirestoreDocumentReference(maybeMember),
     );
@@ -36,7 +38,10 @@ class FirestoreChat with ChatStruct, ToReferenceMixin implements Chat {
   })  : assert(id != null),
         assert(members != null);
 
+  @override
   final String id;
+  @override
   final Iterable<UserReference> members;
+  @override
   final ChatMessageReference lastChatMessage;
 }

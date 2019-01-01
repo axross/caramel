@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChatMessageListScreen extends StatelessWidget {
-  ChatMessageListScreen({Key key, @required this.chatReference})
-      : assert(chatReference != null),
+  const ChatMessageListScreen({
+    @required this.chatReference,
+    Key key,
+  })  : assert(chatReference != null),
         super(key: key);
 
   final ChatReference chatReference;
@@ -33,11 +35,11 @@ class ChatMessageListScreen extends StatelessWidget {
 }
 
 class _ChatMessageListScreenInner extends StatefulWidget {
-  _ChatMessageListScreenInner({
-    Key key,
+  const _ChatMessageListScreenInner({
     @required this.chat,
     @required this.user,
     @required this.chatModelCreator,
+    Key key,
   })  : assert(chat != null),
         assert(user != null),
         assert(chatModelCreator != null),
@@ -72,8 +74,9 @@ class _ChatMessageListScreenInnerState
             future: widget.chat.members
                 .firstWhere((member) => !member.isSameUser(widget.user))
                 .resolve(),
-            builder: (_, ss) =>
-                ss.hasData ? Text(ss.requireData.name) : Text('Loading...'),
+            builder: (_, ss) => ss.hasData
+                ? Text(ss.requireData.name)
+                : const Text('Loading...'),
           ),
           elevation: 2,
         ),
@@ -98,7 +101,7 @@ class _ChatMessageListScreenInnerState
                 ),
               ),
               Material(
-                elevation: 4.0,
+                elevation: 4,
                 child: ChatMessageInput(
                   onSubmitted: (text) => _chatModel.postingText.add(text),
                 ),

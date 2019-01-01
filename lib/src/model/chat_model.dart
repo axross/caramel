@@ -28,7 +28,7 @@ class ChatModel {
   final User _user;
   Iterable<ChatMessage> _chatMessages = [];
 
-  StreamController<String> _postingText = StreamController();
+  final StreamController<String> _postingText = StreamController();
 
   Stream<Iterable<ChatMessage>> get onChanged =>
       _chatMessageRepositoryService.subscribeChatMessages(_chat)

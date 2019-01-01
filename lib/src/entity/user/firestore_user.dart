@@ -2,7 +2,7 @@ import 'package:caramel/entities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
 import 'package:meta/meta.dart';
 
-class FirestoreUser with User {
+class FirestoreUser implements User {
   factory FirestoreUser.fromDocument(DocumentSnapshot documentSnapshot) {
     final uid = documentSnapshot.documentID;
     final maybeName = documentSnapshot.data['name'];
@@ -26,7 +26,12 @@ class FirestoreUser with User {
         assert(name != null),
         assert(imageUrl != null);
 
+  @override
   final String uid;
+
+  @override
   final String name;
+
+  @override
   final Uri imageUrl;
 }

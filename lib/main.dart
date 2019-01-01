@@ -12,15 +12,20 @@ void main() {
   final auth = FirebaseAuth.instance;
   final firestore = Firestore.instance;
   final storage = FirebaseStorage.instance;
-  final chatRepositoryService =
-      ChatRepositoryService.withFirestore(firestore: firestore);
+  final chatRepositoryService = ChatRepositoryService.withFirestore(
+    firestore: firestore,
+  );
   final chatMessageRepositoryService =
-      ChatMessageRepositoryService.withFirestore(firestore: firestore);
-  final friendCodeRepositoryService =
-      FriendCodeRepositoryService.withFirestore(firestore: firestore);
+      ChatMessageRepositoryService.withFirestore(
+    firestore: firestore,
+  );
+  final friendCodeRepositoryService = FriendCodeRepositoryService.withFirestore(
+    firestore: firestore,
+  );
   final friendCodeScanService = FriendCodeScanService();
-  final friendRepositoryService =
-      FriendRepositoryService.withFirestore(firestore: firestore);
+  final friendRepositoryService = FriendRepositoryService.withFirestore(
+    firestore: firestore,
+  );
 
   auth.signInAnonymously();
 

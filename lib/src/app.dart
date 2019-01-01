@@ -14,8 +14,7 @@ import 'package:provider/provider.dart' show Provider;
 import './screen_widget/friend_list_screen.dart';
 
 class App extends StatelessWidget {
-  App({
-    Key key,
+  const App({
     @required this.analytics,
     @required this.auth,
     @required this.firestore,
@@ -25,6 +24,7 @@ class App extends StatelessWidget {
     @required this.friendCodeRepositoryService,
     @required this.friendCodeScanService,
     @required this.friendRepositoryService,
+    Key key,
   })  : assert(analytics != null),
         assert(auth != null),
         assert(firestore != null),

@@ -11,6 +11,7 @@ class ParsedFriendCode implements FriendCode {
 
   ParsedFriendCode._(this.code);
 
+  @override
   final String code;
 }
 
@@ -19,5 +20,6 @@ class FriendCodeParsingFailure implements Exception {
 
   String code;
 
+  @override
   String toString() => 'FriendCodeParsingFailure: "$code" is not a valid code.';
 }

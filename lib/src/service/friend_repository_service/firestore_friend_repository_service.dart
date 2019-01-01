@@ -10,6 +10,7 @@ class FirestoreFriendRepositoryService implements FriendRepositoryService {
 
   final Firestore _firestore;
 
+  @override
   Stream<Iterable<Friendship>> subscribeFriendships(User user) => _firestore
       .collection('users/${user.uid}/friendships')
       .limit(100)
@@ -19,6 +20,7 @@ class FirestoreFriendRepositoryService implements FriendRepositoryService {
             .map((document) => Friendship.fromFirestoreDocument(document)),
       );
 
+  @override
   Future<void> addByFriendCode(User user, FriendCode friendCode) async {
     final friendCodeDocument =
         await _firestore.document('friendCodes/${friendCode.code}').get();
@@ -26,8 +28,8 @@ class FirestoreFriendRepositoryService implements FriendRepositoryService {
     try {
       assert(friendCodeDocument.exists);
       assert(friendCodeDocument.data['user'] is DocumentReference);
-    } catch (error) {
-      throw new Exception();
+    } on Exception catch (_) {
+      throw Exception();
     }
 
     final friendDocument = await friendCodeDocument.data['user'].get();
@@ -47,14 +49,13 @@ class FirestoreFriendRepositoryService implements FriendRepositoryService {
             [], (list, snapshot) => list..addAll(snapshot.documents)))
         .then((documents) => documents.where((document) => document != null));
 
-    final batch = _firestore.batch();
+    final batch = _firestore.batch()
+      ..setData(
+          _firestore.document('users/${user.uid}/friendships/${friend.uid}'), {
+        'user': _firestore.document('users/${friend.uid}'),
+      });
 
-    batch.setData(
-        _firestore.document('users/${user.uid}/friendships/${friend.uid}'), {
-      'user': _firestore.document('users/${friend.uid}'),
-    });
-
-    if (chatDocuments.length == 0) {
+    if (chatDocuments.isEmpty) {
       batch.setData(_firestore.collection('chats').document(), {
         'members': [
           _firestore.document('users/${user.uid}'),
@@ -67,8 +68,10 @@ class FirestoreFriendRepositoryService implements FriendRepositoryService {
     await batch.commit();
   }
 
+  @override
   Future<void> delete(User user, User friend) async {
-    // TODO: Unfollowing both of them should also delete chat document.
+    // TODO(axross): Unfollowing both of them should also delete chat document.
+    // https://github.com/axross/caramel/issues/3
 
     final friendDocumentReference =
         _firestore.document('users/${user.uid}/friendships/${friend.uid}');
@@ -77,8 +80,8 @@ class FirestoreFriendRepositoryService implements FriendRepositoryService {
     try {
       assert(friendshipDocument.exists);
       assert(friendshipDocument.data['user'] is DocumentReference);
-    } catch (error) {
-      throw new Exception();
+    } on Exception catch (_) {
+      throw Exception();
     }
 
     await friendDocumentReference.delete();

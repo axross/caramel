@@ -5,11 +5,11 @@ import 'package:provider/provider.dart';
 import 'package:meta/meta.dart';
 
 class Authenticated extends StatelessWidget {
-  Authenticated(
-      {Key key,
-      @required this.authenticatedBuilder,
-      @required this.unauthenticatedBuilder})
-      : assert(authenticatedBuilder != null),
+  const Authenticated({
+    @required this.authenticatedBuilder,
+    @required this.unauthenticatedBuilder,
+    Key key,
+  })  : assert(authenticatedBuilder != null),
         assert(unauthenticatedBuilder != null),
         super(key: key);
 
@@ -30,5 +30,5 @@ class Authenticated extends StatelessWidget {
   }
 }
 
-typedef Widget AuthenticatedBuilder(BuildContext context, User user);
-typedef Widget UnauthenticatedBuilder(BuildContext context);
+typedef AuthenticatedBuilder = Widget Function(BuildContext context, User user);
+typedef UnauthenticatedBuilder = Widget Function(BuildContext context);

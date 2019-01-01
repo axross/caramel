@@ -9,6 +9,7 @@ class FirestoreChatMessageReference implements ChatMessageReference {
 
   final DocumentReference _documentReference;
 
+  @override
   Future<ChatMessage> resolve() async {
     final document = await _documentReference.get();
 

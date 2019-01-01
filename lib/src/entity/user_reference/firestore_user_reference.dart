@@ -9,12 +9,14 @@ class FirestoreUserReference implements UserReference {
 
   final DocumentReference _documentReference;
 
+  @override
   Future<User> resolve() async {
     final document = await _documentReference.get();
 
     return User.fromFirestoreDocument(document);
   }
 
+  @override
   bool isSameUser(User user) => user.uid == _documentReference.documentID;
 
   @override

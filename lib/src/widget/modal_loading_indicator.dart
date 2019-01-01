@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ModalLoadingIndicator extends StatelessWidget {
-  ModalLoadingIndicator({
-    Key key,
+  const ModalLoadingIndicator({
     this.child,
+    Key key,
   }) : super(key: key);
 
   final Widget child;
@@ -12,14 +12,14 @@ class ModalLoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) => Stack(
         children: [
           child,
-          Opacity(
+          const Opacity(
             opacity: 0.5,
             child: ModalBarrier(
               dismissible: false,
               color: Colors.grey,
             ),
           ),
-          Center(
+          const Center(
             child: CircularProgressIndicator(),
           ),
         ],
