@@ -12,7 +12,7 @@ class FriendCodeModelCreator {
   final FriendCodeRepositoryService _friendCodeRepositoryService;
 
   FriendCodeModel createModel(User user) => FriendCodeModel(
-        user,
+        user: user,
         friendCodeRepositoryService: _friendCodeRepositoryService,
       );
 }

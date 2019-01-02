@@ -4,8 +4,8 @@ import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
 abstract class FriendListModel {
-  factory FriendListModel(
-    User user, {
+  factory FriendListModel({
+    @required User user,
     @required FriendRepositoryService friendRepositoryService,
   }) =>
       _FriendListModelImpl(

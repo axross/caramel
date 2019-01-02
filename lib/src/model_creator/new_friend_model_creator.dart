@@ -16,7 +16,7 @@ class NewFriendModelCreator {
   final FriendRepositoryService _friendRepositoryService;
 
   NewFriendModel createModel(User user) => NewFriendModel(
-        user,
+        user: user,
         friendCodeScanService: _friendCodeScanService,
         friendRepositoryService: _friendRepositoryService,
       );

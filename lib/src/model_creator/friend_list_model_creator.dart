@@ -11,6 +11,8 @@ class FriendListModelCreator {
 
   final FriendRepositoryService _friendRepositoryService;
 
-  FriendListModel createModel(User user) =>
-      FriendListModel(user, friendRepositoryService: _friendRepositoryService);
+  FriendListModel createModel(User user) => FriendListModel(
+        user: user,
+        friendRepositoryService: _friendRepositoryService,
+      );
 }

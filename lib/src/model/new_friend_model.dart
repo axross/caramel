@@ -4,8 +4,8 @@ import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
 abstract class NewFriendModel {
-  factory NewFriendModel(
-    User user, {
+  factory NewFriendModel({
+    @required User user,
     @required FriendCodeScanService friendCodeScanService,
     @required FriendRepositoryService friendRepositoryService,
   }) =>

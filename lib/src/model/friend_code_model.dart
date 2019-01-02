@@ -3,8 +3,8 @@ import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
 abstract class FriendCodeModel {
-  factory FriendCodeModel(
-    User user, {
+  factory FriendCodeModel({
+    @required User user,
     @required FriendCodeRepositoryService friendCodeRepositoryService,
   }) =>
       _FriendCodeModelImpl(
