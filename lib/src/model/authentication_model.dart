@@ -3,8 +3,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
-class AuthenticationModel {
-  AuthenticationModel({
+abstract class AuthenticationModel {
+  factory AuthenticationModel({
+    @required auth,
+    @required firestore,
+  }) =>
+      _AuthenticationModelImpl(auth: auth, firestore: firestore);
+
+  Stream<User> get onUserChanged;
+
+  User get user;
+}
+
+class _AuthenticationModelImpl implements AuthenticationModel {
+  _AuthenticationModelImpl({
     @required auth,
     @required firestore,
   })  : assert(auth != null),
@@ -16,6 +28,7 @@ class AuthenticationModel {
   final Firestore _firestore;
   User _user;
 
+  @override
   Stream<User> get onUserChanged =>
       _auth.onAuthStateChanged.asyncMap<User>((firebaseUser) async {
         if (firebaseUser == null) {
@@ -39,6 +52,7 @@ class AuthenticationModel {
         return user;
       });
 
+  @override
   User get user => _user;
 
   Future<void> _registerNewUser(FirebaseUser firebaseUser) async {

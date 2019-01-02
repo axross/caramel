@@ -3,9 +3,26 @@ import 'package:caramel/entities.dart';
 import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
-class NewFriendModel {
-  NewFriendModel(
+abstract class NewFriendModel {
+  factory NewFriendModel(
     User user, {
+    @required FriendCodeScanService friendCodeScanService,
+    @required FriendRepositoryService friendRepositoryService,
+  }) =>
+      _NewFriendModelImpl(
+        user: user,
+        friendCodeScanService: friendCodeScanService,
+        friendRepositoryService: friendRepositoryService,
+      );
+
+  Sink<void> get scanRequest;
+
+  void dispose();
+}
+
+class _NewFriendModelImpl implements NewFriendModel {
+  _NewFriendModelImpl({
+    @required User user,
     @required FriendCodeScanService friendCodeScanService,
     @required FriendRepositoryService friendRepositoryService,
   })  : _friendCodeScanService = friendCodeScanService,
@@ -30,8 +47,10 @@ class NewFriendModel {
 
   final StreamController<void> _scanRequest = StreamController();
 
+  @override
   Sink<void> get scanRequest => _scanRequest.sink;
 
+  @override
   void dispose() {
     _scanRequest.close();
   }

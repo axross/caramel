@@ -14,12 +14,9 @@ abstract class ChatMessage {
 abstract class TextChatMessage implements ChatMessage {
   @override
   UserReference get from;
-
   @override
   DateTime get sentAt;
-
   @override
   Iterable<UserReference> get readBy;
-
   String get text;
 }
