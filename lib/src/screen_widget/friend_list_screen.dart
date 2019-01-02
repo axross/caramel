@@ -116,25 +116,9 @@ class _FriendListScreenInnerState extends State<_FriendListScreenInner> {
           ),
           body: TabBarView(
             children: [
-              StreamBuilder<Iterable<Friendship>>(
-                stream: _friendListModel.onChanged,
-                initialData: _friendListModel.friendships,
-                builder: (_, snapshot) => snapshot.hasData
-                    ? FriendList(
-                        children: snapshot.requireData
-                            .map(
-                              (friendship) => _FriendListItem(
-                                    key: ValueKey(friendship),
-                                    friendship: friendship,
-                                    user: widget.user,
-                                    chatByFriendshipModelCreator:
-                                        widget.chatByFriendshipModelCreator,
-                                    friendListModel: _friendListModel,
-                                  ),
-                            )
-                            .toList(),
-                      )
-                    : Container(),
+              Provider(
+                value: _friendListModel,
+                child: FriendList(),
               ),
               StreamBuilder<Iterable<Chat>>(
                 stream: _chatListModel.onChanged,
@@ -164,61 +148,5 @@ class _FriendListScreenInnerState extends State<_FriendListScreenInner> {
             ],
           ),
         ),
-      );
-}
-
-class _FriendListItem extends StatefulWidget {
-  const _FriendListItem({
-    @required this.friendship,
-    @required this.user,
-    @required this.chatByFriendshipModelCreator,
-    @required this.friendListModel,
-    Key key,
-  })  : assert(friendship != null),
-        assert(user != null),
-        assert(chatByFriendshipModelCreator != null),
-        assert(friendListModel != null),
-        super(key: key);
-
-  final Friendship friendship;
-  final User user;
-  final ChatByFriendshipModelCreator chatByFriendshipModelCreator;
-  final FriendListModel friendListModel;
-
-  @override
-  State<StatefulWidget> createState() => _FriendListItemState();
-}
-
-class _FriendListItemState extends State<_FriendListItem> {
-  ChatByFriendshipModel _chatByFriendshipModel;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _chatByFriendshipModel = widget.chatByFriendshipModelCreator.createModel(
-      user: widget.user,
-      friendship: widget.friendship,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => StreamBuilder<Chat>(
-        stream: _chatByFriendshipModel.onChanged,
-        initialData: _chatByFriendshipModel.chat,
-        builder: (_, snapshot) => snapshot.hasData
-            ? FriendListItem(
-                friendship: widget.friendship,
-                onTap: () {},
-                // onTapDeleteButton: () =>
-                //     widget.friendListModel.deletion.add(widget.friendship),
-                onTapChatButton: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => ChatMessageListScreen(
-                            chatReference: snapshot.requireData.toReference()),
-                      ),
-                    ),
-              )
-            : Container(),
       );
 }
