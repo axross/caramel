@@ -5,8 +5,8 @@ import 'package:meta/meta.dart';
 
 abstract class AuthenticationModel {
   factory AuthenticationModel({
-    @required auth,
-    @required firestore,
+    @required FirebaseAuth auth,
+    @required Firestore firestore,
   }) =>
       _AuthenticationModelImpl(auth: auth, firestore: firestore);
 
@@ -17,8 +17,8 @@ abstract class AuthenticationModel {
 
 class _AuthenticationModelImpl implements AuthenticationModel {
   _AuthenticationModelImpl({
-    @required auth,
-    @required firestore,
+    @required FirebaseAuth auth,
+    @required Firestore firestore,
   })  : assert(auth != null),
         assert(firestore != null),
         _auth = auth,
