@@ -9,7 +9,7 @@ import '../mock/models.dart';
 
 void main() {
   testWidgets('', (tester) async {
-    final AuthenticationModel authenticationModel = TestAuthenticationModel();
+    final authenticationModel = TestAuthenticationModel();
     when(authenticationModel.onUserChanged).thenAnswer(
       (_) => Stream.fromIterable([
             TestUser(),
@@ -17,8 +17,7 @@ void main() {
     );
     when(authenticationModel.user).thenReturn(TestUser());
 
-    final ChatByFriendshipModel chatByFriendshipModel =
-        TestChatByFriendshipModel();
+    final chatByFriendshipModel = TestChatByFriendshipModel();
     when(chatByFriendshipModel.onChanged).thenAnswer(
       (_) => Stream.fromFuture(
             Future.value(
@@ -28,8 +27,7 @@ void main() {
     );
     when(chatByFriendshipModel.chat).thenReturn(TestChat());
 
-    final ChatByFriendshipModelCreator chatByFriendshipModelCreator =
-        TestChatByFriendshipModelCreator();
+    final chatByFriendshipModelCreator = TestChatByFriendshipModelCreator();
     when(
       chatByFriendshipModelCreator.createModel(
         user: anyNamed('user'),
@@ -37,7 +35,7 @@ void main() {
       ),
     ).thenReturn(chatByFriendshipModel);
 
-    final FriendListModel friendListModel = TestFriendListModel();
+    final friendListModel = TestFriendListModel();
     when(friendListModel.friendships).thenReturn([
       TestFriendship.fromUser(TestUser(name: 'Elton John')),
       TestFriendship.fromUser(TestUser(name: 'Collin Firth')),
@@ -53,11 +51,11 @@ void main() {
     );
 
     await tester.pumpWidget(
-      Provider(
+      Provider<AuthenticationModel>(
         value: authenticationModel,
-        child: Provider(
+        child: Provider<ChatByFriendshipModelCreator>(
           value: chatByFriendshipModelCreator,
-          child: Provider(
+          child: Provider<FriendListModel>(
             value: friendListModel,
             child: MaterialApp(
               home: Material(
