@@ -3,27 +3,36 @@ import 'package:caramel/entities.dart';
 import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
+/// A model managing the list of [Friendship]s the user participated in.
+///
+/// When the instance doesn't need anymore, [dispose()] should be called.
 abstract class FriendListModel {
+  /// Creates a [FriendListModel].
   factory FriendListModel({
     @required User user,
     @required FriendRepositoryService friendRepositoryService,
   }) =>
-      _FriendListModelImpl(
+      _FriendListModel(
         user: user,
         friendRepositoryService: friendRepositoryService,
       );
 
+  /// Fires whenever the list of [Friendship]s changes.
   Stream<Iterable<Friendship>> get onChanged;
 
+  /// The [Sink] to request deleting a [Friendship].
   Sink<Friendship> get deletion;
 
+  /// The current list of [Friendship]s.
   Iterable<Friendship> get friendships;
 
+  /// Closes all [Sink]s used in the instance. This method should be called
+  /// when the instance doesn't need anymore.
   void dispose();
 }
 
-class _FriendListModelImpl implements FriendListModel {
-  _FriendListModelImpl({
+class _FriendListModel implements FriendListModel {
+  _FriendListModel({
     @required User user,
     @required FriendRepositoryService friendRepositoryService,
   })  : _friendRepositoryService = friendRepositoryService,

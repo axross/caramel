@@ -1,10 +1,28 @@
 import 'package:caramel/entities.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'
+    show DocumentReference, DocumentSnapshot, Firestore;
 import 'package:meta/meta.dart';
-import './friend_repository_service.dart';
 
-class FirestoreFriendRepositoryService implements FriendRepositoryService {
-  FirestoreFriendRepositoryService({@required Firestore firestore})
+/// A repository service of a list of friends.
+abstract class FriendRepositoryService {
+  /// Creates a [FriendRepositoryService] with a [Firestore].
+  factory FriendRepositoryService.withFirestore({
+    @required Firestore firestore,
+  }) =>
+      _FirestoreFriendRepositoryService(firestore: firestore);
+
+  /// Subscribes the changes of the list of friends of the [user].
+  Stream<Iterable<Friendship>> subscribeFriendships(User user);
+
+  /// Add an user as the [user]'s friend by a [FriendCode].
+  Future<void> addByFriendCode(User user, FriendCode friendCode);
+
+  /// Delete the relationship with [friend].
+  Future<void> delete(User user, User friend);
+}
+
+class _FirestoreFriendRepositoryService implements FriendRepositoryService {
+  _FirestoreFriendRepositoryService({@required Firestore firestore})
       : assert(firestore != null),
         _firestore = firestore;
 

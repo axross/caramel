@@ -3,7 +3,10 @@ import 'package:caramel/models.dart';
 import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
+///
+@deprecated
 class ChatByFriendshipModelCreator {
+  ///
   ChatByFriendshipModelCreator({
     @required ChatRepositoryService chatRepositoryService,
   })  : assert(chatRepositoryService != null),
@@ -11,6 +14,7 @@ class ChatByFriendshipModelCreator {
 
   final ChatRepositoryService _chatRepositoryService;
 
+  ///
   ChatByFriendshipModel createModel({
     @required User user,
     @required Friendship friendship,

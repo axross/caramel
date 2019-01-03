@@ -2,23 +2,27 @@ import 'package:caramel/entities.dart';
 import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
+/// A model managing the available [FriendCode] of the [User].
 abstract class FriendCodeModel {
+  /// Creates a [FriendCodeModel].
   factory FriendCodeModel({
     @required User user,
     @required FriendCodeRepositoryService friendCodeRepositoryService,
   }) =>
-      _FriendCodeModelImpl(
+      _FriendCodeModel(
         user: user,
         friendCodeRepositoryService: friendCodeRepositoryService,
       );
 
+  /// Fires whenever the available [FriendCode] changes.
   Stream<FriendCode> get onChanged;
 
+  /// The available [FriendCode].
   FriendCode get friendCode;
 }
 
-class _FriendCodeModelImpl implements FriendCodeModel {
-  _FriendCodeModelImpl({
+class _FriendCodeModel implements FriendCodeModel {
+  _FriendCodeModel({
     @required User user,
     @required FriendCodeRepositoryService friendCodeRepositoryService,
   })  : assert(friendCodeRepositoryService != null),

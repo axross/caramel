@@ -1,11 +1,30 @@
 import 'package:caramel/entities.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'
+    show FieldValue, Firestore;
 import 'package:meta/meta.dart';
-import './chat_message_repository_service.dart';
 
-class FirestoreChatMessageRepositoryService
+/// A repository service of chats
+abstract class ChatMessageRepositoryService {
+  /// Creates a [ChatMessageRepositoryService] with a [Firestore].
+  factory ChatMessageRepositoryService.withFirestore({
+    @required Firestore firestore,
+  }) =>
+      _FirestoreChatMessageRepositoryService(firestore: firestore);
+
+  /// Subscribes the changes of the list of [ChatMessage]s in the [chat].
+  Stream<Iterable<ChatMessage>> subscribeChatMessages(Chat chat);
+
+  /// Posts a [TextChatMessage].
+  Future<void> postText({
+    @required String text,
+    @required Chat chat,
+    @required User user,
+  });
+}
+
+class _FirestoreChatMessageRepositoryService
     implements ChatMessageRepositoryService {
-  FirestoreChatMessageRepositoryService({@required Firestore firestore})
+  _FirestoreChatMessageRepositoryService({@required Firestore firestore})
       : assert(firestore != null),
         _firestore = firestore;
 

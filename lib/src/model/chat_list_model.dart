@@ -3,27 +3,36 @@ import 'package:caramel/entities.dart';
 import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
+/// A model managing the list of [Chat]s the user participated in.
+///
+/// When the instance doesn't need anymore, [dispose()] should be called.
 abstract class ChatListModel {
+  /// Creates a [ChatListModel].
   factory ChatListModel({
     @required ChatRepositoryService chatRepositoryService,
     @required User user,
   }) =>
-      _ChatListModelImpl(
+      _ChatListModel(
         chatRepositoryService: chatRepositoryService,
         user: user,
       );
 
-  Iterable<Chat> get chats;
-
+  /// Fires whenever the list of [Chat]s changes.
   Stream<Iterable<Chat>> get onChanged;
 
+  /// The [Sink] to request creating a new [Chat] with the given [User].
   Sink<User> get creation;
 
+  /// The current list of [Chat]s.
+  Iterable<Chat> get chats;
+
+  /// Closes all [Sink]s used in the instance. This method should be called
+  /// when the instance doesn't need anymore.
   void dispose();
 }
 
-class _ChatListModelImpl implements ChatListModel {
-  _ChatListModelImpl({
+class _ChatListModel implements ChatListModel {
+  _ChatListModel({
     @required ChatRepositoryService chatRepositoryService,
     @required User user,
   })  : assert(chatRepositoryService != null),

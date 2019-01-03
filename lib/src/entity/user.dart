@@ -1,9 +1,27 @@
-import 'package:caramel/entities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
 import 'package:meta/meta.dart';
 
-class FirestoreUser implements User {
-  factory FirestoreUser.fromDocument(DocumentSnapshot documentSnapshot) {
+/// An user.
+@immutable
+abstract class User {
+  /// Creates an [User] from Firebase [DocumentSnapshot].
+  factory User.fromFirestoreDocument(DocumentSnapshot document) =>
+      _FirestoreUser.fromDocument(document);
+
+  /// 消すかも
+  @deprecated
+  String get uid;
+
+  /// The name of the user.
+  String get name;
+
+  /// The URL to the image file.
+  Uri get imageUrl;
+}
+
+@immutable
+class _FirestoreUser implements User {
+  factory _FirestoreUser.fromDocument(DocumentSnapshot documentSnapshot) {
     final uid = documentSnapshot.documentID;
     final maybeName = documentSnapshot.data['name'];
     final maybeImageUrlString = documentSnapshot.data['imageUrl'];
@@ -15,10 +33,10 @@ class FirestoreUser implements User {
 
     final imageUrl = Uri.parse(maybeImageUrlString);
 
-    return FirestoreUser._(uid: uid, name: maybeName, imageUrl: imageUrl);
+    return _FirestoreUser._(uid: uid, name: maybeName, imageUrl: imageUrl);
   }
 
-  FirestoreUser._({
+  const _FirestoreUser._({
     @required this.uid,
     @required this.name,
     @required this.imageUrl,

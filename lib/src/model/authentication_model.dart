@@ -3,20 +3,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
+/// A model managing authentication and the current signed-in [User].
 abstract class AuthenticationModel {
+  /// Creates an [AuthenticationModel].
   factory AuthenticationModel({
     @required FirebaseAuth auth,
     @required Firestore firestore,
   }) =>
-      _AuthenticationModelImpl(auth: auth, firestore: firestore);
+      _AuthenticationModel(auth: auth, firestore: firestore);
 
+  /// Fires whenever the signed-in [User] changes.
   Stream<User> get onUserChanged;
 
+  /// The current signed-in user. If no user signed in, returns `null`.
   User get user;
 }
 
-class _AuthenticationModelImpl implements AuthenticationModel {
-  _AuthenticationModelImpl({
+class _AuthenticationModel implements AuthenticationModel {
+  _AuthenticationModel({
     @required FirebaseAuth auth,
     @required Firestore firestore,
   })  : assert(auth != null),

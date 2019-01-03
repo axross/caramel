@@ -1,11 +1,26 @@
 import 'package:caramel/entities.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'
+    show FieldValue, Firestore;
 import 'package:meta/meta.dart';
-import './friend_code_repository_service.dart';
 
-class FirestoreFriendCodeRepositoryService
+/// A repository service of friend code.
+abstract class FriendCodeRepositoryService {
+  /// Creates a [FriendCodeRepositoryService] with a [Firestore].
+  factory FriendCodeRepositoryService.withFirestore({
+    @required Firestore firestore,
+  }) =>
+      _FirestoreFriendCodeRepositoryService(firestore: firestore);
+
+  /// Subscribes the changes of the newest [FriendCode] of the [user].
+  Stream<FriendCode> subscribeNewestFriendCode(User user);
+
+  /// Issues a new [FriendCode].
+  Future<void> issue(User user);
+}
+
+class _FirestoreFriendCodeRepositoryService
     implements FriendCodeRepositoryService {
-  FirestoreFriendCodeRepositoryService({@required Firestore firestore})
+  _FirestoreFriendCodeRepositoryService({@required Firestore firestore})
       : assert(firestore != null),
         _firestore = firestore;
 

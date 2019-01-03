@@ -15,13 +15,15 @@ class TestUser implements User {
 
   @override
   final String uid;
+
   @override
   final String name;
+
   @override
   final Uri imageUrl;
 }
 
-class TestChat with ChatStruct, ToReferenceMixin implements Chat {
+class TestChat implements Chat {
   TestChat({
     this.id = '',
     Iterable<UserReference> members,
@@ -31,10 +33,24 @@ class TestChat with ChatStruct, ToReferenceMixin implements Chat {
 
   @override
   final String id;
+
   @override
   final Iterable<UserReference> members;
+
   @override
   final ChatMessageReference lastChatMessage;
+
+  @override
+  ChatReference toReference() => TestChatReference(chat: this);
+}
+
+class TestChatReference implements ChatReference {
+  TestChatReference({Chat chat}) : chat = chat ?? TestChat();
+
+  final Chat chat;
+
+  @override
+  Future<Chat> resolve() => Future.value(chat);
 }
 
 class TestChatMessageReference implements ChatMessageReference {
@@ -59,8 +75,10 @@ class TestChatMessage implements ChatMessage {
 
   @override
   final UserReference from;
+
   @override
   final DateTime sentAt;
+
   @override
   final Iterable<UserReference> readBy;
   final String text;
@@ -68,6 +86,7 @@ class TestChatMessage implements ChatMessage {
 
 class TestFriendship implements Friendship {
   TestFriendship({UserReference user}) : user = user ?? TestUserReference();
+
   TestFriendship.fromUser(User user) : user = TestUserReference(user: user);
 
   @override

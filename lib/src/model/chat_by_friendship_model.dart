@@ -3,7 +3,10 @@ import 'package:caramel/entities.dart';
 import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
+///
+@deprecated
 abstract class ChatByFriendshipModel {
+  ///
   factory ChatByFriendshipModel({
     @required User user,
     @required Friendship friendship,
@@ -15,12 +18,16 @@ abstract class ChatByFriendshipModel {
         chatRepositoryService: chatRepositoryService,
       );
 
+  ///
   Stream<Chat> get onChanged;
 
+  ///
   Sink<void> get creation;
 
+  ///
   Chat get chat;
 
+  ///
   void dispose();
 }
 

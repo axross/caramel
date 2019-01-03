@@ -1,7 +1,17 @@
 import 'package:caramel/entities.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 
-class FriendCodeScanService {
+/// A service to scan [FriendCode] QR codes.
+abstract class FriendCodeScanService {
+  /// Creates a [FriendCodeScanService].
+  factory FriendCodeScanService() => _FriendCodeScanService();
+
+  /// Scans QR code with device's camera.
+  Future<FriendCode> scan();
+}
+
+class _FriendCodeScanService implements FriendCodeScanService {
+  @override
   Future<FriendCode> scan() async {
     String data;
 
@@ -15,7 +25,9 @@ class FriendCodeScanService {
   }
 }
 
+///
 class ScanCancelled implements Exception {
+  ///
   ScanCancelled();
 
   @override
