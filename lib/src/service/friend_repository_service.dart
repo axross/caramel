@@ -41,7 +41,7 @@ class _FirestoreFriendRepositoryService implements FriendRepositoryService {
   @override
   Future<void> addByFriendCode(User user, FriendCode friendCode) async {
     final friendCodeDocument =
-        await _firestore.document('friendCodes/${friendCode.code}').get();
+        await _firestore.document('friendCodes/${friendCode.data}').get();
 
     try {
       assert(friendCodeDocument.exists);
