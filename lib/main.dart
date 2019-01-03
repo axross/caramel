@@ -15,10 +15,6 @@ void main() {
   final chatRepositoryService = ChatRepositoryService.withFirestore(
     firestore: firestore,
   );
-  final chatMessageRepositoryService =
-      ChatMessageRepositoryService.withFirestore(
-    firestore: firestore,
-  );
   final friendCodeRepositoryService = FriendCodeRepositoryService.withFirestore(
     firestore: firestore,
   );
@@ -35,7 +31,6 @@ void main() {
       auth: auth,
       firestore: firestore,
       storage: storage,
-      chatMessageRepositoryService: chatMessageRepositoryService,
       chatRepositoryService: chatRepositoryService,
       friendCodeRepositoryService: friendCodeRepositoryService,
       friendCodeScanService: friendCodeScanService,

@@ -20,7 +20,6 @@ class App extends StatelessWidget {
     @required this.firestore,
     @required this.storage,
     @required this.chatRepositoryService,
-    @required this.chatMessageRepositoryService,
     @required this.friendCodeRepositoryService,
     @required this.friendCodeScanService,
     @required this.friendRepositoryService,
@@ -30,7 +29,6 @@ class App extends StatelessWidget {
         assert(firestore != null),
         assert(storage != null),
         assert(chatRepositoryService != null),
-        assert(chatMessageRepositoryService != null),
         assert(friendCodeRepositoryService != null),
         assert(friendCodeScanService != null),
         assert(friendRepositoryService != null),
@@ -41,7 +39,6 @@ class App extends StatelessWidget {
   final Firestore firestore;
   final FirebaseStorage storage;
   final ChatRepositoryService chatRepositoryService;
-  final ChatMessageRepositoryService chatMessageRepositoryService;
   final FriendCodeRepositoryService friendCodeRepositoryService;
   final FriendCodeScanService friendCodeScanService;
   final FriendRepositoryService friendRepositoryService;
@@ -63,7 +60,7 @@ class App extends StatelessWidget {
         ),
         child: Provider(
           value: ChatModelCreator(
-            chatMessageRepositoryService: chatMessageRepositoryService,
+            chatRepositoryService: chatRepositoryService,
           ),
           child: Provider(
             value: FriendCodeModelCreator(

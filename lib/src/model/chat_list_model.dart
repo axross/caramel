@@ -54,7 +54,7 @@ class _ChatListModel implements ChatListModel {
 
   @override
   Stream<Iterable<Chat>> get onChanged =>
-      _chatRepositoryService.subscribeChats(_user)
+      _chatRepositoryService.subscribeChatsByUser(_user)
         ..listen((chats) {
           _chats = chats;
         });

@@ -9,11 +9,11 @@ import 'package:meta/meta.dart';
 class ChatModelCreator {
   /// Creates a [ChatModel].
   ChatModelCreator({
-    @required ChatMessageRepositoryService chatMessageRepositoryService,
-  })  : assert(chatMessageRepositoryService != null),
-        _chatMessageRepositoryService = chatMessageRepositoryService;
+    @required ChatRepositoryService chatRepositoryService,
+  })  : assert(chatRepositoryService != null),
+        _chatRepositoryService = chatRepositoryService;
 
-  final ChatMessageRepositoryService _chatMessageRepositoryService;
+  final ChatRepositoryService _chatRepositoryService;
 
   /// Creates [ChatModel]. Almost all of dependencies will be provided.
   ChatModel createModel({
@@ -23,6 +23,6 @@ class ChatModelCreator {
       ChatModel(
         chat: chat,
         user: user,
-        chatMessageRepositoryService: _chatMessageRepositoryService,
+        chatRepositoryService: _chatRepositoryService,
       );
 }

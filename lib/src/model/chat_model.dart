@@ -11,12 +11,12 @@ abstract class ChatModel {
   factory ChatModel({
     @required Chat chat,
     @required User user,
-    @required ChatMessageRepositoryService chatMessageRepositoryService,
+    @required ChatRepositoryService chatRepositoryService,
   }) =>
       _ChatModel(
         chat: chat,
         user: user,
-        chatMessageRepositoryService: chatMessageRepositoryService,
+        chatRepositoryService: chatRepositoryService,
       );
 
   /// Fires whenever the list of [ChatMessage]s changes.
@@ -37,15 +37,15 @@ class _ChatModel implements ChatModel {
   _ChatModel({
     @required Chat chat,
     @required User user,
-    @required ChatMessageRepositoryService chatMessageRepositoryService,
+    @required ChatRepositoryService chatRepositoryService,
   })  : assert(chat != null),
         assert(user != null),
-        assert(chatMessageRepositoryService != null),
+        assert(chatRepositoryService != null),
         _chat = chat,
         _user = user,
-        _chatMessageRepositoryService = chatMessageRepositoryService {
+        _chatRepositoryService = chatRepositoryService {
     _postingText.stream.listen((text) async {
-      await _chatMessageRepositoryService.postText(
+      await _chatRepositoryService.postText(
         text: text,
         chat: _chat,
         user: _user,
@@ -53,7 +53,7 @@ class _ChatModel implements ChatModel {
     });
   }
 
-  final ChatMessageRepositoryService _chatMessageRepositoryService;
+  final ChatRepositoryService _chatRepositoryService;
   final Chat _chat;
   final User _user;
   Iterable<ChatMessage> _chatMessages = [];
@@ -62,7 +62,7 @@ class _ChatModel implements ChatModel {
 
   @override
   Stream<Iterable<ChatMessage>> get onChanged =>
-      _chatMessageRepositoryService.subscribeChatMessages(_chat)
+      _chatRepositoryService.subscribeChatMessagesinChat(_chat)
         ..listen((chatMessages) {
           _chatMessages = chatMessages;
         });

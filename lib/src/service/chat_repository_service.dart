@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:caramel/entities.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' show Firestore;
+import 'package:cloud_firestore/cloud_firestore.dart'
+    show FieldValue, Firestore;
 import 'package:meta/meta.dart';
 
-/// A repository service of lists of chats.
+/// A repository service of chat.
 abstract class ChatRepositoryService {
   /// Creates [ChatRepositoryService] with a [Firestore].
   factory ChatRepositoryService.withFirestore({
@@ -12,14 +13,24 @@ abstract class ChatRepositoryService {
       _FirestoreChatRepositoryService(firestore: firestore);
 
   /// Subscribes the changes of the list of [Chat]s the [user] participates in.
-  Stream<Iterable<Chat>> subscribeChats(User user);
+  Stream<Iterable<Chat>> subscribeChatsByUser(User user);
 
   ///
   @deprecated
   Stream<Chat> subscribeChatByFriendship(User user, Friendship friendship);
 
+  /// Subscribes the changes of the list of [ChatMessage]s in the [chat].
+  Stream<Iterable<ChatMessage>> subscribeChatMessagesinChat(Chat chat);
+
   /// Creates an one-on-one chat with the [user] and [friend].
   Future<void> createChat(User user, User friend);
+
+  /// Posts a [TextChatMessage].
+  Future<void> postText({
+    @required String text,
+    @required Chat chat,
+    @required User user,
+  });
 }
 
 class _FirestoreChatRepositoryService implements ChatRepositoryService {
@@ -31,7 +42,7 @@ class _FirestoreChatRepositoryService implements ChatRepositoryService {
   final Firestore _firestore;
 
   @override
-  Stream<Iterable<Chat>> subscribeChats(User user) => _firestore
+  Stream<Iterable<Chat>> subscribeChatsByUser(User user) => _firestore
       .collection('chats')
       .where(
         'members',
@@ -96,6 +107,19 @@ class _FirestoreChatRepositoryService implements ChatRepositoryService {
   }
 
   @override
+  Stream<Iterable<ChatMessage>> subscribeChatMessagesinChat(Chat chat) =>
+      _firestore
+          .collection('chats/${chat.id}/messages')
+          .orderBy('sentAt', descending: true)
+          .limit(100)
+          .snapshots()
+          .map(
+            (query) => query.documents.map(
+                  (document) => ChatMessage.fromFirestoreDocument(document),
+                ),
+          );
+
+  @override
   Future<void> createChat(User user, User friend) async =>
       await _firestore.collection('chats').document().setData({
         'members': [
@@ -103,4 +127,49 @@ class _FirestoreChatRepositoryService implements ChatRepositoryService {
           _firestore.document('users/${friend.uid}'),
         ],
       });
+
+  @override
+  Future<void> postText({
+    @required String text,
+    @required Chat chat,
+    @required User user,
+  }) async {
+    // TODO(axross): I can't implement this process like the below.
+    // https://github.com/axross/caramel/issues/2
+    //
+    // final batch = _firestore.batch();
+    // final chatMessageDocumentReference =
+    //     _firestore.collection('chats/${chat.id}/messages').document();
+
+    // batch.setData(chatMessageDocumentReference, {
+    //   'type': 'TEXT',
+    //   'from': _firestore.document('users/${user.uid}'),
+    //   'sentAt': FieldValue.serverTimestamp(),
+    //   'readBy': [],
+    //   'text': text,
+    // });
+
+    // batch.updateData(_firestore.document('chats/${chat.id}'), {
+    //   'lastChatMessage': chatMessageDocumentReference,
+    // });
+
+    // await batch.commit();
+
+    final chatMessageDocumentReference =
+        _firestore.collection('chats/${chat.id}/messages').document();
+
+    await Future.wait([
+      chatMessageDocumentReference.setData({
+        'type': 'TEXT',
+        'from': _firestore.document('users/${user.uid}'),
+        'sentAt': FieldValue.serverTimestamp(),
+        'readBy': [],
+        'text': text,
+      }),
+      _firestore.document('chats/${chat.id}').updateData({
+        'lastChatMessage': chatMessageDocumentReference,
+        'lastMessageCreatedAt': FieldValue.serverTimestamp(),
+      }),
+    ]);
+  }
 }
