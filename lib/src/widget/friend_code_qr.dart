@@ -63,7 +63,7 @@ class _FriendCodeQrInnerState extends State<_FriendCodeQrInner> {
                 child: QrImage(
                   version: 2,
                   errorCorrectionLevel: QrErrorCorrectLevel.M,
-                  data: snapshot.data.code,
+                  data: snapshot.data.data,
                 ),
               )
             : Container(

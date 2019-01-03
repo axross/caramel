@@ -11,9 +11,8 @@ abstract class FriendCode {
   /// Creates a [FriendCode] from a [String].
   factory FriendCode.parse(String string) => _ParsedFriendCode.parse(string);
 
-  /// 消すかも
-  @deprecated
-  String get code;
+  /// String data.
+  String get data;
 }
 
 @immutable
@@ -26,10 +25,10 @@ class _ParsedFriendCode implements FriendCode {
     return _ParsedFriendCode._(maybeCode);
   }
 
-  const _ParsedFriendCode._(this.code);
+  const _ParsedFriendCode._(this.data);
 
   @override
-  final String code;
+  final String data;
 }
 
 @immutable
@@ -45,18 +44,18 @@ class _FirestoreFriendCode implements FriendCode {
   final String id;
 
   @override
-  String get code => id;
+  String get data => id;
 }
 
 ///
 @immutable
 class FriendCodeParsingFailure implements Exception {
   /// Creates a [FriendCodeParsingFailure].
-  const FriendCodeParsingFailure(this.code);
+  const FriendCodeParsingFailure(this.data);
 
   /// A string.
-  final String code;
+  final String data;
 
   @override
-  String toString() => 'FriendCodeParsingFailure: "$code" is not a valid code.';
+  String toString() => 'FriendCodeParsingFailure: "$data" is not a valid code.';
 }
