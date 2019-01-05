@@ -10,8 +10,8 @@ class FirebaseAuthenticator implements Authenticator {
   final FirebaseAuth _auth;
 
   @override
-  Stream<String> observeSignedInUserId() =>
-      _auth.onAuthStateChanged.map((firebaseUser) => firebaseUser.uid);
+  Stream<String> observeSignedInUserId() => _auth.onAuthStateChanged
+      .map((firebaseUser) => firebaseUser == null ? null : firebaseUser.uid);
 
   @override
   void signIn() => _auth.signInAnonymously();
