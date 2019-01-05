@@ -34,12 +34,12 @@ class _ChatsObservable implements ChatsObservable {
   @override
   Stream<Iterable<Chat>> get onChanged =>
       _chatRepository.subscribeChats(hero: _hero)
-        ..listen((friendships) {
-          _friendships = friendships;
+        ..listen((chats) {
+          _chats = chats;
         });
 
-  Iterable<Chat> _friendships;
+  Iterable<Chat> _chats;
 
   @override
-  Iterable<Chat> get latest => _friendships;
+  Iterable<Chat> get latest => _chats;
 }
