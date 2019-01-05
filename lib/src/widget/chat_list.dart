@@ -24,21 +24,24 @@ class ChatList extends StatelessWidget {
   Widget build(BuildContext context) => StreamBuilder<List<Chat>>(
         stream: chatsObervable.onChanged.map((chats) => chats.toList()),
         initialData: chatsObervable.latest?.toList(),
-        builder: (_, myChatsSnapshot) => ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              itemBuilder: (_, index) => myChatsSnapshot.hasData
-                  ? _ChatListItem(
-                      hero: hero,
-                      chat: myChatsSnapshot.requireData[index],
-                      onTapped: () => onChatTapped(
-                            myChatsSnapshot.requireData[index],
-                          ),
-                    )
-                  : null,
-              separatorBuilder: (_, __) => const Divider(),
-              itemCount: myChatsSnapshot.hasData
-                  ? myChatsSnapshot.requireData.length
-                  : 0,
+        builder: (context, myChatsSnapshot) => StreamBuilder(
+              stream: Stream.periodic(const Duration(seconds: 5)),
+              builder: (context, _) => ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    itemBuilder: (_, index) => myChatsSnapshot.hasData
+                        ? _ChatListItem(
+                            hero: hero,
+                            chat: myChatsSnapshot.requireData[index],
+                            onTapped: () => onChatTapped(
+                                  myChatsSnapshot.requireData[index],
+                                ),
+                          )
+                        : null,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemCount: myChatsSnapshot.hasData
+                        ? myChatsSnapshot.requireData.length
+                        : 0,
+                  ),
             ),
       );
 }
@@ -123,14 +126,16 @@ class _LastChatMessageTime extends StatelessWidget {
   Widget build(BuildContext context) {
     final difference = DateTime.now().difference(lastChatMessage.sentAt);
 
-    print(difference);
-
-    if (difference.inMinutes < 1) {
+    if (difference.inSeconds < 15) {
       return const Text('Now');
     }
 
+    if (difference.inMinutes < 1) {
+      return Text('${difference.inSeconds} seconds ago');
+    }
+
     if (difference.inHours < 1) {
-      return Text('${difference.inMinutes} mins ago');
+      return Text('${difference.inMinutes} minutes ago');
     }
 
     if (difference.inHours < 6) {

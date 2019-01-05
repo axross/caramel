@@ -21,26 +21,24 @@ class FriendList extends StatelessWidget {
   final ValueChanged<Chat> onChatTapped;
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<List<Friendship>>(
-      stream: friendshipsObservable.onChanged
-          .map((friendships) => friendships.toList()),
-      initialData: friendshipsObservable.latest?.toList(),
-      builder: (context, friendListSnapshot) => friendListSnapshot.hasData
-          ? ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              itemBuilder: (context, index) => _FriendListItem(
-                    friendship: friendListSnapshot.requireData[index],
-                    onTap: () =>
-                        onFriendTapped(friendListSnapshot.requireData[index]),
-                    onChatTapped: onChatTapped,
-                  ),
-              separatorBuilder: (context, index) => const Divider(),
-              itemCount: friendListSnapshot.requireData.length,
-            )
-          : ListView(),
-    );
-  }
+  Widget build(BuildContext context) => StreamBuilder<List<Friendship>>(
+        stream: friendshipsObservable.onChanged
+            .map((friendships) => friendships.toList()),
+        initialData: friendshipsObservable.latest?.toList(),
+        builder: (context, friendListSnapshot) => friendListSnapshot.hasData
+            ? ListView.separated(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                itemBuilder: (context, index) => _FriendListItem(
+                      friendship: friendListSnapshot.requireData[index],
+                      onTap: () =>
+                          onFriendTapped(friendListSnapshot.requireData[index]),
+                      onChatTapped: onChatTapped,
+                    ),
+                separatorBuilder: (context, index) => const Divider(),
+                itemCount: friendListSnapshot.requireData.length,
+              )
+            : ListView(),
+      );
 }
 
 class _FriendListItem extends StatelessWidget {
