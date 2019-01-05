@@ -5,5 +5,6 @@ export './src/widget/custom_icons.dart';
 export './src/widget/friend_code_dialog.dart';
 export './src/widget/friend_code_qr.dart';
 export './src/widget/friend_list.dart';
+export './src/widget/friend_profile_dialog.dart';
 export './src/widget/memoized_builder.dart';
-export './src/widget/user_profile_dialog.dart';
+export './src/widget/provider.dart';

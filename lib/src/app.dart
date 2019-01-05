@@ -7,53 +7,52 @@ import 'package:firebase_analytics/firebase_analytics.dart'
 import 'package:firebase_analytics/observer.dart'
     show FirebaseAnalyticsObserver;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart' show Provider;
 
 class App extends StatelessWidget {
   const App({
     @required this.analytics,
     @required this.authenticate,
+    @required this.deleteFriendship,
     @required this.listChat,
     @required this.participateChat,
     @required this.getFriendCode,
     @required this.createFriend,
     @required this.listFriend,
-    @required this.createOneOnOneChat,
     Key key,
   })  : assert(analytics != null),
         assert(authenticate != null),
+        assert(deleteFriendship != null),
         assert(listChat != null),
         assert(participateChat != null),
         assert(getFriendCode != null),
         assert(createFriend != null),
         assert(listFriend != null),
-        assert(createOneOnOneChat != null),
         super(key: key);
 
   final FirebaseAnalytics analytics;
   final AuthenticateUsecase authenticate;
+  final FriendshipDeleteUsecase deleteFriendship;
   final ChatListUsecase listChat;
   final ChatParticipateUsecase participateChat;
   final FriendCodeGetUsecase getFriendCode;
   final FriendCreateUsecase createFriend;
   final FriendListUsecase listFriend;
-  final OneOnOneChatCreateUsecase createOneOnOneChat;
 
   @override
   Widget build(BuildContext context) => MemoizedBuilder(
         valueBuilder: (context, old) => old ?? authenticate(),
         builder: (context, heroObservable) => Provider(
-              value: listChat,
+              value: deleteFriendship,
               child: Provider(
-                value: participateChat,
+                value: listChat,
                 child: Provider(
-                  value: getFriendCode,
+                  value: participateChat,
                   child: Provider(
-                    value: createFriend,
+                    value: getFriendCode,
                     child: Provider(
-                      value: listFriend,
+                      value: createFriend,
                       child: Provider(
-                        value: createOneOnOneChat,
+                        value: listFriend,
                         child: StreamBuilder<User>(
                           stream: heroObservable.onChanged,
                           initialData: heroObservable.latest,

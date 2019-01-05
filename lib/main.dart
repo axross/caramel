@@ -22,6 +22,8 @@ void main() {
     authenticator: authenticator,
     userRepository: userRepository,
   );
+  final deleteFriendship =
+      FriendshipDeleteUsecase(userRepository: userRepository);
   final listChat = ChatListUsecase(chatRepository: chatRepository);
   final participateChat = ChatParticipateUsecase(
     chatRepository: chatRepository,
@@ -34,20 +36,17 @@ void main() {
     userRepository: userRepository,
   );
   final listFriend = FriendListUsecase(userRepository: userRepository);
-  final createOneOnOneChat = OneOnOneChatCreateUsecase(
-    chatRepository: chatRepository,
-  );
 
   runApp(
     App(
       analytics: analytics,
       authenticate: authenticate,
+      deleteFriendship: deleteFriendship,
       listChat: listChat,
       participateChat: participateChat,
       getFriendCode: getFriendCode,
       createFriend: createFriend,
       listFriend: listFriend,
-      createOneOnOneChat: createOneOnOneChat,
     ),
   );
 }

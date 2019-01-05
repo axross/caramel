@@ -114,11 +114,36 @@ class FirestoreUserRepository implements UserRepository {
               _firestore.document('users/${hero.id}'),
               _firestore.document('users/$opponentId'),
             ],
+            'lastChatMessage': null,
+            'lastMessageCreatedAt': null,
           },
         );
     }
 
     await batch.commit();
+  }
+
+  @override
+  Future<void> deleteFriendship({
+    @required SignedInUser hero,
+    @required Friendship friendship,
+  }) async {
+    final myFriendshipRef = _firestore
+        .collection('users')
+        .document(hero.id)
+        .collection('friendships')
+        .document(friendship.id);
+    final myFriendshipDoc = await myFriendshipRef.get();
+    final DocumentReference oppoenentRef = myFriendshipDoc.data['user'];
+    final opponentFriendshipRef =
+        oppoenentRef.collection('friendships').document(hero.id);
+    final oneOnOneChatRef = myFriendshipDoc['chat'];
+
+    await (_firestore.batch()
+          ..delete(myFriendshipRef)
+          ..delete(opponentFriendshipRef)
+          ..delete(oneOnOneChatRef))
+        .commit();
   }
 }
 

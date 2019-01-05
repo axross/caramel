@@ -2,7 +2,6 @@ import 'package:caramel/domains.dart';
 import 'package:caramel/usecases.dart';
 import 'package:caramel/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({
@@ -63,8 +62,10 @@ class HomeScreen extends StatelessWidget {
                           friendshipsObservable: friendshipsObservable,
                           onFriendTapped: (friendship) => showDialog(
                                 context: context,
-                                builder: (context) =>
-                                    UserProfileDialog(user: friendship.user),
+                                builder: (context) => FriendProfileDialog(
+                                      hero: _hero,
+                                      friendship: friendship,
+                                    ),
                               ),
                           onChatTapped: _onRequestNavigateToChat,
                         ),

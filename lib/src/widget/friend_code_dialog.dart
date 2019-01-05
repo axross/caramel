@@ -3,7 +3,6 @@ import 'package:caramel/usecases.dart';
 import 'package:caramel/widgets.dart';
 import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class FriendCodeDialog extends StatelessWidget {
   const FriendCodeDialog({

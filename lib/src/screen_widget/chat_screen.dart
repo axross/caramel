@@ -2,7 +2,6 @@ import 'package:caramel/domains.dart';
 import 'package:caramel/usecases.dart';
 import 'package:caramel/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({

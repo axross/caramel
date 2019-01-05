@@ -35,49 +35,6 @@ class FirestoreChatRepository implements ChatRepository {
           .then((document) => FirestoreChat(document));
 
   @override
-  Future<Chat> findOneOnOneChat({
-    @required SignedInUser hero,
-    @required User opponent,
-  }) =>
-      Future.wait([
-        _firestore
-            .collection('chats')
-            .where('members', isEqualTo: [
-              _firestore.document('users/${hero.id}'),
-              _firestore.document('users/${opponent.id}'),
-            ])
-            .limit(1)
-            .getDocuments(),
-        _firestore
-            .collection('chats')
-            .where('members', isEqualTo: [
-              _firestore.document('users/${opponent.id}'),
-              _firestore.document('users/${hero.id}'),
-            ])
-            .limit(1)
-            .getDocuments(),
-      ]).then(
-        (snapshots) => FirestoreChat(snapshots
-            .firstWhere((snapshot) => snapshot.documents.isNotEmpty)
-            .documents
-            .first),
-      );
-
-  @override
-  Future<void> createOneOnOneChat({
-    @required SignedInUser hero,
-    @required User opponent,
-  }) =>
-      _firestore.collection('chats').document().setData({
-        'members': [
-          _firestore.document('users/${hero.id}'),
-          _firestore.document('users/${opponent.id}'),
-        ],
-        'lastMessageCreatedAt': null,
-        'lastChatMessage': null,
-      });
-
-  @override
   Future<void> postTextToChat({
     @required SignedInUser hero,
     @required Chat chat,

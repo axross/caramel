@@ -12,18 +12,6 @@ abstract class ChatRepository {
     @required String chatId,
   });
 
-  /// Find the one-on-one chat. Returns `Future<Null>` if it doesn't exist.
-  Future<Chat> findOneOnOneChat({
-    @required SignedInUser hero,
-    @required User opponent,
-  });
-
-  /// Creates an one-on-one chat.
-  Future<void> createOneOnOneChat({
-    @required SignedInUser hero,
-    @required User opponent,
-  });
-
   /// Posts a [TextChatMessage] in a chat.
   Future<void> postTextToChat({
     @required SignedInUser hero,

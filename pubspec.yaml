@@ -30,7 +30,6 @@ dependencies:
   image_picker: ^0.4.10
   intl: ^0.15.7
   meta: ^1.1.6
-  provider: ^1.1.1
   qr_flutter: ^1.1.5
 
 dev_dependencies:

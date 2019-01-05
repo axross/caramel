@@ -17,4 +17,10 @@ abstract class UserRepository {
     @required SignedInUser hero,
     @required FriendCode friendCode,
   });
+
+  /// Deletes a friendship.
+  Future<void> deleteFriendship({
+    @required SignedInUser hero,
+    @required Friendship friendship,
+  });
 }
