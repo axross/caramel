@@ -1,91 +1,112 @@
-import 'package:caramel/entities.dart';
-import 'package:caramel/widgets.dart';
+import 'package:caramel/domains.dart';
+import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 
 class ChatMessageList extends StatelessWidget {
   const ChatMessageList({
-    @required this.user,
-    @required this.chatMessages,
+    @required this.hero,
+    @required this.chatMessagesObservable,
     Key key,
-  })  : assert(user != null),
-        assert(chatMessages != null),
+  })  : assert(hero != null),
+        assert(chatMessagesObservable != null),
         super(key: key);
 
-  final User user;
-  final List<ChatMessage> chatMessages;
+  final SignedInUser hero;
+
+  final ChatMessagesObservable chatMessagesObservable;
 
   @override
-  Widget build(BuildContext context) => ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        reverse: true,
-        itemBuilder: (_, index) {
-          final chatMessage = chatMessages[index];
-          final previous =
-              index == chatMessages.length - 1 ? null : chatMessages[index + 1];
-          final next = index == 0 ? null : chatMessages[index - 1];
+  Widget build(BuildContext context) => StreamBuilder<List<ChatMessage>>(
+        stream: chatMessagesObservable.onChanged
+            .map((chatMessages) => chatMessages.toList().reversed.toList()),
+        initialData:
+            chatMessagesObservable.latest?.toList()?.reversed?.toList(),
+        builder: (_, snapshot) => ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              reverse: true,
+              itemBuilder: snapshot.hasData
+                  ? (_, index) {
+                      final chatMessage = snapshot.requireData[index];
+                      final previousChatMessage =
+                          index == snapshot.requireData.length - 1
+                              ? null
+                              : snapshot.requireData[index + 1];
+                      final nextChatMessage =
+                          index == 0 ? null : snapshot.requireData[index - 1];
 
-          return _ChatMessageListItem(
-            chatMessage: chatMessage,
-            isPreviousAnotherSender:
-                previous == null || previous.from != chatMessage.from,
-            isNextAnotherSender: next == null || next.from != chatMessage.from,
-            isMine: chatMessage.from.isSameUser(user),
-          );
-        },
-        itemCount: chatMessages.length,
+                      return _ChatMessageListItem(
+                        hero: hero,
+                        chatMessage: chatMessage,
+                        previousChatMessage: previousChatMessage,
+                        nextChatMessage: nextChatMessage,
+                      );
+                    }
+                  : (_, __) => Container(),
+              itemCount: snapshot.hasData ? snapshot.requireData.length : 0,
+            ),
       );
 }
 
 class _ChatMessageListItem extends StatelessWidget {
   const _ChatMessageListItem({
+    @required this.hero,
     @required this.chatMessage,
-    @required this.isPreviousAnotherSender,
-    @required this.isNextAnotherSender,
-    @required this.isMine,
+    @required this.previousChatMessage,
+    @required this.nextChatMessage,
     Key key,
-  })  : assert(chatMessage != null),
-        assert(isPreviousAnotherSender != null),
-        assert(isNextAnotherSender != null),
-        assert(isMine != null),
+  })  : assert(hero != null),
+        assert(chatMessage != null),
         super(key: key);
 
+  final SignedInUser hero;
+
   final ChatMessage chatMessage;
-  final bool isPreviousAnotherSender;
-  final bool isNextAnotherSender;
-  final bool isMine;
+
+  final ChatMessage previousChatMessage;
+
+  final ChatMessage nextChatMessage;
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: isPreviousAnotherSender
+        margin: chatMessage.sender != previousChatMessage?.sender
             ? const EdgeInsets.only(top: 16)
             : const EdgeInsets.only(top: 4),
         child: Row(
-          children: isMine
+          children: hero.isSameWithReference(chatMessage.sender)
               ? [
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.15 + 40,
                   ),
                   Expanded(
                     child: _ChatMessageContent(
+                      hero: hero,
                       chatMessage: chatMessage,
-                      isPreviousAnotherSender: isPreviousAnotherSender,
-                      isNextAnotherSender: isNextAnotherSender,
-                      isMine: isMine,
+                      previousChatMessage: previousChatMessage,
+                      nextChatMessage: nextChatMessage,
                     ),
                   ),
                 ]
               : [
-                  isPreviousAnotherSender
-                      ? CircleAvatarByUserReference(
-                          userReference: chatMessage.from)
-                      : const SizedBox(width: 40),
+                  chatMessage.sender == previousChatMessage?.sender
+                      ? const SizedBox(width: 40)
+                      : FutureBuilder<User>(
+                          future: chatMessage.sender.resolve,
+                          initialData: chatMessage.sender.value,
+                          builder: (_, snapshot) => snapshot.hasData
+                              ? CircleAvatar(
+                                  backgroundImage: FirebaseStorageImage(
+                                    snapshot.requireData.imageUrl.toString(),
+                                  ),
+                                )
+                              : const CircleAvatar(),
+                        ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _ChatMessageContent(
+                      hero: hero,
                       chatMessage: chatMessage,
-                      isPreviousAnotherSender: isPreviousAnotherSender,
-                      isNextAnotherSender: isNextAnotherSender,
-                      isMine: isMine,
+                      previousChatMessage: previousChatMessage,
+                      nextChatMessage: nextChatMessage,
                     ),
                   ),
                   SizedBox(width: MediaQuery.of(context).size.width * 0.15),
@@ -96,30 +117,28 @@ class _ChatMessageListItem extends StatelessWidget {
 
 class _ChatMessageContent extends StatelessWidget {
   const _ChatMessageContent({
+    @required this.hero,
     @required this.chatMessage,
-    @required this.isPreviousAnotherSender,
-    @required this.isNextAnotherSender,
-    @required this.isMine,
+    @required this.previousChatMessage,
+    @required this.nextChatMessage,
     Key key,
-  })  : assert(chatMessage != null),
-        assert(isPreviousAnotherSender != null),
-        assert(isNextAnotherSender != null),
-        assert(isMine != null),
+  })  : assert(hero != null),
+        assert(chatMessage != null),
         super(key: key);
 
+  final SignedInUser hero;
   final ChatMessage chatMessage;
-  final bool isPreviousAnotherSender;
-  final bool isNextAnotherSender;
-  final bool isMine;
+  final ChatMessage previousChatMessage;
+  final ChatMessage nextChatMessage;
 
   @override
   Widget build(BuildContext context) {
     if (chatMessage is TextChatMessage) {
       return _TextChatMessageContent(
-        textChatMessage: chatMessage,
-        isPreviousAnotherSender: isPreviousAnotherSender,
-        isNextAnotherSender: isNextAnotherSender,
-        isMine: isMine,
+        hero: hero,
+        chatMessage: chatMessage,
+        previousChatMessage: previousChatMessage,
+        nextChatMessage: nextChatMessage,
       );
     }
 
@@ -129,40 +148,40 @@ class _ChatMessageContent extends StatelessWidget {
 
 class _TextChatMessageContent extends StatelessWidget {
   const _TextChatMessageContent({
-    @required this.textChatMessage,
-    @required this.isPreviousAnotherSender,
-    @required this.isNextAnotherSender,
-    @required this.isMine,
+    @required this.hero,
+    @required this.chatMessage,
+    @required this.previousChatMessage,
+    @required this.nextChatMessage,
     Key key,
-  })  : assert(textChatMessage != null),
-        assert(isPreviousAnotherSender != null),
-        assert(isNextAnotherSender != null),
-        assert(isMine != null),
+  })  : assert(hero != null),
+        assert(chatMessage != null),
         super(key: key);
 
-  final TextChatMessage textChatMessage;
-  final bool isPreviousAnotherSender;
-  final bool isNextAnotherSender;
-  final bool isMine;
+  final SignedInUser hero;
+  final TextChatMessage chatMessage;
+  final ChatMessage previousChatMessage;
+  final ChatMessage nextChatMessage;
 
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: isMine ? Colors.white : Theme.of(context).accentColor,
+          color: hero.isSameWithReference(chatMessage.sender)
+              ? Colors.white
+              : Theme.of(context).accentColor,
           borderRadius: BorderRadius.vertical(
-            top: isPreviousAnotherSender
+            top: chatMessage.sender != previousChatMessage?.sender
                 ? const Radius.circular(16)
                 : const Radius.circular(4),
-            bottom: isNextAnotherSender
+            bottom: chatMessage.sender != nextChatMessage?.sender
                 ? const Radius.circular(16)
                 : const Radius.circular(4),
           ),
         ),
         child: Text(
-          textChatMessage.text,
+          chatMessage.body,
           style: TextStyle(
-            color: isMine
+            color: hero.isSameWithReference(chatMessage.sender)
                 ? Theme.of(context).textTheme.body1.color
                 : Theme.of(context).accentTextTheme.body1.color,
             height: 1.333,

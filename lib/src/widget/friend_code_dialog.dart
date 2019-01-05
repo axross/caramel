@@ -1,19 +1,18 @@
-import 'package:caramel/entities.dart';
+import 'package:caramel/domains.dart';
+import 'package:caramel/usecases.dart';
 import 'package:caramel/widgets.dart';
 import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FriendCodeDialog extends StatelessWidget {
   const FriendCodeDialog({
-    @required this.user,
-    @required this.onScanButtonPressed,
+    @required this.hero,
     Key key,
-  })  : assert(user != null),
-        assert(onScanButtonPressed != null),
+  })  : assert(hero != null),
         super(key: key);
 
-  final User user;
-  final VoidCallback onScanButtonPressed;
+  final SignedInUser hero;
 
   @override
   Widget build(BuildContext context) => AlertDialog(
@@ -21,16 +20,13 @@ class FriendCodeDialog extends StatelessWidget {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: FirebaseStorageImage(user.imageUrl.toString()),
+                backgroundImage: FirebaseStorageImage(hero.imageUrl.toString()),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Text(user.name),
+                child: Text(hero.name),
               ),
-              IconButton(
-                icon: const Icon(CustomIcons.scan),
-                onPressed: onScanButtonPressed,
-              ),
+              _ScanButton(hero: hero),
             ],
           ),
         ),
@@ -41,7 +37,7 @@ class FriendCodeDialog extends StatelessWidget {
             const SizedBox(
               height: 16,
             ),
-            FriendCodeQr(user: user),
+            _FriendCodeQr(hero: hero),
           ],
         ),
         actions: [
@@ -51,4 +47,37 @@ class FriendCodeDialog extends StatelessWidget {
           ),
         ],
       );
+}
+
+class _ScanButton extends StatelessWidget {
+  const _ScanButton({@required this.hero, Key key})
+      : assert(hero != null),
+        super(key: key);
+
+  final SignedInUser hero;
+
+  @override
+  Widget build(BuildContext context) {
+    final createFriend = Provider.of<FriendCreateUsecase>(context);
+
+    return IconButton(
+      icon: const Icon(CustomIcons.scan),
+      onPressed: () => createFriend(hero: hero),
+    );
+  }
+}
+
+class _FriendCodeQr extends StatelessWidget {
+  const _FriendCodeQr({@required this.hero, Key key})
+      : assert(hero != null),
+        super(key: key);
+
+  final SignedInUser hero;
+
+  @override
+  Widget build(BuildContext context) {
+    final getFriendCode = Provider.of<FriendCodeGetUsecase>(context);
+
+    return FriendCodeQr(friendCodeObservable: getFriendCode(hero: hero));
+  }
 }

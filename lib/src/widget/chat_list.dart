@@ -1,55 +1,81 @@
-import 'package:caramel/entities.dart';
+import 'package:caramel/domains.dart';
 import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ChatList extends StatelessWidget {
-  const ChatList({
-    @required this.children,
+  ChatList({
+    @required this.hero,
+    @required this.chatsObervable,
+    @required this.onChatTapped,
     Key key,
-  })  : assert(children != null),
+  })  : assert(hero != null),
+        assert(chatsObervable != null),
+        assert(onChatTapped != null),
         super(key: key);
 
-  final List<Widget> children;
+  final SignedInUser hero;
+
+  final ChatsObservable chatsObervable;
+
+  final ValueChanged<Chat> onChatTapped;
 
   @override
-  Widget build(BuildContext context) => ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        itemBuilder: (_, index) => children[index],
-        separatorBuilder: (_, __) => const Divider(),
-        itemCount: children.length,
+  Widget build(BuildContext context) => StreamBuilder<List<Chat>>(
+        stream: chatsObervable.onChanged.map((chats) => chats.toList()),
+        initialData: chatsObervable.latest?.toList(),
+        builder: (_, myChatsSnapshot) => ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              itemBuilder: (_, index) => myChatsSnapshot.hasData
+                  ? _ChatListItem(
+                      hero: hero,
+                      chat: myChatsSnapshot.requireData[index],
+                      onTapped: () => onChatTapped(
+                            myChatsSnapshot.requireData[index],
+                          ),
+                    )
+                  : null,
+              separatorBuilder: (_, __) => const Divider(),
+              itemCount: myChatsSnapshot.hasData
+                  ? myChatsSnapshot.requireData.length
+                  : 0,
+            ),
       );
 }
 
-class ChatListItem extends StatelessWidget {
-  const ChatListItem({
+class _ChatListItem extends StatelessWidget {
+  const _ChatListItem({
     @required this.chat,
-    @required this.user,
-    @required this.onTap,
+    @required this.hero,
+    @required this.onTapped,
     Key key,
   })  : assert(chat != null),
-        assert(user != null),
-        assert(onTap != null),
+        assert(hero != null),
+        assert(onTapped != null),
         super(key: key);
 
+  final SignedInUser hero;
+
   final Chat chat;
-  final User user;
-  final VoidCallback onTap;
+
+  final VoidCallback onTapped;
 
   @override
   Widget build(BuildContext context) => ListTile(
-        title: FutureBuilder<User>(
-          future: chat.members
-              .firstWhere((member) => !member.isSameUser(user))
-              .resolve(),
+        title: FutureBuilder<Iterable<User>>(
+          future: chat.participants.resolve,
+          initialData: chat.participants.value,
           builder: (_, snapshot) => snapshot.hasData
-              ? Text(snapshot.requireData.name)
+              ? Text(
+                  snapshot.requireData.firstWhere((user) => user != hero).name,
+                )
               : const Text('Loading...'),
         ),
         subtitle: chat.lastChatMessage == null
             ? const Text('')
             : FutureBuilder<ChatMessage>(
-                future: chat.lastChatMessage.resolve(),
+                future: chat.lastChatMessage.resolve,
+                initialData: chat.lastChatMessage.value,
                 builder: (_, snapshot) => snapshot.hasData
                     ? Row(
                         children: [
@@ -66,10 +92,21 @@ class ChatListItem extends StatelessWidget {
                       )
                     : const Text('Loading...'),
               ),
-        leading: CircleAvatar(
-          backgroundImage: FirebaseStorageImage(user.imageUrl.toString()),
+        leading: FutureBuilder<Iterable<User>>(
+          future: chat.participants.resolve,
+          initialData: chat.participants.value,
+          builder: (_, snapshot) => snapshot.hasData
+              ? CircleAvatar(
+                  backgroundImage: FirebaseStorageImage(snapshot.requireData
+                      .firstWhere((user) => user != hero)
+                      .imageUrl
+                      .toString()),
+                )
+              : CircleAvatar(
+                  child: Image.asset('assets/images/avatar-loading.gif'),
+                ),
         ),
-        onTap: onTap,
+        onTap: onTapped,
       );
 }
 
@@ -126,7 +163,7 @@ class _LastChatMessageBody extends StatelessWidget {
       final TextChatMessage lastChatmessageAsTextChatMessage = lastChatMessage;
 
       return Text(
-        lastChatmessageAsTextChatMessage.text,
+        lastChatmessageAsTextChatMessage.body,
         overflow: TextOverflow.ellipsis,
       );
     }

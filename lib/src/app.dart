@@ -1,99 +1,92 @@
-import 'package:caramel/entities.dart';
-import 'package:caramel/models.dart';
-import 'package:caramel/model_creators.dart';
-import 'package:caramel/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' show Firestore;
-import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
+import 'package:caramel/domains.dart';
+import 'package:caramel/routes.dart';
+import 'package:caramel/usecases.dart';
 import 'package:firebase_analytics/firebase_analytics.dart'
     show FirebaseAnalytics;
 import 'package:firebase_analytics/observer.dart'
     show FirebaseAnalyticsObserver;
-import 'package:firebase_storage/firebase_storage.dart' show FirebaseStorage;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' show Provider;
-import './screen_widget/friend_list_screen.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({
     @required this.analytics,
-    @required this.auth,
-    @required this.firestore,
-    @required this.storage,
-    @required this.chatRepositoryService,
-    @required this.friendCodeRepositoryService,
-    @required this.friendCodeScanService,
-    @required this.friendRepositoryService,
+    @required this.authenticate,
+    @required this.listChat,
+    @required this.participateChat,
+    @required this.getFriendCode,
+    @required this.createFriend,
+    @required this.listFriend,
+    @required this.createOneOnOneChat,
     Key key,
   })  : assert(analytics != null),
-        assert(auth != null),
-        assert(firestore != null),
-        assert(storage != null),
-        assert(chatRepositoryService != null),
-        assert(friendCodeRepositoryService != null),
-        assert(friendCodeScanService != null),
-        assert(friendRepositoryService != null),
+        assert(authenticate != null),
+        assert(listChat != null),
+        assert(participateChat != null),
+        assert(getFriendCode != null),
+        assert(createFriend != null),
+        assert(listFriend != null),
+        assert(createOneOnOneChat != null),
         super(key: key);
 
   final FirebaseAnalytics analytics;
-  final FirebaseAuth auth;
-  final Firestore firestore;
-  final FirebaseStorage storage;
-  final ChatRepositoryService chatRepositoryService;
-  final FriendCodeRepositoryService friendCodeRepositoryService;
-  final FriendCodeScanService friendCodeScanService;
-  final FriendRepositoryService friendRepositoryService;
+  final AuthenticateUsecase authenticate;
+  final ChatListUsecase listChat;
+  final ChatParticipateUsecase participateChat;
+  final FriendCodeGetUsecase getFriendCode;
+  final FriendCreateUsecase createFriend;
+  final FriendListUsecase listFriend;
+  final OneOnOneChatCreateUsecase createOneOnOneChat;
 
   @override
-  Widget build(BuildContext context) {
-    final authenticationModel = AuthenticationModel(
-      auth: auth,
-      firestore: firestore,
-    );
+  State<StatefulWidget> createState() => _AppState();
+}
 
-    return Provider(
-      value: ChatByFriendshipModelCreator(
-        chatRepositoryService: chatRepositoryService,
-      ),
-      child: Provider(
-        value: ChatListModelCreator(
-          chatRepositoryService: chatRepositoryService,
-        ),
+class _AppState extends State<App> {
+  SignedInUserObservable _heroObservable;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _heroObservable = widget.authenticate();
+  }
+
+  @override
+  Widget build(BuildContext context) => Provider(
+        value: widget.listChat,
         child: Provider(
-          value: ChatModelCreator(
-            chatRepositoryService: chatRepositoryService,
-          ),
+          value: widget.participateChat,
           child: Provider(
-            value: FriendCodeModelCreator(
-              friendCodeRepositoryService: friendCodeRepositoryService,
-            ),
+            value: widget.getFriendCode,
             child: Provider(
-              value: FriendListModelCreator(
-                friendRepositoryService: friendRepositoryService,
-              ),
+              value: widget.createFriend,
               child: Provider(
-                value: NewFriendModelCreator(
-                  friendRepositoryService: friendRepositoryService,
-                  friendCodeScanService: friendCodeScanService,
-                ),
+                value: widget.listFriend,
                 child: Provider(
-                  value: authenticationModel,
+                  value: widget.createOneOnOneChat,
                   child: StreamBuilder<User>(
-                    stream: authenticationModel.onUserChanged,
-                    initialData: authenticationModel.user,
-                    builder: (_, snapshot) => snapshot.data == null
-                        ? Container()
-                        : MaterialApp(
+                    stream: _heroObservable.onChanged,
+                    initialData: _heroObservable.latest,
+                    builder: (_, snapshot) => snapshot.hasData
+                        ? MaterialApp(
                             title: 'Flutter Demo',
                             theme: ThemeData(
                               primarySwatch: Colors.blue,
                             ),
                             initialRoute: '/',
                             routes: {
-                              '/': (_) => FriendListScreen(),
+                              '/':
+                                  HomeRoute(hero: snapshot.requireData).builder,
                             },
                             navigatorObservers: [
-                              FirebaseAnalyticsObserver(analytics: analytics),
+                              FirebaseAnalyticsObserver(
+                                analytics: widget.analytics,
+                              ),
                             ],
+                          )
+                        : Container(
+                            decoration: const BoxDecoration(color: Colors.red),
                           ),
                   ),
                 ),
@@ -101,7 +94,5 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }

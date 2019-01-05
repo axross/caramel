@@ -1,13 +1,14 @@
+import 'package:caramel/domains.dart';
 import 'package:flutter/material.dart';
 
 class ChatMessageInput extends StatefulWidget {
   const ChatMessageInput({
-    @required this.onSubmitted,
+    @required this.chatParticipation,
     Key key,
-  })  : assert(onSubmitted != null),
+  })  : assert(chatParticipation != null),
         super(key: key);
 
-  final ValueChanged<String> onSubmitted;
+  final ChatParticipation chatParticipation;
 
   @override
   State<StatefulWidget> createState() => _ChatMessageInputState();
@@ -62,7 +63,7 @@ class _ChatMessageInputState extends State<ChatMessageInput> {
     final inputtedText = _textEditingController.text.trim();
 
     if (inputtedText.isNotEmpty) {
-      widget.onSubmitted(inputtedText);
+      widget.chatParticipation.postText(inputtedText);
 
       _textEditingController
         ..clear()

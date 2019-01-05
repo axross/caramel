@@ -1,4 +1,4 @@
-import 'package:caramel/entities.dart';
+import 'package:caramel/domains.dart';
 
 const _loremIpsum =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod '
