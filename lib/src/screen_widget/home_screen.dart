@@ -24,56 +24,60 @@ class HomeScreen extends StatelessWidget {
     final listFriends = Provider.of<FriendListUsecase>(context);
     final listChats = Provider.of<ChatListUsecase>(context);
 
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Friends'),
-          actions: [
-            IconButton(
-              icon: const Icon(CustomIcons.qr),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => FriendCodeDialog(hero: _hero),
-                );
-              },
-            ),
-          ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(
-                icon: Icon(Icons.face),
-                text: 'Friends',
-              ),
-              Tab(
-                icon: Icon(Icons.chat),
-                text: 'Chats',
-              ),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            FriendList(
-              friendshipsObservable: listFriends(
-                hero: _hero,
-              ),
-              onFriendTapped: (friendship) => showDialog(
-                    context: context,
-                    builder: (context) =>
-                        UserProfileDialog(user: friendship.user),
+    return MemoizedBuilder(
+      valueBuilder: (context, old) => old ?? listFriends(hero: _hero),
+      builder: (context, friendshipsObservable) => MemoizedBuilder(
+            valueBuilder: (context, old) => old ?? listChats(hero: _hero),
+            builder: (context, chatsObservable) => DefaultTabController(
+                  length: 2,
+                  child: Scaffold(
+                    appBar: AppBar(
+                      title: const Text('Friends'),
+                      actions: [
+                        IconButton(
+                          icon: const Icon(CustomIcons.qr),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => FriendCodeDialog(hero: _hero),
+                            );
+                          },
+                        ),
+                      ],
+                      bottom: const TabBar(
+                        tabs: [
+                          Tab(
+                            icon: Icon(Icons.face),
+                            text: 'Friends',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.chat),
+                            text: 'Chats',
+                          ),
+                        ],
+                      ),
+                    ),
+                    body: TabBarView(
+                      children: [
+                        FriendList(
+                          friendshipsObservable: friendshipsObservable,
+                          onFriendTapped: (friendship) => showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    UserProfileDialog(user: friendship.user),
+                              ),
+                          onChatTapped: _onRequestNavigateToChat,
+                        ),
+                        ChatList(
+                          hero: _hero,
+                          chatsObervable: chatsObservable,
+                          onChatTapped: _onRequestNavigateToChat,
+                        ),
+                      ],
+                    ),
                   ),
-              onChatTapped: _onRequestNavigateToChat,
-            ),
-            ChatList(
-              hero: _hero,
-              chatsObervable: listChats(hero: _hero),
-              onChatTapped: _onRequestNavigateToChat,
-            ),
-          ],
-        ),
-      ),
+                ),
+          ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:caramel/domains.dart';
 import 'package:caramel/routes.dart';
 import 'package:caramel/usecases.dart';
+import 'package:caramel/widgets.dart';
 import 'package:firebase_analytics/firebase_analytics.dart'
     show FirebaseAnalytics;
 import 'package:firebase_analytics/observer.dart'
@@ -8,7 +9,7 @@ import 'package:firebase_analytics/observer.dart'
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' show Provider;
 
-class App extends StatefulWidget {
+class App extends StatelessWidget {
   const App({
     @required this.analytics,
     @required this.authenticate,
@@ -39,60 +40,50 @@ class App extends StatefulWidget {
   final OneOnOneChatCreateUsecase createOneOnOneChat;
 
   @override
-  State<StatefulWidget> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  SignedInUserObservable _heroObservable;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _heroObservable = widget.authenticate();
-  }
-
-  @override
-  Widget build(BuildContext context) => Provider(
-        value: widget.listChat,
-        child: Provider(
-          value: widget.participateChat,
-          child: Provider(
-            value: widget.getFriendCode,
-            child: Provider(
-              value: widget.createFriend,
+  Widget build(BuildContext context) => MemoizedBuilder(
+        valueBuilder: (context, old) => old ?? authenticate(),
+        builder: (context, heroObservable) => Provider(
+              value: listChat,
               child: Provider(
-                value: widget.listFriend,
+                value: participateChat,
                 child: Provider(
-                  value: widget.createOneOnOneChat,
-                  child: StreamBuilder<User>(
-                    stream: _heroObservable.onChanged,
-                    initialData: _heroObservable.latest,
-                    builder: (_, snapshot) => snapshot.hasData
-                        ? MaterialApp(
-                            title: 'Flutter Demo',
-                            theme: ThemeData(
-                              primarySwatch: Colors.blue,
-                            ),
-                            initialRoute: '/',
-                            routes: {
-                              '/':
-                                  HomeRoute(hero: snapshot.requireData).builder,
-                            },
-                            navigatorObservers: [
-                              FirebaseAnalyticsObserver(
-                                analytics: widget.analytics,
-                              ),
-                            ],
-                          )
-                        : Container(
-                            decoration: const BoxDecoration(color: Colors.red),
-                          ),
+                  value: getFriendCode,
+                  child: Provider(
+                    value: createFriend,
+                    child: Provider(
+                      value: listFriend,
+                      child: Provider(
+                        value: createOneOnOneChat,
+                        child: StreamBuilder<User>(
+                          stream: heroObservable.onChanged,
+                          initialData: heroObservable.latest,
+                          builder: (_, snapshot) => snapshot.hasData
+                              ? MaterialApp(
+                                  title: 'Flutter Demo',
+                                  theme: ThemeData(
+                                    primarySwatch: Colors.blue,
+                                  ),
+                                  initialRoute: '/',
+                                  routes: {
+                                    '/': HomeRoute(hero: snapshot.requireData)
+                                        .builder,
+                                  },
+                                  navigatorObservers: [
+                                    FirebaseAnalyticsObserver(
+                                      analytics: analytics,
+                                    ),
+                                  ],
+                                )
+                              : Container(
+                                  decoration:
+                                      const BoxDecoration(color: Colors.red),
+                                ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
       );
 }
