@@ -59,6 +59,11 @@ class HomeScreen extends StatelessWidget {
               friendshipsObservable: listFriends(
                 hero: _hero,
               ),
+              onFriendTapped: (friendship) => showDialog(
+                    context: context,
+                    builder: (context) =>
+                        UserProfileDialog(user: friendship.user),
+                  ),
               onChatTapped: _onRequestNavigateToChat,
             ),
             ChatList(

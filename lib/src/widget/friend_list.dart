@@ -6,13 +6,17 @@ import 'package:meta/meta.dart';
 class FriendList extends StatelessWidget {
   FriendList({
     @required this.friendshipsObservable,
+    @required this.onFriendTapped,
     @required this.onChatTapped,
     Key key,
   })  : assert(friendshipsObservable != null),
+        assert(onFriendTapped != null),
         assert(onChatTapped != null),
         super(key: key);
 
   final FriendshipsObservable friendshipsObservable;
+
+  final ValueChanged<Friendship> onFriendTapped;
 
   final ValueChanged<Chat> onChatTapped;
 
@@ -27,7 +31,8 @@ class FriendList extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               itemBuilder: (context, index) => _FriendListItem(
                     friendship: friendListSnapshot.requireData[index],
-                    onTap: () {},
+                    onTap: () =>
+                        onFriendTapped(friendListSnapshot.requireData[index]),
                     onChatTapped: onChatTapped,
                   ),
               separatorBuilder: (context, index) => const Divider(),
