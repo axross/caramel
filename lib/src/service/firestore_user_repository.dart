@@ -1,6 +1,5 @@
 import 'package:caramel/domains.dart';
 import 'package:caramel/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
 
@@ -38,64 +37,86 @@ class FirestoreUserRepository implements UserRepository {
     @required User hero,
     @required FriendCode friendCode,
   }) async {
-    final friendCodeDocument =
+    /**
+     * TODO(axross): the operations in the below are supposed to do with
+     * transaction. but it doesn't work more than one write operations in a
+     * transaction. I need to wait for this bug to be fixed in cloud_firestore
+     * package.
+     * see also: https://github.com/flutter/flutter/issues/17663
+     */
+
+    final friendCodeDoc =
         await _firestore.document('friendCodes/${friendCode.data}').get();
 
-    try {
-      assert(friendCodeDocument.exists);
-      assert(friendCodeDocument.data['user'] is DocumentReference);
-    } on Exception catch (_) {
-      throw Exception();
+    if (!friendCodeDoc.exists) {
+      throw FriendCodeNotExisting(friendCode: friendCode);
     }
 
-    final DocumentReference friendReference = friendCodeDocument.data['user'];
-    final friendDocument = await friendReference.get();
-    final friendId = friendDocument.documentID;
+    if (friendCodeDoc.data['user'] is! DocumentReference) {
+      throw DatabaseBadState(
+        detail: 'a document ${friendCodeDoc.reference.path} doesn\'t have a '
+            'member `user` as a reference.',
+      );
+    }
 
-    var chatReference = await Future.wait([
-      _firestore
-          .collection('chats')
-          .where('members', isEqualTo: [
-            _firestore.document('users/${hero.id}'),
-            _firestore.document('users/$friendId'),
-          ])
-          .limit(1)
-          .getDocuments(),
-      _firestore
-          .collection('chats')
-          .where('members', isEqualTo: [
-            _firestore.document('users/$friendId'),
-            _firestore.document('users/${hero.id}'),
-          ])
-          .limit(1)
-          .getDocuments(),
-    ]).then((snapshots) => snapshots
-        .firstWhere(
-          (snapshot) => snapshot.documents.isNotEmpty,
-          orElse: () => null,
+    final heroRef = _firestore.document('users/${hero.id}');
+    final DocumentReference opponentRef = friendCodeDoc.data['user'];
+    final friendshipDoc = await opponentRef
+        .collection('friendships')
+        .document('${hero.id}')
+        .get();
+
+    DocumentReference chat;
+    var isOpponentAlreadyAddedMe = false;
+
+    if (friendshipDoc.exists) {
+      // hero has already been opponent's friend
+
+      if (friendshipDoc.data['chat'] is! DocumentReference) {
+        throw DatabaseBadState(
+          detail: 'a document `${friendshipDoc.reference.path}` doesn\'t '
+              'have a member `chat` as a reference.',
+        );
+      }
+
+      chat = friendshipDoc.data['chat'];
+      isOpponentAlreadyAddedMe = true;
+    } else {
+      // this is the first time to know each other
+
+      chat = _firestore.collection('chats').document();
+    }
+
+    final opponentId = opponentRef.documentID;
+
+    final batch = _firestore.batch()
+      ..setData(
+        heroRef.collection('friendships').document(opponentId),
+        {
+          'user': opponentRef,
+          'chat': chat,
+        },
+      );
+
+    if (!isOpponentAlreadyAddedMe) {
+      batch
+        ..setData(
+          opponentRef.collection('friendships').document(hero.id),
+          {
+            'user': heroRef,
+            'chat': chat,
+          },
         )
-        ?.documents
-        ?.first
-        ?.reference);
-
-    final batch = _firestore.batch();
-
-    if (chatReference == null) {
-      chatReference = _firestore.collection('chats').document();
-
-      batch.setData(chatReference, {
-        'members': [
-          _firestore.document('users/${hero.id}'),
-          _firestore.document('users/$friendId'),
-        ],
-      });
+        ..setData(
+          chat,
+          {
+            'members': [
+              _firestore.document('users/${hero.id}'),
+              _firestore.document('users/$opponentId'),
+            ],
+          },
+        );
     }
-
-    batch.setData(
-        _firestore.document('users/${hero.id}/friendships/$friendId'), {
-      'user': _firestore.document('users/$friendId'),
-      'chat': chatReference,
-    });
 
     await batch.commit();
   }
@@ -265,15 +286,4 @@ class FirestoreFriendship
 
   @override
   final ChatReference oneOnOneChat;
-}
-
-/// An exception that the [User] doesn't exist.
-class UserNotExisting implements Exception {
-  /// Creates an [UserNotExisting] from [FirebaseUser].
-  UserNotExisting({@required String id}) : _id = id;
-
-  final String _id;
-
-  @override
-  String toString() => 'UserNotExisting: An user (id = $_id) doesn\'t exist.';
 }

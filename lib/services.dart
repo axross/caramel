@@ -1,5 +1,6 @@
 export './src/service/authenticator.dart';
 export './src/service/chat_repository.dart';
+export './src/service/exceptions.dart';
 export './src/service/firebase_authenticator.dart';
 export './src/service/firestore_chat_repository.dart';
 export './src/service/firestore_friend_code_repository.dart';
