@@ -73,6 +73,8 @@ class FirestoreChatRepository implements ChatRepository {
           _firestore.document('users/${hero.id}'),
           _firestore.document('users/${opponent.id}'),
         ],
+        'lastMessageCreatedAt': null,
+        'lastChatMessage': null,
       });
 
   @override
