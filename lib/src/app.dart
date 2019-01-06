@@ -1,5 +1,6 @@
 import 'package:caramel/domains.dart';
 import 'package:caramel/routes.dart';
+import 'package:caramel/services.dart';
 import 'package:caramel/usecases.dart';
 import 'package:caramel/widgets.dart';
 import 'package:firebase_analytics/firebase_analytics.dart'
@@ -8,7 +9,7 @@ import 'package:firebase_analytics/observer.dart'
     show FirebaseAnalyticsObserver;
 import 'package:flutter/material.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({
     @required this.analytics,
     @required this.authenticate,
@@ -39,20 +40,25 @@ class App extends StatelessWidget {
   final FriendListUsecase listFriend;
 
   @override
+  State<StatefulWidget> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
   Widget build(BuildContext context) => MemoizedBuilder(
-        valueBuilder: (context, old) => old ?? authenticate(),
+        valueBuilder: (context, old) => old ?? widget.authenticate(),
         builder: (context, heroObservable) => Provider(
-              value: deleteFriendship,
+              value: widget.deleteFriendship,
               child: Provider(
-                value: listChat,
+                value: widget.listChat,
                 child: Provider(
-                  value: participateChat,
+                  value: widget.participateChat,
                   child: Provider(
-                    value: getFriendCode,
+                    value: widget.getFriendCode,
                     child: Provider(
-                      value: createFriend,
+                      value: widget.createFriend,
                       child: Provider(
-                        value: listFriend,
+                        value: widget.listFriend,
                         child: StreamBuilder<User>(
                           stream: heroObservable.onChanged,
                           initialData: heroObservable.latest,
@@ -69,7 +75,7 @@ class App extends StatelessWidget {
                                   },
                                   navigatorObservers: [
                                     FirebaseAnalyticsObserver(
-                                      analytics: analytics,
+                                      analytics: widget.analytics,
                                     ),
                                   ],
                                 )

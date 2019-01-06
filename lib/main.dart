@@ -12,6 +12,7 @@ void main() {
   final auth = FirebaseAuth.instance;
   final firestore = Firestore.instance;
 
+  final atomicWriteCreator = FirestoreAtomicWriteCreator(firestore: firestore);
   final authenticator = FirebaseAuthenticator(auth: auth);
   final chatRepository = FirestoreChatRepository(firestore);
   final friendCodeRepository = FirestoreFriendCodeRepository(firestore);
@@ -22,8 +23,11 @@ void main() {
     authenticator: authenticator,
     userRepository: userRepository,
   );
-  final deleteFriendship =
-      FriendshipDeleteUsecase(userRepository: userRepository);
+  final deleteFriendship = FriendshipDeleteUsecase(
+    chatRepository: chatRepository,
+    userRepository: userRepository,
+    atomicWriteCreator: atomicWriteCreator,
+  );
   final listChat = ChatListUsecase(chatRepository: chatRepository);
   final participateChat = ChatParticipateUsecase(
     chatRepository: chatRepository,

@@ -27,12 +27,14 @@ class AuthenticateUsecase {
         return null;
       }
 
-      try {
-        return await _userRepository.getUserById(id);
-      } on UserNotExisting catch (_) {
-        await _userRepository.registerAsNewUser(id);
+      final user = _userRepository.referByFirebaseAuthId(id: id);
 
-        return await _userRepository.getUserById(id);
+      try {
+        return await user.resolve;
+      } on UserNotExisting catch (_) {
+        await _userRepository.registerUser(user: user);
+
+        return await user.resolve;
       }
     }));
   }

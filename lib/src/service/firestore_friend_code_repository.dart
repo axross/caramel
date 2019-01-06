@@ -9,8 +9,9 @@ class FirestoreFriendCodeRepository implements FriendCodeRepository {
   final Firestore _firestore;
 
   @override
-  Stream<FirestoreFriendCode> subscribeNewestFriendCode(
-          {@required SignedInUser hero}) =>
+  Stream<FirestoreFriendCode> subscribeNewestFriendCode({
+    @required SignedInUser hero,
+  }) =>
       _firestore
           .collection('friendCodes')
           .where('user', isEqualTo: _firestore.document('users/${hero.id}'))
@@ -18,27 +19,43 @@ class FirestoreFriendCodeRepository implements FriendCodeRepository {
           .limit(1)
           .snapshots()
           .map(
-        (snapshot) {
-          final friendCode = snapshot.documents.isEmpty
-              ? null
-              : FirestoreFriendCode(snapshot.documents.first);
-
-          if (friendCode == null) {
-            issue(hero: hero);
-          }
-
-          return friendCode;
-        },
-      );
+            (snapshot) => snapshot.documents.isEmpty
+                ? null
+                : FirestoreFriendCode(snapshot.documents.first),
+          );
 
   @override
-  Future<void> issue({
+  Future<void> create({
     @required SignedInUser hero,
-  }) =>
-      _firestore.collection('friendCodes').document().setData({
-        'user': _firestore.document('/users/${hero.id}'),
-        'issuedAt': FieldValue.serverTimestamp(),
-      });
+    AtomicWrite atomicWrite,
+  }) async {
+    final friendCodeRef = _firestore.collection('friendCodes').document();
+    final data = {
+      'user': _firestore.document('/users/${hero.id}'),
+      'issuedAt': FieldValue.serverTimestamp(),
+    };
+
+    if (atomicWrite == null) {
+      await friendCodeRef.setData(data);
+    } else {
+      atomicWrite.forFirestore.setData(friendCodeRef, data);
+    }
+  }
+
+  @override
+  Future<void> delete({
+    @required FriendCode friendCode,
+    AtomicWrite atomicWrite,
+  }) async {
+    final friendCodeRef =
+        _firestore.collection('friendCodes').document(friendCode.data);
+
+    if (atomicWrite == null) {
+      await friendCodeRef.delete();
+    } else {
+      atomicWrite.forFirestore.delete(friendCodeRef);
+    }
+  }
 }
 
 class FirestoreFriendCode implements FriendCode {

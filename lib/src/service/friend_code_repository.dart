@@ -1,4 +1,5 @@
 import 'package:caramel/domains.dart';
+import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
 /// A repository handling [FriendCode]s.
@@ -7,5 +8,13 @@ abstract class FriendCodeRepository {
   Stream<FriendCode> subscribeNewestFriendCode({@required SignedInUser hero});
 
   /// Issues a new [FriendCode].
-  Future<void> issue({@required SignedInUser hero});
+  Future<void> create({
+    @required SignedInUser hero,
+    AtomicWrite atomicWrite,
+  });
+
+  Future<void> delete({
+    @required FriendCode friendCode,
+    AtomicWrite atomicWrite,
+  });
 }

@@ -27,17 +27,15 @@ class ChatScreen extends StatelessWidget {
       chatId: _chatId,
     );
 
-    return FutureBuilder<ChatParticipation>(
-      future: chatParticipation.resolve,
-      initialData: chatParticipation.value,
-      builder: (context, chatParticipationSnapshot) => Scaffold(
+    return FutureBuilder<Chat>(
+      future: chatParticipation.chat.resolve,
+      initialData: chatParticipation.chat.value,
+      builder: (context, chatSnapshot) => Scaffold(
             appBar: AppBar(
-              title: chatParticipationSnapshot.hasData
+              title: chatSnapshot.hasData
                   ? FutureBuilder<Iterable<User>>(
-                      future: chatParticipationSnapshot
-                          .requireData.chat.participants.resolve,
-                      initialData: chatParticipationSnapshot
-                          .requireData.chat.participants.value,
+                      future: chatSnapshot.requireData.participants.resolve,
+                      initialData: chatSnapshot.requireData.participants.value,
                       builder: (_, participantsSnapshot) =>
                           participantsSnapshot.hasData
                               ? Text(
@@ -59,21 +57,20 @@ class ChatScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.blueGrey[50],
                       ),
-                      child: chatParticipationSnapshot.hasData
+                      child: chatSnapshot.hasData
                           ? ChatMessageList(
                               hero: _hero,
-                              chatMessagesObservable: chatParticipationSnapshot
-                                  .requireData.chat.chatMessages,
+                              chatMessagesObservable:
+                                  chatSnapshot.requireData.chatMessages,
                             )
                           : Container(),
                     ),
                   ),
                   Material(
                     elevation: 4,
-                    child: chatParticipationSnapshot.hasData
+                    child: chatSnapshot.hasData
                         ? ChatMessageInput(
-                            chatParticipation:
-                                chatParticipationSnapshot.requireData,
+                            chatParticipation: chatParticipation,
                           )
                         : Container(),
                   ),

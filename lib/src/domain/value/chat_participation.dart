@@ -7,7 +7,7 @@ abstract class ChatParticipation {
   /// Creates [ChatParticipation].
   factory ChatParticipation({
     @required SignedInUser hero,
-    @required Chat chat,
+    @required ChatReference chat,
     @required ChatRepository chatRepository,
   }) =>
       _ChatParticipation(
@@ -17,7 +17,7 @@ abstract class ChatParticipation {
       );
 
   /// The chat.
-  Chat get chat;
+  ChatReference get chat;
 
   /// Posts a [TextChatMessage] in the chat.
   void postText(String text);
@@ -38,7 +38,7 @@ class _ChatParticipation implements ChatParticipation {
   final SignedInUser _hero;
 
   @override
-  final Chat chat;
+  final ChatReference chat;
 
   @override
   void postText(String text) => _chatRepository.postTextToChat(

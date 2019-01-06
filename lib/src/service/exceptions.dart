@@ -27,6 +27,17 @@ class FriendCodeNotExisting implements Exception {
       'doesn\'t exist.';
 }
 
+/// An exception that the [Chat] doesn't exist  in the database.
+class ChatNotExisting implements Exception {
+  /// Creates an [ChatNotExisting].
+  ChatNotExisting({@required String id}) : _id = id;
+
+  final String _id;
+
+  @override
+  String toString() => 'ChatNotExisting: A chat (id = $_id) doesn\'t exist.';
+}
+
 /// An error that something in the database is unexpected state.
 class DatabaseBadState extends Error {
   /// Creates a [DatabaseBadState].
