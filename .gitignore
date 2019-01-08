@@ -73,3 +73,6 @@ build/
 # Firebase key files
 GoogleService-Info.plist
 android/app/google-services.json
+
+# Firebase functions config
+.runtimeconfig.json

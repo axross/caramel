@@ -26,18 +26,55 @@ class FirestoreChatRepository implements ChatRepository {
               query.documents.map((document) => FirestoreChat(document)));
 
   @override
-  Future<Chat> getChatById({
-    @required String chatId,
-  }) =>
-      _firestore
-          .document('chats/$chatId')
-          .get()
-          .then((document) => FirestoreChat(document));
+  ChatReference referChatById({@required String id}) =>
+      FirestoreChatReference(_firestore.collection('chats').document(id));
+
+  @override
+  ChatReference referNewChat() =>
+      FirestoreChatReference(_firestore.collection('chats').document());
+
+  @override
+  Future<void> createOneOnOneChat({
+    @required ChatReference chat,
+    @required SignedInUser hero,
+    @required UserReference opponent,
+    AtomicWrite atomicWrite,
+  }) async {
+    final heroRef = _firestore.collection('users').document(hero.id);
+    final opponentRef =
+        _firestore.collection('users').document(opponent.substanceId);
+    final chatRef = _firestore.collection('chats').document(chat.substanceId);
+    final data = {
+      'members': [heroRef, opponentRef],
+      'lastChatMessage': null,
+      'lastMessageCreatedAt': null,
+    };
+
+    if (atomicWrite == null) {
+      await chatRef.setData(data);
+    } else {
+      atomicWrite.forFirestore.setData(chatRef, data);
+    }
+  }
+
+  @override
+  Future<void> deleteChat({
+    @required ChatReference chat,
+    AtomicWrite atomicWrite,
+  }) async {
+    final chatRef = _firestore.collection('chats').document(chat.substanceId);
+
+    if (atomicWrite == null) {
+      await chatRef.delete();
+    } else {
+      atomicWrite.forFirestore.delete(chatRef);
+    }
+  }
 
   @override
   Future<void> postTextToChat({
     @required SignedInUser hero,
-    @required Chat chat,
+    @required ChatReference chat,
     @required String text,
   }) async {
     // TODO(axross): I can't implement this process like the below.
@@ -62,7 +99,7 @@ class FirestoreChatRepository implements ChatRepository {
     // await batch.commit();
 
     final chatMessageDocumentReference =
-        _firestore.collection('chats/${chat.id}/messages').document();
+        _firestore.collection('chats/${chat.substanceId}/messages').document();
 
     await Future.wait([
       chatMessageDocumentReference.setData({
@@ -72,7 +109,7 @@ class FirestoreChatRepository implements ChatRepository {
         'readBy': [],
         'text': text,
       }),
-      _firestore.document('chats/${chat.id}').updateData({
+      _firestore.document('chats/${chat.substanceId}').updateData({
         'lastChatMessage': chatMessageDocumentReference,
         'lastMessageCreatedAt': FieldValue.serverTimestamp(),
       }),
@@ -147,8 +184,13 @@ class FirestoreChatReference
   final DocumentReference _documentReference;
 
   @override
-  Future<Chat> get resolve =>
-      _documentReference.get().then((document) => FirestoreChat(document))
+  Future<Chat> get resolve => _documentReference.get().then((document) {
+        if (!document.exists) {
+          throw ChatNotExisting(id: document.documentID);
+        }
+
+        return FirestoreChat(document);
+      })
         ..then((chat) {
           _chat = chat;
         });

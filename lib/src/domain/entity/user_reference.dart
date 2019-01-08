@@ -9,3 +9,11 @@ abstract class UserReference
   /// The resolved [User]. If this has never been resolved, its `null`.
   User get value;
 }
+
+abstract class SignedInUserReference extends UserReference {
+  @override
+  Future<SignedInUser> get resolve;
+
+  @override
+  SignedInUser get value;
+}

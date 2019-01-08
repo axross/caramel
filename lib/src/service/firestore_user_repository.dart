@@ -9,44 +9,18 @@ class FirestoreUserRepository implements UserRepository {
   final Firestore _firestore;
 
   @override
-  Future<SignedInUser> getUserById(String id) =>
-      _firestore.document('users/$id').get().then((document) {
-        if (!document.exists) {
-          throw UserNotExisting(id: id);
-        }
-
-        return FirestoreSignedInUser(document);
-      });
+  SignedInUserReference referByFirebaseAuthId({@required String id}) =>
+      FirestoreSignedInUserReference(
+          _firestore.collection('users').document(id));
 
   @override
-  Future<void> registerAsNewUser(String id) =>
-      _firestore.collection('users').document(id).setData({
-        'name': 'No Name',
-        'imageUrl':
-            'gs://caramel-b3766.appspot.com/profile_images/0000000000000000000000000000000000000000000000000000000000000000.png',
-      });
-
-  @override
-  Stream<Iterable<Friendship>> subscribeFriendships({@required User hero}) =>
-      _firestore.collection('users/${hero.id}/friendships').snapshots().map(
-          (snapshot) => snapshot.documents
-              .map((document) => FirestoreFriendship(document)));
-
-  @override
-  Future<void> addFriendByFriendCode({
-    @required User hero,
+  Future<UserReference> referUserByFriendCode({
     @required FriendCode friendCode,
   }) async {
-    /**
-     * TODO(axross): the operations in the below are supposed to do with
-     * transaction. but it doesn't work more than one write operations in a
-     * transaction. I need to wait for this bug to be fixed in cloud_firestore
-     * package.
-     * see also: https://github.com/flutter/flutter/issues/17663
-     */
-
-    final friendCodeDoc =
-        await _firestore.document('friendCodes/${friendCode.data}').get();
+    final friendCodeDoc = await _firestore
+        .collection('friendCodes')
+        .document(friendCode.data)
+        .get();
 
     if (!friendCodeDoc.exists) {
       throw FriendCodeNotExisting(friendCode: friendCode);
@@ -59,74 +33,83 @@ class FirestoreUserRepository implements UserRepository {
       );
     }
 
-    final heroRef = _firestore.document('users/${hero.id}');
-    final DocumentReference opponentRef = friendCodeDoc.data['user'];
-    final friendshipDoc = await opponentRef
-        .collection('friendships')
-        .document('${hero.id}')
-        .get();
+    final DocumentReference userRef = friendCodeDoc.data['user'];
 
-    DocumentReference chat;
-    var isOpponentAlreadyAddedMe = false;
-
-    if (friendshipDoc.exists) {
-      // hero has already been opponent's friend
-
-      if (friendshipDoc.data['chat'] is! DocumentReference) {
-        throw DatabaseBadState(
-          detail: 'a document `${friendshipDoc.reference.path}` doesn\'t '
-              'have a member `chat` as a reference.',
-        );
-      }
-
-      chat = friendshipDoc.data['chat'];
-      isOpponentAlreadyAddedMe = true;
-    } else {
-      // this is the first time to know each other
-
-      chat = _firestore.collection('chats').document();
-    }
-
-    final opponentId = opponentRef.documentID;
-
-    final batch = _firestore.batch()
-      ..setData(
-        heroRef.collection('friendships').document(opponentId),
-        {
-          'user': opponentRef,
-          'chat': chat,
-        },
-      );
-
-    if (!isOpponentAlreadyAddedMe) {
-      batch
-        ..setData(
-          opponentRef.collection('friendships').document(hero.id),
-          {
-            'user': heroRef,
-            'chat': chat,
-          },
-        )
-        ..setData(
-          chat,
-          {
-            'members': [
-              _firestore.document('users/${hero.id}'),
-              _firestore.document('users/$opponentId'),
-            ],
-            'lastChatMessage': null,
-            'lastMessageCreatedAt': null,
-          },
-        );
-    }
-
-    await batch.commit();
+    return FirestoreUserReference(userRef);
   }
 
   @override
-  Future<void> deleteFriendship({
+  Future<void> registerUser({
+    @required UserReference user,
+    AtomicWrite atomicWrite,
+  }) async {
+    final userRef = _firestore.collection('users').document(user.substanceId);
+    final data = {
+      'name': 'No Name',
+      'imageUrl': 'gs://caramel-b3766.appspot.com/profile_images/00000000000'
+          '00000000000000000000000000000000000000000000000000000.png',
+    };
+
+    if (atomicWrite == null) {
+      await userRef.setData(data);
+    } else {
+      atomicWrite.forFirestore.setData(userRef, data);
+    }
+  }
+
+  @override
+  Stream<Iterable<Friendship>> subscribeFriendships({@required User hero}) =>
+      _firestore
+          .collection('users')
+          .document(hero.id)
+          .collection('friendships')
+          .snapshots()
+          .map((snapshot) => snapshot.documents
+              .map((document) => FirestoreFriendship(document)));
+
+  @override
+  Future<void> relateByFriendship({
+    @required SignedInUser hero,
+    @required UserReference opponent,
+    @required ChatReference oneOnOneChat,
+    AtomicWrite atomicWrite,
+  }) async {
+    final opponentRef =
+        _firestore.collection('users').document(opponent.substanceId);
+    final chatRef =
+        _firestore.collection('chats').document(oneOnOneChat.substanceId);
+    final myFriendshipRef = _firestore
+        .collection('users')
+        .document(hero.id)
+        .collection('friendships')
+        .document(opponent.substanceId);
+    final opponentFriendshipRef = _firestore
+        .collection('users')
+        .document(opponent.substanceId)
+        .collection('friendships')
+        .document(hero.id);
+    final data = {
+      'user': opponentRef,
+      'chat': chatRef,
+    };
+
+    if (atomicWrite == null) {
+      final batch = _firestore.batch()
+        ..setData(myFriendshipRef, data)
+        ..setData(opponentFriendshipRef, data);
+
+      await batch.commit();
+    } else {
+      atomicWrite.forFirestore.setData(myFriendshipRef, data);
+      atomicWrite.forFirestore.setData(opponentFriendshipRef, data);
+    }
+  }
+
+  @override
+  Future<void> disrelateByFriendship({
     @required SignedInUser hero,
     @required Friendship friendship,
+    AtomicWrite atomicWrite,
   }) async {
     final myFriendshipRef = _firestore
         .collection('users')
@@ -137,13 +120,18 @@ class FirestoreUserRepository implements UserRepository {
     final DocumentReference oppoenentRef = myFriendshipDoc.data['user'];
     final opponentFriendshipRef =
         oppoenentRef.collection('friendships').document(hero.id);
-    final oneOnOneChatRef = myFriendshipDoc['chat'];
 
-    await (_firestore.batch()
-          ..delete(myFriendshipRef)
-          ..delete(opponentFriendshipRef)
-          ..delete(oneOnOneChatRef))
-        .commit();
+    if (atomicWrite == null) {
+      final batch = _firestore.batch()
+        ..delete(myFriendshipRef)
+        ..delete(opponentFriendshipRef);
+
+      await batch.commit();
+    } else {
+      atomicWrite.forFirestore
+        ..delete(myFriendshipRef)
+        ..delete(opponentFriendshipRef);
+    }
   }
 }
 
@@ -238,8 +226,13 @@ class FirestoreUserReference
   String get substanceId => _documentReference.documentID;
 
   @override
-  Future<User> get resolve =>
-      _documentReference.get().then((document) => FirestoreUser(document))
+  Future<User> get resolve => _documentReference.get().then((document) {
+        if (!document.exists) {
+          throw UserNotExisting(id: document.documentID);
+        }
+
+        return FirestoreUser(document);
+      })
         ..then((user) {
           _user = user;
         });
@@ -250,13 +243,46 @@ class FirestoreUserReference
   User get value => _user;
 }
 
+class FirestoreSignedInUserReference implements SignedInUserReference {
+  FirestoreSignedInUserReference(DocumentReference documentReference)
+      : assert(documentReference != null),
+        _documentReference = documentReference;
+
+  final DocumentReference _documentReference;
+
+  @override
+  String get substanceId => _documentReference.documentID;
+
+  @override
+  Future<FirestoreSignedInUser> get resolve =>
+      _documentReference.get().then((document) {
+        if (!document.exists) {
+          throw UserNotExisting(id: document.documentID);
+        }
+
+        return FirestoreSignedInUser(document);
+      })
+        ..then((user) {
+          _user = user;
+        });
+
+  FirestoreSignedInUser _user;
+
+  @override
+  FirestoreSignedInUser get value => _user;
+}
+
 class FirestoreUsersReference implements UsersReference {
   FirestoreUsersReference.fromDocumentReferences(
     Iterable<DocumentReference> documentReferences,
-  ) : _resolve = Future.wait(documentReferences.map((documentReference) =>
-            documentReference
-                .get()
-                .then((document) => FirestoreUser(document))));
+  ) : _resolve = Future.wait(documentReferences.map(
+            (documentReference) => documentReference.get().then((document) {
+                  if (!document.exists) {
+                    throw UserNotExisting(id: document.documentID);
+                  }
+
+                  return FirestoreUser(document);
+                })));
 
   final Future<Iterable<User>> _resolve;
 
