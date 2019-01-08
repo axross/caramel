@@ -9,4 +9,6 @@ export './src/service/firestore_friend_code_repository.dart';
 export './src/service/firestore_user_repository.dart';
 export './src/service/friend_code_repository.dart';
 export './src/service/friend_code_scanner.dart';
+export './src/service/notification_manager.dart';
+export './src/service/onesignal_firestore_notification_manager.dart';
 export './src/service/user_repository.dart';

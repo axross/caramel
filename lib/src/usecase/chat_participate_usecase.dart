@@ -9,7 +9,7 @@ class ChatParticipateUsecase {
       : assert(chatRepository != null),
         _chatRepository = chatRepository;
 
-  ChatRepository _chatRepository;
+  final ChatRepository _chatRepository;
 
   /// Participate in the [Chat] by [chatId].
   ChatParticipation call({

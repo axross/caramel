@@ -6,21 +6,26 @@ import 'package:meta/meta.dart';
 class FriendshipDeleteUsecase {
   /// Creates a [FriendshipDeleteUsecase].
   FriendshipDeleteUsecase({
-    @required ChatRepository chatRepository,
-    @required UserRepository userRepository,
     @required AtomicWriteCreator atomicWriteCreator,
-  })  : assert(chatRepository != null),
+    @required ChatRepository chatRepository,
+    @required NotificationManager notificationManager,
+    @required UserRepository userRepository,
+  })  : assert(atomicWriteCreator != null),
+        assert(chatRepository != null),
+        assert(notificationManager != null),
         assert(userRepository != null),
-        assert(atomicWriteCreator != null),
+        _atomicWriteCreator = atomicWriteCreator,
         _chatRepository = chatRepository,
-        _userRepository = userRepository,
-        _atomicWriteCreator = atomicWriteCreator;
+        _notificationManager = notificationManager,
+        _userRepository = userRepository;
+
+  final AtomicWriteCreator _atomicWriteCreator;
 
   final ChatRepository _chatRepository;
 
-  final UserRepository _userRepository;
+  final NotificationManager _notificationManager;
 
-  final AtomicWriteCreator _atomicWriteCreator;
+  final UserRepository _userRepository;
 
   /// Deletes the [friendship].
   void call({
@@ -37,5 +42,10 @@ class FriendshipDeleteUsecase {
     await _chatRepository.deleteChat(chat: friendship.oneOnOneChat);
 
     await atomicWrite.commit();
+
+    await _notificationManager.subscribeChat(
+      chat: friendship.oneOnOneChat,
+      hero: hero,
+    );
   }
 }

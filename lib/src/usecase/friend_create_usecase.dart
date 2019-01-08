@@ -6,27 +6,41 @@ import 'package:meta/meta.dart';
 class FriendCreateUsecase {
   /// Creates a [FriendCreateUsecase].
   FriendCreateUsecase({
+    @required AtomicWriteCreator atomicWriteCreator,
+    @required ChatRepository chatRepository,
+    @required FriendCodeRepository friendCodeRepository,
     @required FriendCodeScanner friendCodeScanner,
+    @required NotificationManager notificationManager,
     @required UserRepository userRepository,
-  })  : assert(friendCodeScanner != null),
+  })  : assert(atomicWriteCreator != null),
+        assert(chatRepository != null),
+        assert(friendCodeRepository != null),
+        assert(friendCodeScanner != null),
+        assert(notificationManager != null),
         assert(userRepository != null),
+        _atomicWriteCreator = atomicWriteCreator,
+        _chatRepository = chatRepository,
+        _friendCodeRepository = friendCodeRepository,
         _friendCodeScanner = friendCodeScanner,
+        _notificationManager = notificationManager,
         _userRepository = userRepository;
 
-  ChatRepository _chatRepository;
+  final NotificationManager _notificationManager;
 
-  UserRepository _userRepository;
+  final ChatRepository _chatRepository;
 
-  FriendCodeRepository _friendCodeRepository;
+  final UserRepository _userRepository;
 
-  FriendCodeScanner _friendCodeScanner;
+  final FriendCodeRepository _friendCodeRepository;
 
-  AtomicWriteCreator _atomicWriteCreator;
+  final FriendCodeScanner _friendCodeScanner;
+
+  final AtomicWriteCreator _atomicWriteCreator;
 
   /// Read a [FriendCode] and make the user who issued it to be friends.
   void call({@required SignedInUser hero}) async {
     final friendCode = await _friendCodeScanner.scan();
-    final chatReference = _chatRepository.referNewChat();
+    final chat = _chatRepository.referNewChat();
     final atomicWrite = _atomicWriteCreator.create();
     final opponent = await _userRepository.referUserByFriendCode(
       friendCode: friendCode,
@@ -35,14 +49,14 @@ class FriendCreateUsecase {
     await _userRepository.relateByFriendship(
       hero: hero,
       opponent: opponent,
-      oneOnOneChat: chatReference,
+      oneOnOneChat: chat,
       atomicWrite: atomicWrite,
     );
 
     await _chatRepository.createOneOnOneChat(
       hero: hero,
       opponent: opponent,
-      chatReference: chatReference,
+      chat: chat,
       atomicWrite: atomicWrite,
     );
 
@@ -52,5 +66,10 @@ class FriendCreateUsecase {
     );
 
     await atomicWrite.commit();
+
+    await _notificationManager.subscribeChat(
+      chat: chat,
+      hero: hero,
+    );
   }
 }

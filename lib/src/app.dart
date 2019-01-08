@@ -1,17 +1,16 @@
 import 'package:caramel/domains.dart';
-import 'package:caramel/routes.dart';
 import 'package:caramel/services.dart';
 import 'package:caramel/usecases.dart';
 import 'package:caramel/widgets.dart';
 import 'package:firebase_analytics/firebase_analytics.dart'
     show FirebaseAnalytics;
-import 'package:firebase_analytics/observer.dart'
-    show FirebaseAnalyticsObserver;
 import 'package:flutter/material.dart';
+import './signed_in.dart';
 
-class App extends StatefulWidget {
+class App extends StatelessWidget {
   const App({
     @required this.analytics,
+    @required this.notificationManager,
     @required this.authenticate,
     @required this.deleteFriendship,
     @required this.listChat,
@@ -21,6 +20,7 @@ class App extends StatefulWidget {
     @required this.listFriend,
     Key key,
   })  : assert(analytics != null),
+        assert(notificationManager != null),
         assert(authenticate != null),
         assert(deleteFriendship != null),
         assert(listChat != null),
@@ -31,6 +31,7 @@ class App extends StatefulWidget {
         super(key: key);
 
   final FirebaseAnalytics analytics;
+  final NotificationManager notificationManager;
   final AuthenticateUsecase authenticate;
   final FriendshipDeleteUsecase deleteFriendship;
   final ChatListUsecase listChat;
@@ -40,44 +41,28 @@ class App extends StatefulWidget {
   final FriendListUsecase listFriend;
 
   @override
-  State<StatefulWidget> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  @override
   Widget build(BuildContext context) => MemoizedBuilder(
-        valueBuilder: (context, old) => old ?? widget.authenticate(),
+        valueBuilder: (context, old) => old ?? authenticate(),
         builder: (context, heroObservable) => Provider(
-              value: widget.deleteFriendship,
+              value: deleteFriendship,
               child: Provider(
-                value: widget.listChat,
+                value: listChat,
                 child: Provider(
-                  value: widget.participateChat,
+                  value: participateChat,
                   child: Provider(
-                    value: widget.getFriendCode,
+                    value: getFriendCode,
                     child: Provider(
-                      value: widget.createFriend,
+                      value: createFriend,
                       child: Provider(
-                        value: widget.listFriend,
+                        value: listFriend,
                         child: StreamBuilder<User>(
                           stream: heroObservable.onChanged,
                           initialData: heroObservable.latest,
                           builder: (_, snapshot) => snapshot.hasData
-                              ? MaterialApp(
-                                  title: 'Flutter Demo',
-                                  theme: ThemeData(
-                                    primarySwatch: Colors.blue,
-                                  ),
-                                  initialRoute: '/',
-                                  routes: {
-                                    '/': HomeRoute(hero: snapshot.requireData)
-                                        .builder,
-                                  },
-                                  navigatorObservers: [
-                                    FirebaseAnalyticsObserver(
-                                      analytics: widget.analytics,
-                                    ),
-                                  ],
+                              ? SignedIn(
+                                  hero: snapshot.requireData,
+                                  analytics: analytics,
+                                  notificationManager: notificationManager,
                                 )
                               : Container(
                                   decoration:

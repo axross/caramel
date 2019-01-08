@@ -14,7 +14,7 @@ abstract class ChatRepository {
   ChatReference referNewChat();
 
   Future<void> createOneOnOneChat({
-    @required ChatReference chatReference,
+    @required ChatReference chat,
     @required SignedInUser hero,
     @required UserReference opponent,
     AtomicWrite atomicWrite,

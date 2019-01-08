@@ -9,7 +9,7 @@ class FriendListUsecase {
       : assert(userRepository != null),
         _userRepository = userRepository;
 
-  UserRepository _userRepository;
+  final UserRepository _userRepository;
 
   /// Retrieve the [Friendship]s what the [hero] has.
   FriendshipsObservable call({@required SignedInUser hero}) =>

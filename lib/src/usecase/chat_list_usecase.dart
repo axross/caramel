@@ -9,7 +9,7 @@ class ChatListUsecase {
       : assert(chatRepository != null),
         _chatRepository = chatRepository;
 
-  ChatRepository _chatRepository;
+  final ChatRepository _chatRepository;
 
   /// Retrieve the [Chat]s what the [hero] has participated in.
   ChatsObservable call({@required SignedInUser hero}) => _ChatsObservable(

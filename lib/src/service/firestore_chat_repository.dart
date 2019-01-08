@@ -35,7 +35,7 @@ class FirestoreChatRepository implements ChatRepository {
 
   @override
   Future<void> createOneOnOneChat({
-    @required ChatReference chatReference,
+    @required ChatReference chat,
     @required SignedInUser hero,
     @required UserReference opponent,
     AtomicWrite atomicWrite,
@@ -43,8 +43,7 @@ class FirestoreChatRepository implements ChatRepository {
     final heroRef = _firestore.collection('users').document(hero.id);
     final opponentRef =
         _firestore.collection('users').document(opponent.substanceId);
-    final chatRef =
-        _firestore.collection('chats').document(chatReference.substanceId);
+    final chatRef = _firestore.collection('chats').document(chat.substanceId);
     final data = {
       'members': [heroRef, opponentRef],
       'lastChatMessage': null,

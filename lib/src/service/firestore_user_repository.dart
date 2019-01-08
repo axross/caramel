@@ -61,7 +61,7 @@ class FirestoreUserRepository implements UserRepository {
   Stream<Iterable<Friendship>> subscribeFriendships({@required User hero}) =>
       _firestore
           .collection('users')
-          .document('hero.id')
+          .document(hero.id)
           .collection('friendships')
           .snapshots()
           .map((snapshot) => snapshot.documents
