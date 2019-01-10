@@ -8,8 +8,5 @@ abstract class FriendCodeRepository {
   Stream<FriendCode> subscribeNewestFriendCode({@required SignedInUser hero});
 
   /// Issues a new [FriendCode].
-  Future<void> create({
-    @required SignedInUser hero,
-    AtomicWrite atomicWrite,
-  });
+  Future<void> create({@required SignedInUser hero});
 }

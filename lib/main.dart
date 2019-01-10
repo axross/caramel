@@ -15,7 +15,6 @@ void main() {
   final firestore = Firestore.instance;
   final functions = CloudFunctions.instance;
 
-  final atomicWriteCreator = FirestoreAtomicWriteCreator(firestore: firestore);
   final authenticator = FirebaseAuthenticator(
     auth: auth,
     firestore: firestore,

@@ -91,20 +91,13 @@ class FirebaseUserRepository implements UserRepository {
   Future<void> deleteFriendship({
     @required SignedInUser hero,
     @required Friendship friendship,
-    AtomicWrite atomicWrite,
-  }) async {
-    final friendshipRef = _firestore
-        .collection('users')
-        .document(hero.id)
-        .collection('friendships')
-        .document(friendship.id);
-
-    if (atomicWrite == null) {
-      await friendshipRef.delete();
-    } else {
-      atomicWrite.forFirestore.delete(friendshipRef);
-    }
-  }
+  }) =>
+      _firestore
+          .collection('users')
+          .document(hero.id)
+          .collection('friendships')
+          .document(friendship.id)
+          .delete();
 
   @override
   Future<void> createUser({@required String id}) =>

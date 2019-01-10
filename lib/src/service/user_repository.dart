@@ -22,7 +22,6 @@ abstract class UserRepository {
   Future<void> deleteFriendship({
     @required SignedInUser hero,
     @required Friendship friendship,
-    AtomicWrite atomicWrite,
   });
 
   Future<void> createUser({@required String id});

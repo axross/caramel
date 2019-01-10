@@ -25,35 +25,17 @@ class FirestoreFriendCodeRepository implements FriendCodeRepository {
   @override
   Future<void> create({
     @required SignedInUser hero,
-    AtomicWrite atomicWrite,
-  }) async {
-    final friendCodeRef = _firestore.collection('friendCodes').document();
-    final data = {
-      'user': _firestore.document('/users/${hero.id}'),
-      'issuedAt': FieldValue.serverTimestamp(),
-    };
-
-    if (atomicWrite == null) {
-      await friendCodeRef.setData(data);
-    } else {
-      atomicWrite.forFirestore.setData(friendCodeRef, data);
-    }
-  }
+  }) =>
+      _firestore.collection('friendCodes').document().setData({
+        'user': _firestore.document('/users/${hero.id}'),
+        'issuedAt': FieldValue.serverTimestamp(),
+      });
 
   @override
   Future<void> delete({
     @required FriendCode friendCode,
-    AtomicWrite atomicWrite,
-  }) async {
-    final friendCodeRef =
-        _firestore.collection('friendCodes').document(friendCode.data);
-
-    if (atomicWrite == null) {
-      await friendCodeRef.delete();
-    } else {
-      atomicWrite.forFirestore.delete(friendCodeRef);
-    }
-  }
+  }) =>
+      _firestore.collection('friendCodes').document(friendCode.data).delete();
 }
 
 class FirestoreFriendCode implements FriendCode {
