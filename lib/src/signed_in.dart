@@ -54,7 +54,7 @@ class _SignedInState extends State<SignedIn> {
         ),
         initialRoute: '/',
         routes: {
-          '/': HomeRoute(hero: widget._hero).builder,
+          '/': ChatListRoute(hero: widget._hero).builder,
         },
         navigatorObservers: [
           FirebaseAnalyticsObserver(

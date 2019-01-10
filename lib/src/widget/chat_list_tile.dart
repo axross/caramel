@@ -3,51 +3,8 @@ import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ChatList extends StatelessWidget {
-  ChatList({
-    @required this.hero,
-    @required this.chatsObervable,
-    @required this.onChatTapped,
-    Key key,
-  })  : assert(hero != null),
-        assert(chatsObervable != null),
-        assert(onChatTapped != null),
-        super(key: key);
-
-  final SignedInUser hero;
-
-  final ChatsObservable chatsObervable;
-
-  final ValueChanged<Chat> onChatTapped;
-
-  @override
-  Widget build(BuildContext context) => StreamBuilder<List<Chat>>(
-        stream: chatsObervable.onChanged.map((chats) => chats.toList()),
-        initialData: chatsObervable.latest?.toList(),
-        builder: (context, myChatsSnapshot) => StreamBuilder(
-              stream: Stream.periodic(const Duration(seconds: 5)),
-              builder: (context, _) => ListView.separated(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    itemBuilder: (_, index) => myChatsSnapshot.hasData
-                        ? _ChatListItem(
-                            hero: hero,
-                            chat: myChatsSnapshot.requireData[index],
-                            onTapped: () => onChatTapped(
-                                  myChatsSnapshot.requireData[index],
-                                ),
-                          )
-                        : null,
-                    separatorBuilder: (_, __) => const Divider(),
-                    itemCount: myChatsSnapshot.hasData
-                        ? myChatsSnapshot.requireData.length
-                        : 0,
-                  ),
-            ),
-      );
-}
-
-class _ChatListItem extends StatelessWidget {
-  const _ChatListItem({
+class ChatListTile extends StatelessWidget {
+  const ChatListTile({
     @required this.chat,
     @required this.hero,
     @required this.onTapped,
