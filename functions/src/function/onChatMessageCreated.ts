@@ -9,10 +9,18 @@ import storageBucket from '../singleton/storageBucket';
 const onChatMessageCreated = functions.firestore
   .document('chats/{chatId}/messages/{messageId}')
   .onCreate(async (change, context) => {
-    const chatMessageDoc = change.data();
-    const chatMessageType = chatMessageDoc['type'];
+    const chatMessageDoc = change;
+    const chatMessageDocData = change.data();
+    const chatMessageType = chatMessageDocData['type'];
 
-    const userDoc = await (chatMessageDoc['from'] as admin.firestore.DocumentReference).get();
+    const chatRef = chatMessageDoc.ref.parent.parent;
+
+    await chatRef.update({
+      lastChatMessage: chatMessageDoc.ref,
+      lastMessageCreatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    const userDoc = await (chatMessageDocData['from'] as admin.firestore.DocumentReference).get();
     const userId = userDoc.id;
     const userData = userDoc.data();
     const userName = userData['name'];
@@ -21,7 +29,7 @@ const onChatMessageCreated = functions.firestore
     let body = '';
 
     if (chatMessageType == 'TEXT') {
-      body = chatMessageDoc['text'];
+      body = chatMessageDocData['text'];
     } else {
       throw new Error('invalid type');
     }

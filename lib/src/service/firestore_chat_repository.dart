@@ -34,45 +34,17 @@ class FirestoreChatRepository implements ChatRepository {
     @required SignedInUser hero,
     @required ChatReference chat,
     @required String text,
-  }) async {
-    // TODO(axross): I can't implement this process like the below.
-    // https://github.com/axross/caramel/issues/2
-    //
-    // final batch = _firestore.batch();
-    // final chatMessageDocumentReference =
-    //     _firestore.collection('chats/${chat.id}/messages').document();
-
-    // batch.setData(chatMessageDocumentReference, {
-    //   'type': 'TEXT',
-    //   'from': _firestore.document('users/${user.uid}'),
-    //   'sentAt': FieldValue.serverTimestamp(),
-    //   'readBy': [],
-    //   'text': text,
-    // });
-
-    // batch.updateData(_firestore.document('chats/${chat.id}'), {
-    //   'lastChatMessage': chatMessageDocumentReference,
-    // });
-
-    // await batch.commit();
-
-    final chatMessageDocumentReference =
-        _firestore.collection('chats/${chat.substanceId}/messages').document();
-
-    await Future.wait([
-      chatMessageDocumentReference.setData({
+  }) =>
+      _firestore
+          .collection('chats/${chat.substanceId}/messages')
+          .document()
+          .setData({
         'type': 'TEXT',
         'from': _firestore.document('users/${hero.id}'),
         'sentAt': FieldValue.serverTimestamp(),
         'readBy': [],
         'text': text,
-      }),
-      _firestore.document('chats/${chat.substanceId}').updateData({
-        'lastChatMessage': chatMessageDocumentReference,
-        'lastMessageCreatedAt': FieldValue.serverTimestamp(),
-      }),
-    ]);
-  }
+      });
 }
 
 class FirestoreChat with IdentifiableById<Chat> implements Chat {
