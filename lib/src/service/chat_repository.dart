@@ -11,20 +11,6 @@ abstract class ChatRepository {
 
   ChatReference referChatById({@required String id});
 
-  ChatReference referNewChat();
-
-  Future<void> createOneOnOneChat({
-    @required ChatReference chat,
-    @required SignedInUser hero,
-    @required UserReference opponent,
-    AtomicWrite atomicWrite,
-  });
-
-  Future<void> deleteChat({
-    @required ChatReference chat,
-    AtomicWrite atomicWrite,
-  });
-
   /// Posts a [TextChatMessage] in a chat.
   Future<void> postTextToChat({
     @required SignedInUser hero,

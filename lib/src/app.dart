@@ -7,10 +7,12 @@ import 'package:firebase_analytics/firebase_analytics.dart'
 import 'package:flutter/material.dart';
 import './signed_in.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({
     @required this.analytics,
+    @required this.deviceService,
     @required this.notificationManager,
+    @required this.userRepository,
     @required this.authenticate,
     @required this.deleteFriendship,
     @required this.listChat,
@@ -20,7 +22,9 @@ class App extends StatelessWidget {
     @required this.listFriend,
     Key key,
   })  : assert(analytics != null),
+        assert(deviceService != null),
         assert(notificationManager != null),
+        assert(userRepository != null),
         assert(authenticate != null),
         assert(deleteFriendship != null),
         assert(listChat != null),
@@ -31,7 +35,9 @@ class App extends StatelessWidget {
         super(key: key);
 
   final FirebaseAnalytics analytics;
+  final DeviceService deviceService;
   final NotificationManager notificationManager;
+  final UserRepository userRepository;
   final AuthenticateUsecase authenticate;
   final FriendshipDeleteUsecase deleteFriendship;
   final ChatListUsecase listChat;
@@ -41,39 +47,60 @@ class App extends StatelessWidget {
   final FriendListUsecase listFriend;
 
   @override
-  Widget build(BuildContext context) => MemoizedBuilder(
-        valueBuilder: (context, old) => old ?? authenticate(),
-        builder: (context, heroObservable) => Provider(
-              value: deleteFriendship,
+  State<StatefulWidget> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  SignedInUserObservable _heroObservable;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _heroObservable = widget.authenticate()
+      ..onChanged.listen((signedInUser) async {
+        final deviceInformation = await widget.deviceService.deviceInformation;
+        final pushNotificationDestinationId =
+            await widget.notificationManager.pushNotificationDestinationId;
+
+        await widget.userRepository.setDevice(
+          hero: signedInUser,
+          deviceInformation: deviceInformation,
+          pushNotificationDestinationId: pushNotificationDestinationId,
+        );
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) => Provider(
+        value: widget.deleteFriendship,
+        child: Provider(
+          value: widget.listChat,
+          child: Provider(
+            value: widget.participateChat,
+            child: Provider(
+              value: widget.getFriendCode,
               child: Provider(
-                value: listChat,
+                value: widget.createFriend,
                 child: Provider(
-                  value: participateChat,
-                  child: Provider(
-                    value: getFriendCode,
-                    child: Provider(
-                      value: createFriend,
-                      child: Provider(
-                        value: listFriend,
-                        child: StreamBuilder<User>(
-                          stream: heroObservable.onChanged,
-                          initialData: heroObservable.latest,
-                          builder: (_, snapshot) => snapshot.hasData
-                              ? SignedIn(
-                                  hero: snapshot.requireData,
-                                  analytics: analytics,
-                                  notificationManager: notificationManager,
-                                )
-                              : Container(
-                                  decoration:
-                                      const BoxDecoration(color: Colors.red),
-                                ),
-                        ),
-                      ),
-                    ),
+                  value: widget.listFriend,
+                  child: StreamBuilder<User>(
+                    stream: _heroObservable.onChanged,
+                    initialData: _heroObservable.latest,
+                    builder: (_, snapshot) => snapshot.hasData
+                        ? SignedIn(
+                            hero: snapshot.requireData,
+                            analytics: widget.analytics,
+                            notificationManager: widget.notificationManager,
+                          )
+                        : Container(
+                            decoration: const BoxDecoration(color: Colors.red),
+                          ),
                   ),
                 ),
               ),
             ),
+          ),
+        ),
       );
 }

@@ -12,9 +12,4 @@ abstract class FriendCodeRepository {
     @required SignedInUser hero,
     AtomicWrite atomicWrite,
   });
-
-  Future<void> delete({
-    @required FriendCode friendCode,
-    AtomicWrite atomicWrite,
-  });
 }

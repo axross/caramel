@@ -46,23 +46,3 @@ class ScannedFriendCode implements FriendCode {
   @override
   int get hashCode => data.hashCode;
 }
-
-class FriendCodeParsingFailure implements Exception {
-  /// Creates a [FriendCodeParsingFailure].
-  const FriendCodeParsingFailure(this.data);
-
-  /// A string.
-  final String data;
-
-  @override
-  String toString() => 'FriendCodeParsingFailure: "$data" is not a valid code.';
-}
-
-///
-class ScanCancelled implements Exception {
-  ///
-  ScanCancelled();
-
-  @override
-  String toString() => 'ScanCancelled: scaning barcode has been cancelled.';
-}

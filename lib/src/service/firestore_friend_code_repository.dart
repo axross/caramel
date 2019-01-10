@@ -18,11 +18,9 @@ class FirestoreFriendCodeRepository implements FriendCodeRepository {
           .orderBy('issuedAt', descending: true)
           .limit(1)
           .snapshots()
-          .map(
-            (snapshot) => snapshot.documents.isEmpty
-                ? null
-                : FirestoreFriendCode(snapshot.documents.first),
-          );
+          .map((snapshot) => snapshot.documents.isEmpty
+              ? null
+              : FirestoreFriendCode(snapshot.documents.first));
 
   @override
   Future<void> create({

@@ -1,4 +1,4 @@
-import { DocumentReference } from '@google-cloud/firestore';
+import * as admin from 'firebase-admin';
 import { addDays, differenceInMilliseconds } from 'date-fns';
 import * as functions from 'firebase-functions';
 import { URL } from 'url';
@@ -6,13 +6,13 @@ import config from '../config';
 import onesignalAxios from '../singleton/onesignalAxios';
 import storageBucket from '../singleton/storageBucket';
 
-const onChatMessageWritten = functions.firestore
+const onChatMessageCreated = functions.firestore
   .document('chats/{chatId}/messages/{messageId}')
-  .onWrite(async (change, context) => {
-    const chatMessageDoc = change.after.data();
+  .onCreate(async (change, context) => {
+    const chatMessageDoc = change.data();
     const chatMessageType = chatMessageDoc['type'];
 
-    const userDoc = await (chatMessageDoc['from'] as DocumentReference).get();
+    const userDoc = await (chatMessageDoc['from'] as admin.firestore.DocumentReference).get();
     const userId = userDoc.id;
     const userData = userDoc.data();
     const userName = userData['name'];
@@ -56,7 +56,13 @@ const onChatMessageWritten = functions.firestore
       summary_arg_count: 1,
     });
 
-    console.log(`A push notification (id: ${response.data['id']}) has been sent.\n  sender name: ${userName}\n  image url: ${temporaryImageUrl} (expires: ${temporaryImageUrlExpire})\n  target tag: ${targetTag} (${differenceInMilliseconds(new Date(), context.timestamp)})\n  recipients: ${response.data['recipients']}`);
+    console.info(
+      `A push notification (id: ${response.data['id']}) has been sent.
+  sender: ${userId} (name = ${userName})
+  image url: ${temporaryImageUrl} (expires: ${temporaryImageUrlExpire})
+  target tag: ${targetTag} (${differenceInMilliseconds(new Date(), context.timestamp)})
+  recipients: ${response.data['recipients']}`
+    );
   });
 
-export default onChatMessageWritten;
+export default onChatMessageCreated;

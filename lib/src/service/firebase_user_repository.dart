@@ -1,12 +1,21 @@
 import 'package:caramel/domains.dart';
 import 'package:caramel/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:meta/meta.dart';
 
-class FirestoreUserRepository implements UserRepository {
-  FirestoreUserRepository(Firestore firestore) : _firestore = firestore;
+class FirebaseUserRepository implements UserRepository {
+  FirebaseUserRepository({
+    @required Firestore firestore,
+    @required CloudFunctions functions,
+  })  : assert(firestore != null),
+        assert(functions != null),
+        _firestore = firestore,
+        _functions = functions;
 
   final Firestore _firestore;
+
+  final CloudFunctions _functions;
 
   @override
   SignedInUserReference referByFirebaseAuthId({@required String id}) =>
@@ -39,25 +48,6 @@ class FirestoreUserRepository implements UserRepository {
   }
 
   @override
-  Future<void> registerUser({
-    @required UserReference user,
-    AtomicWrite atomicWrite,
-  }) async {
-    final userRef = _firestore.collection('users').document(user.substanceId);
-    final data = {
-      'name': 'No Name',
-      'imageUrl': 'gs://caramel-b3766.appspot.com/profile_images/00000000000'
-          '00000000000000000000000000000000000000000000000000000.png',
-    };
-
-    if (atomicWrite == null) {
-      await userRef.setData(data);
-    } else {
-      atomicWrite.forFirestore.setData(userRef, data);
-    }
-  }
-
-  @override
   Stream<Iterable<Friendship>> subscribeFriendships({@required User hero}) =>
       _firestore
           .collection('users')
@@ -68,71 +58,76 @@ class FirestoreUserRepository implements UserRepository {
               .map((document) => FirestoreFriendship(document)));
 
   @override
-  Future<void> relateByFriendship({
-    @required SignedInUser hero,
-    @required UserReference opponent,
-    @required ChatReference oneOnOneChat,
-    AtomicWrite atomicWrite,
+  Future<void> createFriendshipByFriendCode({
+    @required FriendCode friendCode,
   }) async {
-    final opponentRef =
-        _firestore.collection('users').document(opponent.substanceId);
-    final chatRef =
-        _firestore.collection('chats').document(oneOnOneChat.substanceId);
-    final myFriendshipRef = _firestore
-        .collection('users')
-        .document(hero.id)
-        .collection('friendships')
-        .document(opponent.substanceId);
-    final opponentFriendshipRef = _firestore
-        .collection('users')
-        .document(opponent.substanceId)
-        .collection('friendships')
-        .document(hero.id);
-    final data = {
-      'user': opponentRef,
-      'chat': chatRef,
-    };
+    try {
+      await _functions.call(
+        functionName: 'makeFriendshipByFriendCode',
+        parameters: {
+          'friendCode': friendCode.data,
+        },
+      );
+    } on CloudFunctionsException catch (err) {
+      if (err.code == 'INVALID_ARGUMENT') {
+        rethrow;
+      }
 
-    if (atomicWrite == null) {
-      final batch = _firestore.batch()
-        ..setData(myFriendshipRef, data)
-        ..setData(opponentFriendshipRef, data);
+      if (err.code == 'NOT_FOUND') {
+        throw FriendCodeNotExisting(friendCode: friendCode);
+      }
 
-      await batch.commit();
-    } else {
-      atomicWrite.forFirestore.setData(myFriendshipRef, data);
-      atomicWrite.forFirestore.setData(opponentFriendshipRef, data);
+      if (err.code == 'ALREADY_EXISTS') {
+        throw AlreadyFriend();
+      }
+
+      if (err.code == 'INTERNAL') {
+        throw ServerInternalException(message: err.message);
+      }
     }
   }
 
   @override
-  Future<void> disrelateByFriendship({
+  Future<void> deleteFriendship({
     @required SignedInUser hero,
     @required Friendship friendship,
     AtomicWrite atomicWrite,
   }) async {
-    final myFriendshipRef = _firestore
+    final friendshipRef = _firestore
         .collection('users')
         .document(hero.id)
         .collection('friendships')
         .document(friendship.id);
-    final myFriendshipDoc = await myFriendshipRef.get();
-    final DocumentReference oppoenentRef = myFriendshipDoc.data['user'];
-    final opponentFriendshipRef =
-        oppoenentRef.collection('friendships').document(hero.id);
 
     if (atomicWrite == null) {
-      final batch = _firestore.batch()
-        ..delete(myFriendshipRef)
-        ..delete(opponentFriendshipRef);
-
-      await batch.commit();
+      await friendshipRef.delete();
     } else {
-      atomicWrite.forFirestore
-        ..delete(myFriendshipRef)
-        ..delete(opponentFriendshipRef);
+      atomicWrite.forFirestore.delete(friendshipRef);
     }
   }
+
+  @override
+  Future<void> createUser({@required String id}) =>
+      _functions.call(functionName: 'registerUser');
+
+  @override
+  Future<void> setDevice({
+    @required SignedInUser hero,
+    @required DeviceInformation deviceInformation,
+    @required String pushNotificationDestinationId,
+  }) =>
+      _firestore
+          .collection('users')
+          .document(hero.id)
+          .collection('devices')
+          .document(deviceInformation.id)
+          .setData({
+        'manufacturer': deviceInformation.manufacturer,
+        'model': deviceInformation.model,
+        'os': deviceInformation.os,
+        'osVersion': deviceInformation.osVersion,
+        'pushNotificationDestinationId': pushNotificationDestinationId,
+      });
 }
 
 class FirestoreUser

@@ -14,37 +14,41 @@ class FriendCodeDialog extends StatelessWidget {
   final SignedInUser hero;
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: Container(
-          child: Row(
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AlertDialog(
+          title: Container(
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage:
+                      FirebaseStorageImage(hero.imageUrl.toString()),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(hero.name),
+                ),
+                _ScanButton(hero: hero),
+              ],
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(
-                backgroundImage: FirebaseStorageImage(hero.imageUrl.toString()),
+              const Text('Scan this to add me to your friends!'),
+              const SizedBox(
+                height: 16,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(hero.name),
-              ),
-              _ScanButton(hero: hero),
+              _FriendCodeQr(hero: hero),
             ],
           ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Scan this to add me to your friends!'),
-            const SizedBox(
-              height: 16,
+          actions: [
+            FlatButton(
+              child: const Text('Close'),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            _FriendCodeQr(hero: hero),
           ],
         ),
-        actions: [
-          FlatButton(
-            child: const Text('Close'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
       );
 }
 
@@ -61,7 +65,29 @@ class _ScanButton extends StatelessWidget {
 
     return IconButton(
       icon: const Icon(CustomIcons.scan),
-      onPressed: () => createFriend(hero: hero),
+      onPressed: () async {
+        try {
+          await createFriend();
+        } on InvalidFriendCodeScanned {
+          return Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('The scanned QR code is invalid. Try again.'),
+            ),
+          );
+        } on AlreadyFriend {
+          return Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('You are already friends.'),
+            ),
+          );
+        } on ServerInternalException {
+          return Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Server error. Try again later.'),
+            ),
+          );
+        }
+      },
     );
   }
 }

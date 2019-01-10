@@ -21,22 +21,13 @@ class AuthenticateUsecase {
   SignedInUserObservable call() {
     _authenticator.signIn();
 
-    return _SignedInUserObservable(
-        _authenticator.observeSignedInUserId().asyncMap((id) async {
-      if (id == null) {
-        return null;
-      }
+    return _SignedInUserObservable(_authenticator.observeSignedInUser(
+      registerUser: (id) async {
+        await _userRepository.createUser(id: id);
 
-      final user = _userRepository.referByFirebaseAuthId(id: id);
-
-      try {
-        return await user.resolve;
-      } on UserNotExisting catch (_) {
-        await _userRepository.registerUser(user: user);
-
-        return await user.resolve;
-      }
-    }));
+        return _userRepository.referByFirebaseAuthId(id: id).resolve;
+      },
+    ));
   }
 }
 

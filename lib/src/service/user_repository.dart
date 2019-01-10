@@ -10,26 +10,26 @@ abstract class UserRepository {
     @required FriendCode friendCode,
   });
 
-  Future<void> registerUser({
-    @required UserReference user,
-    AtomicWrite atomicWrite,
-  });
-
   Stream<Iterable<Friendship>> subscribeFriendships({
     @required SignedInUser hero,
   });
 
-  Future<void> relateByFriendship({
-    @required SignedInUser hero,
-    @required UserReference opponent,
-    @required ChatReference oneOnOneChat,
-    AtomicWrite atomicWrite,
+  Future<void> createFriendshipByFriendCode({
+    @required FriendCode friendCode,
   });
 
   /// Deletes a friendship.
-  Future<void> disrelateByFriendship({
+  Future<void> deleteFriendship({
     @required SignedInUser hero,
     @required Friendship friendship,
     AtomicWrite atomicWrite,
+  });
+
+  Future<void> createUser({@required String id});
+
+  Future<void> setDevice({
+    @required SignedInUser hero,
+    @required DeviceInformation deviceInformation,
+    @required String pushNotificationDestinationId,
   });
 }

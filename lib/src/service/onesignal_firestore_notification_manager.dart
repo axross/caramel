@@ -13,15 +13,13 @@ class OnesignalFirestoreNotificationManager implements NotificationManager {
   })  : assert(onesignal != null),
         assert(appId != null),
         assert(firestore != null),
-        _onesignal = onesignal,
         _onChatMessageNotificationOpened = StreamController(),
-        _firestore = firestore {
+        _firestore = firestore,
+        _onesignal = onesignal {
     onesignal
       ..init(appId)
       ..setInFocusDisplayType(OSNotificationDisplayType.notification)
       ..setNotificationOpenedHandler((openedResult) {
-        print(openedResult.notification.payload.additionalData);
-
         final type = openedResult.notification.payload.additionalData['type'];
 
         if (type == 'chatMessage') {
@@ -38,45 +36,21 @@ class OnesignalFirestoreNotificationManager implements NotificationManager {
       });
   }
 
-  final OneSignal _onesignal;
-
   final Firestore _firestore;
+
+  final OneSignal _onesignal;
 
   final StreamController<ChatMessageNotification>
       _onChatMessageNotificationOpened;
 
   @override
+  Future<String> get pushNotificationDestinationId => _onesignal
+      .getPermissionSubscriptionState()
+      .then((state) => state.subscriptionStatus.userId);
+
+  @override
   Stream<ChatMessageNotification> get onChatMessageNotificationOpened =>
       _onChatMessageNotificationOpened.stream;
-
-  @override
-  Future<void> subscribeChat({
-    @required ChatReference chat,
-    @required SignedInUser hero,
-  }) =>
-      chat.resolve.then((chat) => chat.participants.resolve).then((users) {
-        final membersWithoutHero = users.where((user) => hero != user);
-        final tags = Map.fromIterable(
-          membersWithoutHero,
-          key: (user) => 'chats/${chat.substanceId}?without=${user.id}',
-          value: (_) => true,
-        );
-
-        return _onesignal.sendTags(tags);
-      });
-
-  @override
-  Future<void> unsubscribeChat({
-    @required ChatReference chat,
-    @required SignedInUser hero,
-  }) =>
-      chat.resolve.then((chat) => chat.participants.resolve).then((users) {
-        final membersWithoutHero = users.where((user) => hero != user);
-        final tags = membersWithoutHero
-            .map((user) => 'chats/${chat.substanceId}?without=${user.id}');
-
-        return _onesignal.deleteTags(tags.toList());
-      });
 }
 
 class _OnesignalFirestoreChatMessageNotification

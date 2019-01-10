@@ -16,11 +16,7 @@ class FriendCodeGetUsecase {
       _FriendCodeObservable(
         hero: hero,
         friendCodeRepository: _friendCodeRepository,
-      )..onChanged.listen((friendCode) {
-          if (friendCode == null) {
-            _friendCodeRepository.create(hero: hero);
-          }
-        });
+      );
 }
 
 class _FriendCodeObservable implements FriendCodeObservable {

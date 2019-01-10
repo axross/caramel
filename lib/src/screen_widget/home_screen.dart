@@ -38,7 +38,8 @@ class HomeScreen extends StatelessWidget {
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (_) => FriendCodeDialog(hero: _hero),
+                              builder: (context) =>
+                                  FriendCodeDialog(hero: _hero),
                             );
                           },
                         ),

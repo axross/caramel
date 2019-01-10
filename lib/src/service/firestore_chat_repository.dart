@@ -30,48 +30,6 @@ class FirestoreChatRepository implements ChatRepository {
       FirestoreChatReference(_firestore.collection('chats').document(id));
 
   @override
-  ChatReference referNewChat() =>
-      FirestoreChatReference(_firestore.collection('chats').document());
-
-  @override
-  Future<void> createOneOnOneChat({
-    @required ChatReference chat,
-    @required SignedInUser hero,
-    @required UserReference opponent,
-    AtomicWrite atomicWrite,
-  }) async {
-    final heroRef = _firestore.collection('users').document(hero.id);
-    final opponentRef =
-        _firestore.collection('users').document(opponent.substanceId);
-    final chatRef = _firestore.collection('chats').document(chat.substanceId);
-    final data = {
-      'members': [heroRef, opponentRef],
-      'lastChatMessage': null,
-      'lastMessageCreatedAt': null,
-    };
-
-    if (atomicWrite == null) {
-      await chatRef.setData(data);
-    } else {
-      atomicWrite.forFirestore.setData(chatRef, data);
-    }
-  }
-
-  @override
-  Future<void> deleteChat({
-    @required ChatReference chat,
-    AtomicWrite atomicWrite,
-  }) async {
-    final chatRef = _firestore.collection('chats').document(chat.substanceId);
-
-    if (atomicWrite == null) {
-      await chatRef.delete();
-    } else {
-      atomicWrite.forFirestore.delete(chatRef);
-    }
-  }
-
-  @override
   Future<void> postTextToChat({
     @required SignedInUser hero,
     @required ChatReference chat,

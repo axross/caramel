@@ -1,5 +1,10 @@
+import 'package:caramel/domains.dart';
+import 'package:meta/meta.dart';
+
 abstract class Authenticator {
-  Stream<String> observeSignedInUserId();
+  Stream<SignedInUser> observeSignedInUser({
+    @required Future<SignedInUser> Function(String id) registerUser,
+  });
 
   void signIn();
 }
