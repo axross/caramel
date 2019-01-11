@@ -65,11 +65,8 @@ class DatabaseBadState extends Error {
 
   @override
   String toString() =>
-      'DatabaseBadState: something in the database is unexpected state.' +
-                  _detail ==
-              null
-          ? ''
-          : '\nDetail: $_detail';
+      'DatabaseBadState: something in the database is unexpected state. '
+      '${_detail == null ? "" : "\nDetail: $_detail"}';
 }
 
 class ServerInternalException implements Exception {

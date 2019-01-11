@@ -44,7 +44,7 @@ class FirebaseUserRepository implements UserRepository {
 
     final DocumentReference userRef = friendCodeDoc.data['user'];
 
-    return FirestoreUserReference(userRef);
+    return Future.value(FirestoreUserReference(userRef));
   }
 
   @override
@@ -203,63 +203,31 @@ class FirestoreSignedInUser
   final Uri imageUrl;
 }
 
-class FirestoreUserReference
+class FirestoreUserReference extends StatefulFuture<User>
     with IdentifiableBySubstanceId<UserReference, User>
     implements UserReference {
   FirestoreUserReference(DocumentReference documentReference)
       : assert(documentReference != null),
-        _documentReference = documentReference;
-
-  final DocumentReference _documentReference;
-
-  @override
-  String get substanceId => _documentReference.documentID;
+        substanceId = documentReference.documentID,
+        super(documentReference
+            .get()
+            .then((document) => FirestoreUser(document)));
 
   @override
-  Future<User> get resolve => _documentReference.get().then((document) {
-        if (!document.exists) {
-          throw UserNotExisting(id: document.documentID);
-        }
-
-        return FirestoreUser(document);
-      })
-        ..then((user) {
-          _user = user;
-        });
-
-  User _user;
-
-  @override
-  User get value => _user;
+  final String substanceId;
 }
 
-class FirestoreSignedInUserReference implements SignedInUserReference {
+class FirestoreSignedInUserReference extends StatefulFuture<SignedInUser>
+    implements SignedInUserReference {
   FirestoreSignedInUserReference(DocumentReference documentReference)
       : assert(documentReference != null),
-        _documentReference = documentReference;
-
-  final DocumentReference _documentReference;
-
-  @override
-  String get substanceId => _documentReference.documentID;
+        substanceId = documentReference.documentID,
+        super(documentReference
+            .get()
+            .then((document) => FirestoreSignedInUser(document)));
 
   @override
-  Future<FirestoreSignedInUser> get resolve =>
-      _documentReference.get().then((document) {
-        if (!document.exists) {
-          throw UserNotExisting(id: document.documentID);
-        }
-
-        return FirestoreSignedInUser(document);
-      })
-        ..then((user) {
-          _user = user;
-        });
-
-  FirestoreSignedInUser _user;
-
-  @override
-  FirestoreSignedInUser get value => _user;
+  final String substanceId;
 }
 
 class FirestoreFriendship

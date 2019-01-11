@@ -19,7 +19,7 @@ class FriendProfileDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Consumer<FriendshipDeleteUsecase>(
         builder: (context, deleteFriendship) => FutureBuilder<User>(
-              future: friendship.user.resolve,
+              future: friendship.user,
               initialData: friendship.user.value,
               builder: (context, snapshot) => AlertDialog(
                     content: Column(

@@ -25,7 +25,7 @@ class AuthenticateUsecase {
       registerUser: (id) async {
         await _userRepository.createUser(id: id);
 
-        return _userRepository.referByFirebaseAuthId(id: id).resolve;
+        return _userRepository.referByFirebaseAuthId(id: id);
       },
     ));
   }

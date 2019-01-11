@@ -34,7 +34,7 @@ class ChatListTile extends StatelessWidget {
         subtitle: chat.lastChatMessage == null
             ? const Text('')
             : FutureBuilder<ChatMessage>(
-                future: chat.lastChatMessage.resolve,
+                future: chat.lastChatMessage,
                 initialData: chat.lastChatMessage.value,
                 builder: (_, snapshot) => snapshot.hasData
                     ? Row(

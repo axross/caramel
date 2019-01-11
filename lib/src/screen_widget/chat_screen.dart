@@ -28,7 +28,7 @@ class ChatScreen extends StatelessWidget {
     );
 
     return FutureBuilder<Chat>(
-      future: chatParticipation.chat.resolve,
+      future: chatParticipation.chat,
       initialData: chatParticipation.chat.value,
       builder: (context, chatSnapshot) => Scaffold(
             appBar: AppBar(

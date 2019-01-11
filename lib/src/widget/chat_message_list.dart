@@ -89,7 +89,7 @@ class _ChatMessageListItem extends StatelessWidget {
                   chatMessage.sender == previousChatMessage?.sender
                       ? const SizedBox(width: 40)
                       : FutureBuilder<User>(
-                          future: chatMessage.sender.resolve,
+                          future: chatMessage.sender,
                           initialData: chatMessage.sender.value,
                           builder: (_, snapshot) => snapshot.hasData
                               ? CircleAvatar(

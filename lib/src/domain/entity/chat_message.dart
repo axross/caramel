@@ -9,7 +9,7 @@ abstract class ChatMessage with IdentifiableById<ChatMessage> {
   DateTime get sentAt;
 
   /// The users who has read the message.
-  StatefulFuture<List<User>> get readBy;
+  StatefulStream<List<User>> get readBy;
 }
 
 /// An entity of "text" type [ChatMessage].

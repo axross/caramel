@@ -1,5 +1,4 @@
 import 'package:caramel/domains.dart';
-import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
 /// A repository handling [Chat]s.
