@@ -18,10 +18,10 @@ class AuthenticateUsecase {
   final UserRepository _userRepository;
 
   /// Authenticates an user.
-  SignedInUserObservable call() {
+  StatefulStream<SignedInUser> call() {
     _authenticator.signIn();
 
-    return _SignedInUserObservable(_authenticator.observeSignedInUser(
+    return StatefulStream(_authenticator.observeSignedInUser(
       registerUser: (id) async {
         await _userRepository.createUser(id: id);
 
@@ -29,21 +29,4 @@ class AuthenticateUsecase {
       },
     ));
   }
-}
-
-class _SignedInUserObservable implements SignedInUserObservable {
-  _SignedInUserObservable(this._onChanged) : assert(_onChanged != null);
-
-  final Stream<SignedInUser> _onChanged;
-
-  @override
-  Stream<SignedInUser> get onChanged => _onChanged
-    ..listen((signedInUser) {
-      _signedInUser = signedInUser;
-    });
-
-  SignedInUser _signedInUser;
-
-  @override
-  SignedInUser get latest => _signedInUser;
 }

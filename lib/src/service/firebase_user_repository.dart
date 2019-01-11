@@ -48,14 +48,16 @@ class FirebaseUserRepository implements UserRepository {
   }
 
   @override
-  Stream<Iterable<Friendship>> subscribeFriendships({@required User hero}) =>
+  Stream<List<Friendship>> subscribeFriendships(
+          {@required User hero}) =>
       _firestore
           .collection('users')
           .document(hero.id)
           .collection('friendships')
           .snapshots()
           .map((snapshot) => snapshot.documents
-              .map((document) => FirestoreFriendship(document)));
+              .map((document) => FirestoreFriendship(document))
+              .toList());
 
   @override
   Future<void> createFriendshipByFriendCode({
@@ -258,32 +260,6 @@ class FirestoreSignedInUserReference implements SignedInUserReference {
 
   @override
   FirestoreSignedInUser get value => _user;
-}
-
-class FirestoreUsersReference implements UsersReference {
-  FirestoreUsersReference.fromDocumentReferences(
-    Iterable<DocumentReference> documentReferences,
-  ) : _resolve = Future.wait(documentReferences.map(
-            (documentReference) => documentReference.get().then((document) {
-                  if (!document.exists) {
-                    throw UserNotExisting(id: document.documentID);
-                  }
-
-                  return FirestoreUser(document);
-                })));
-
-  final Future<Iterable<User>> _resolve;
-
-  @override
-  Future<Iterable<User>> get resolve => _resolve
-    ..then((users) {
-      _users = users;
-    });
-
-  Iterable<User> _users;
-
-  @override
-  Iterable<User> get value => _users;
 }
 
 class FirestoreFriendship

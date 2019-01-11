@@ -11,7 +11,7 @@ class FirestoreChatRepository implements ChatRepository {
   Firestore _firestore;
 
   @override
-  Stream<Iterable<Chat>> subscribeChats({
+  Stream<List<Chat>> subscribeChats({
     @required SignedInUser hero,
   }) =>
       _firestore
@@ -22,8 +22,9 @@ class FirestoreChatRepository implements ChatRepository {
           )
           .orderBy('lastMessageCreatedAt', descending: true)
           .snapshots()
-          .map((query) =>
-              query.documents.map((document) => FirestoreChat(document)));
+          .map((query) => query.documents
+              .map((document) => FirestoreChat(document))
+              .toList());
 
   @override
   ChatReference referChatById({@required String id}) =>
@@ -60,16 +61,15 @@ class FirestoreChat with IdentifiableById<Chat> implements Chat {
 
     final List<DocumentReference> list = List.from(maybeParticipantReferences);
 
-    final participants = FirestoreUsersReference.fromDocumentReferences(
-      list,
-    );
+    final participants = StatefulFuture(Future.wait(list
+        .map((ref) => ref.get().then((document) => FirestoreUser(document)))));
     final lastChatMessage = maybeLastChatMessageReference == null
         ? null
         : FirestoreChatMessageReference(maybeLastChatMessageReference);
-    final chatMessages =
-        FirestoreChatMessagesObservable.fromCollectionReferences(
-      chatMessagesReference,
-    );
+    final chatMessages = StatefulStream(chatMessagesReference.snapshots().map(
+        (snapshot) => snapshot.documents
+            .map((document) => FirestoreChatMessage(document))
+            .toList()));
 
     return FirestoreChat._(
       id: id,
@@ -92,13 +92,13 @@ class FirestoreChat with IdentifiableById<Chat> implements Chat {
   final String id;
 
   @override
-  final UsersReference participants;
+  final StatefulFuture<List<User>> participants;
 
   @override
   final ChatMessageReference lastChatMessage;
 
   @override
-  final ChatMessagesObservable chatMessages;
+  final StatefulStream<List<ChatMessage>> chatMessages;
 }
 
 class FirestoreChatReference
@@ -151,7 +151,8 @@ class FirestoreChatMessage
     final sender = FirestoreUserReference(maybeSender);
     final sentAt = maybeSentAt ?? DateTime.now();
     final List<DocumentReference> list = List.from(maybeReadBy);
-    final readBy = FirestoreUsersReference.fromDocumentReferences(list);
+    final readBy = StatefulFuture(Future.wait(list
+        .map((ref) => ref.get().then((document) => FirestoreUser(document)))));
     final String type = maybeType;
 
     switch (type) {
@@ -188,7 +189,7 @@ class FirestoreChatMessage
   final DateTime sentAt;
 
   @override
-  final UsersReference readBy;
+  final StatefulFuture<List<User>> readBy;
 }
 
 class _FirestoreTextChatMessage extends FirestoreChatMessage
@@ -198,7 +199,7 @@ class _FirestoreTextChatMessage extends FirestoreChatMessage
     @required String id,
     @required UserReference sender,
     @required DateTime sentAt,
-    @required UsersReference readBy,
+    @required StatefulFuture<List<User>> readBy,
   }) {
     final maybeBody = document.data['text'];
 
@@ -218,7 +219,7 @@ class _FirestoreTextChatMessage extends FirestoreChatMessage
     @required String id,
     @required UserReference sender,
     @required DateTime sentAt,
-    @required UsersReference readBy,
+    @required StatefulFuture<List<User>> readBy,
     @required this.body,
   })  : assert(body != null),
         super._(
@@ -256,25 +257,4 @@ class FirestoreChatMessageReference
 
   @override
   ChatMessage get value => _chatMessage;
-}
-
-class FirestoreChatMessagesObservable implements ChatMessagesObservable {
-  FirestoreChatMessagesObservable.fromCollectionReferences(
-      CollectionReference collectionReferences)
-      : _stream = collectionReferences.snapshots().map((snapshot) => snapshot
-            .documents
-            .map((document) => FirestoreChatMessage(document)));
-
-  final Stream<Iterable<FirestoreChatMessage>> _stream;
-
-  @override
-  Stream<Iterable<FirestoreChatMessage>> get onChanged => _stream
-    ..listen((chatMessages) {
-      _chatMessages = chatMessages;
-    });
-
-  Iterable<FirestoreChatMessage> _chatMessages;
-
-  @override
-  Iterable<FirestoreChatMessage> get latest => _chatMessages;
 }

@@ -12,35 +12,8 @@ class FriendCodeGetUsecase {
   final FriendCodeRepository _friendCodeRepository;
 
   /// Gets the available [FriendCode].
-  FriendCodeObservable call({@required SignedInUser hero}) =>
-      _FriendCodeObservable(
-        hero: hero,
-        friendCodeRepository: _friendCodeRepository,
+  StatefulStream<FriendCode> call({@required SignedInUser hero}) =>
+      StatefulStream(
+        _friendCodeRepository.subscribeNewestFriendCode(hero: hero),
       );
-}
-
-class _FriendCodeObservable implements FriendCodeObservable {
-  _FriendCodeObservable({
-    @required SignedInUser hero,
-    @required FriendCodeRepository friendCodeRepository,
-  })  : assert(hero != null),
-        assert(friendCodeRepository != null),
-        _hero = hero,
-        _friendCodeRepository = friendCodeRepository;
-
-  final SignedInUser _hero;
-
-  final FriendCodeRepository _friendCodeRepository;
-
-  @override
-  Stream<FriendCode> get onChanged =>
-      _friendCodeRepository.subscribeNewestFriendCode(hero: _hero)
-        ..listen((friendCode) {
-          _friendCode = friendCode;
-        });
-
-  FriendCode _friendCode;
-
-  @override
-  FriendCode get latest => _friendCode;
 }

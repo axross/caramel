@@ -24,7 +24,7 @@ class ChatListScreen extends StatelessWidget {
 
     return MemoizedBuilder(
       valueBuilder: (context, old) => old ?? listChats(hero: _hero),
-      builder: (context, chatsObservable) => Scaffold(
+      builder: (context, chats) => Scaffold(
             body: CustomScrollView(
               slivers: [
                 SliverAppBar(
@@ -51,9 +51,9 @@ class ChatListScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                StreamBuilder<Iterable<Chat>>(
-                  stream: chatsObservable.onChanged,
-                  initialData: chatsObservable.latest,
+                StreamBuilder<List<Chat>>(
+                  stream: chats,
+                  initialData: chats.latest,
                   builder: (context, chatsSnapshot) => SliverPadding(
                         padding: EdgeInsets.symmetric(vertical: 12),
                         sliver: SliverList(

@@ -10,7 +10,7 @@ abstract class UserRepository {
     @required FriendCode friendCode,
   });
 
-  Stream<Iterable<Friendship>> subscribeFriendships({
+  Stream<List<Friendship>> subscribeFriendships({
     @required SignedInUser hero,
   });
 

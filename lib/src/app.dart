@@ -51,14 +51,14 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  SignedInUserObservable _heroObservable;
+  StatefulStream<SignedInUser> _hero;
 
   @override
   void initState() {
     super.initState();
 
-    _heroObservable = widget.authenticate()
-      ..onChanged.listen((signedInUser) async {
+    _hero = widget.authenticate()
+      ..listen((signedInUser) async {
         final deviceInformation = await widget.deviceService.deviceInformation;
         final pushNotificationDestinationId =
             await widget.notificationManager.pushNotificationDestinationId;
@@ -85,8 +85,8 @@ class _AppState extends State<App> {
                 child: Provider(
                   value: widget.listFriend,
                   child: StreamBuilder<User>(
-                    stream: _heroObservable.onChanged,
-                    initialData: _heroObservable.latest,
+                    stream: _hero,
+                    initialData: _hero.latest,
                     builder: (_, snapshot) => snapshot.hasData
                         ? SignedIn(
                             hero: snapshot.requireData,

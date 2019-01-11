@@ -26,7 +26,7 @@ class TestUser implements User {
 class TestChat implements Chat {
   TestChat({
     this.id = '',
-    Iterable<UserReference> members,
+    List<UserReference> members,
     ChatMessageReference lastChatMessage,
   })  : members = members ?? [],
         lastChatMessage = lastChatMessage ?? TestChatMessageReference();
@@ -35,7 +35,7 @@ class TestChat implements Chat {
   final String id;
 
   @override
-  final Iterable<UserReference> members;
+  final List<UserReference> members;
 
   @override
   final ChatMessageReference lastChatMessage;

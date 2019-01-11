@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 /// A repository handling [Chat]s.
 abstract class ChatRepository {
   /// Returns a stream of the user's list of [Chat]s.
-  Stream<Iterable<Chat>> subscribeChats({
+  Stream<List<Chat>> subscribeChats({
     @required SignedInUser hero,
   });
 

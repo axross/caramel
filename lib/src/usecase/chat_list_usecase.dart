@@ -12,34 +12,8 @@ class ChatListUsecase {
   final ChatRepository _chatRepository;
 
   /// Retrieve the [Chat]s what the [hero] has participated in.
-  ChatsObservable call({@required SignedInUser hero}) => _ChatsObservable(
-        hero: hero,
-        chatRepository: _chatRepository,
+  StatefulStream<List<Chat>> call({@required SignedInUser hero}) =>
+      StatefulStream(
+        _chatRepository.subscribeChats(hero: hero),
       );
-}
-
-class _ChatsObservable implements ChatsObservable {
-  _ChatsObservable({
-    @required SignedInUser hero,
-    @required ChatRepository chatRepository,
-  })  : assert(hero != null),
-        assert(chatRepository != null),
-        _hero = hero,
-        _chatRepository = chatRepository;
-
-  final SignedInUser _hero;
-
-  final ChatRepository _chatRepository;
-
-  @override
-  Stream<Iterable<Chat>> get onChanged =>
-      _chatRepository.subscribeChats(hero: _hero)
-        ..listen((chats) {
-          _chats = chats;
-        });
-
-  Iterable<Chat> _chats;
-
-  @override
-  Iterable<Chat> get latest => _chats;
 }

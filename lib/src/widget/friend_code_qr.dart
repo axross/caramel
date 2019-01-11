@@ -5,17 +5,17 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class FriendCodeQr extends StatelessWidget {
   const FriendCodeQr({
-    @required this.friendCodeObservable,
+    @required this.friendCode,
     Key key,
-  })  : assert(friendCodeObservable != null),
+  })  : assert(friendCode != null),
         super(key: key);
 
-  final FriendCodeObservable friendCodeObservable;
+  final StatefulStream<FriendCode> friendCode;
 
   @override
   Widget build(BuildContext context) => StreamBuilder<FriendCode>(
-        stream: friendCodeObservable.onChanged,
-        initialData: friendCodeObservable.latest,
+        stream: friendCode,
+        initialData: friendCode.latest,
         builder: (_, snapshot) => snapshot.hasData
             ? Container(
                 width: 192,

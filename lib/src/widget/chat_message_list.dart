@@ -5,22 +5,21 @@ import 'package:flutter/material.dart';
 class ChatMessageList extends StatelessWidget {
   const ChatMessageList({
     @required this.hero,
-    @required this.chatMessagesObservable,
+    @required this.chatMessages,
     Key key,
   })  : assert(hero != null),
-        assert(chatMessagesObservable != null),
+        assert(chatMessages != null),
         super(key: key);
 
   final SignedInUser hero;
 
-  final ChatMessagesObservable chatMessagesObservable;
+  final StatefulStream<List<ChatMessage>> chatMessages;
 
   @override
   Widget build(BuildContext context) => StreamBuilder<List<ChatMessage>>(
-        stream: chatMessagesObservable.onChanged
-            .map((chatMessages) => chatMessages.toList().reversed.toList()),
-        initialData:
-            chatMessagesObservable.latest?.toList()?.reversed?.toList(),
+        stream:
+            chatMessages.map((chatMessages) => chatMessages.reversed.toList()),
+        initialData: chatMessages.latest?.reversed?.toList(),
         builder: (_, snapshot) => ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
               reverse: true,

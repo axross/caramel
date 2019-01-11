@@ -22,8 +22,8 @@ class ChatListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListTile(
-        title: FutureBuilder<Iterable<User>>(
-          future: chat.participants.resolve,
+        title: FutureBuilder<List<User>>(
+          future: chat.participants,
           initialData: chat.participants.value,
           builder: (_, snapshot) => snapshot.hasData
               ? Text(
@@ -52,8 +52,8 @@ class ChatListTile extends StatelessWidget {
                       )
                     : const Text('Loading...'),
               ),
-        leading: FutureBuilder<Iterable<User>>(
-          future: chat.participants.resolve,
+        leading: FutureBuilder<List<User>>(
+          future: chat.participants,
           initialData: chat.participants.value,
           builder: (_, snapshot) => snapshot.hasData
               ? CircleAvatar(

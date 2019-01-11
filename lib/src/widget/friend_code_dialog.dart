@@ -103,6 +103,6 @@ class _FriendCodeQr extends StatelessWidget {
   Widget build(BuildContext context) {
     final getFriendCode = Provider.of<FriendCodeGetUsecase>(context);
 
-    return FriendCodeQr(friendCodeObservable: getFriendCode(hero: hero));
+    return FriendCodeQr(friendCode: getFriendCode(hero: hero));
   }
 }

@@ -12,35 +12,6 @@ class FriendListUsecase {
   final UserRepository _userRepository;
 
   /// Retrieve the [Friendship]s what the [hero] has.
-  FriendshipsObservable call({@required SignedInUser hero}) =>
-      _FriendshipsObservable(
-        hero: hero,
-        userRepository: _userRepository,
-      );
-}
-
-class _FriendshipsObservable implements FriendshipsObservable {
-  _FriendshipsObservable({
-    @required SignedInUser hero,
-    @required UserRepository userRepository,
-  })  : assert(hero != null),
-        assert(userRepository != null),
-        _hero = hero,
-        _userRepository = userRepository;
-
-  final SignedInUser _hero;
-
-  final UserRepository _userRepository;
-
-  @override
-  Stream<Iterable<Friendship>> get onChanged =>
-      _userRepository.subscribeFriendships(hero: _hero)
-        ..listen((friendships) {
-          _friendships = friendships;
-        });
-
-  Iterable<Friendship> _friendships;
-
-  @override
-  Iterable<Friendship> get latest => _friendships;
+  StatefulStream<List<Friendship>> call({@required SignedInUser hero}) =>
+      StatefulStream(_userRepository.subscribeFriendships(hero: hero));
 }

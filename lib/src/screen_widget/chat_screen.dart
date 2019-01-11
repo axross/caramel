@@ -33,8 +33,8 @@ class ChatScreen extends StatelessWidget {
       builder: (context, chatSnapshot) => Scaffold(
             appBar: AppBar(
               title: chatSnapshot.hasData
-                  ? FutureBuilder<Iterable<User>>(
-                      future: chatSnapshot.requireData.participants.resolve,
+                  ? FutureBuilder<List<User>>(
+                      future: chatSnapshot.requireData.participants,
                       initialData: chatSnapshot.requireData.participants.value,
                       builder: (_, participantsSnapshot) =>
                           participantsSnapshot.hasData
@@ -60,7 +60,7 @@ class ChatScreen extends StatelessWidget {
                       child: chatSnapshot.hasData
                           ? ChatMessageList(
                               hero: _hero,
-                              chatMessagesObservable:
+                              chatMessages:
                                   chatSnapshot.requireData.chatMessages,
                             )
                           : Container(),
