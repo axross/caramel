@@ -1,7 +1,7 @@
 import 'package:caramel/domains.dart';
-import 'package:flutter/material.dart';
-import 'package:caramel/screens.dart';
 import 'package:caramel/routes.dart';
+import 'package:caramel/widgets.dart';
+import 'package:flutter/material.dart';
 
 class ChatListRoute extends MaterialPageRoute {
   ChatListRoute({
