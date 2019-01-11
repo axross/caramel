@@ -7,11 +7,18 @@ import 'package:flutter/material.dart';
 class FriendCodeDialog extends StatelessWidget {
   const FriendCodeDialog({
     @required this.hero,
+    @required this.friendCode,
+    @required this.createFriend,
     Key key,
   })  : assert(hero != null),
+        assert(friendCode != null),
         super(key: key);
 
   final SignedInUser hero;
+
+  final StatefulStream<FriendCode> friendCode;
+
+  final FriendCreateUsecase createFriend;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -28,7 +35,10 @@ class FriendCodeDialog extends StatelessWidget {
                 Expanded(
                   child: Text(hero.name),
                 ),
-                _ScanButton(hero: hero),
+                _ScanButton(
+                  hero: hero,
+                  createFriend: createFriend,
+                ),
               ],
             ),
           ),
@@ -39,7 +49,7 @@ class FriendCodeDialog extends StatelessWidget {
               const SizedBox(
                 height: 16,
               ),
-              _FriendCodeQr(hero: hero),
+              _FriendCodeQr(friendCode: friendCode),
             ],
           ),
           actions: [
@@ -53,56 +63,56 @@ class FriendCodeDialog extends StatelessWidget {
 }
 
 class _ScanButton extends StatelessWidget {
-  const _ScanButton({@required this.hero, Key key})
-      : assert(hero != null),
+  const _ScanButton({
+    @required this.hero,
+    @required this.createFriend,
+    Key key,
+  })  : assert(hero != null),
+        assert(createFriend != null),
         super(key: key);
 
   final SignedInUser hero;
 
-  @override
-  Widget build(BuildContext context) {
-    final createFriend = Provider.of<FriendCreateUsecase>(context);
+  final FriendCreateUsecase createFriend;
 
-    return IconButton(
-      icon: const Icon(CustomIcons.scan),
-      onPressed: () async {
-        try {
-          await createFriend();
-        } on InvalidFriendCodeScanned {
-          return Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text('The scanned QR code is invalid. Try again.'),
-            ),
-          );
-        } on AlreadyFriend {
-          return Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text('You are already friends.'),
-            ),
-          );
-        } on ServerInternalException {
-          return Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Server error. Try again later.'),
-            ),
-          );
-        }
-      },
-    );
-  }
+  @override
+  Widget build(BuildContext context) => IconButton(
+        icon: const Icon(CustomIcons.scan),
+        onPressed: () async {
+          try {
+            await createFriend();
+          } on InvalidFriendCodeScanned {
+            return Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text('The scanned QR code is invalid. Try again.'),
+              ),
+            );
+          } on AlreadyFriend {
+            return Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text('You are already friends.'),
+              ),
+            );
+          } on ServerInternalException {
+            return Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Server error. Try again later.'),
+              ),
+            );
+          }
+        },
+      );
 }
 
 class _FriendCodeQr extends StatelessWidget {
-  const _FriendCodeQr({@required this.hero, Key key})
-      : assert(hero != null),
+  const _FriendCodeQr({
+    @required this.friendCode,
+    Key key,
+  })  : assert(friendCode != null),
         super(key: key);
 
-  final SignedInUser hero;
+  final StatefulStream<FriendCode> friendCode;
 
   @override
-  Widget build(BuildContext context) {
-    final getFriendCode = Provider.of<FriendCodeGetUsecase>(context);
-
-    return FriendCodeQr(friendCode: getFriendCode(hero: hero));
-  }
+  Widget build(BuildContext context) => FriendCodeQr(friendCode: friendCode);
 }

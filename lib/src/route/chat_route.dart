@@ -1,4 +1,5 @@
 import 'package:caramel/domains.dart';
+import 'package:caramel/usecases.dart';
 import 'package:caramel/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -7,8 +8,16 @@ class ChatRoute extends MaterialPageRoute {
     @required SignedInUser hero,
     @required String chatId,
   }) : super(
-            builder: (context) => ChatScreen(
-                  hero: hero,
-                  chatId: chatId,
-                ));
+          builder: (context) {
+            final participateChat =
+                Provider.of<ChatParticipateUsecase>(context);
+
+            final chatParticipation = participateChat(
+              hero: hero,
+              chatId: chatId,
+            );
+
+            return ChatScreen(chatParticipation: chatParticipation);
+          },
+        );
 }

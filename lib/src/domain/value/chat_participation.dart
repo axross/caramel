@@ -16,6 +16,8 @@ abstract class ChatParticipation {
         chatRepository: chatRepository,
       );
 
+  SignedInUser get hero;
+
   /// The chat.
   ChatReference get chat;
 
@@ -25,24 +27,25 @@ abstract class ChatParticipation {
 
 class _ChatParticipation implements ChatParticipation {
   _ChatParticipation({
-    @required SignedInUser hero,
+    @required this.hero,
     @required this.chat,
     @required ChatRepository chatRepository,
   })  : assert(hero != null),
         assert(chat != null),
         assert(chatRepository != null),
-        _hero = hero,
         _chatRepository = chatRepository;
 
   final ChatRepository _chatRepository;
-  final SignedInUser _hero;
+
+  @override
+  final SignedInUser hero;
 
   @override
   final ChatReference chat;
 
   @override
   void postText(String text) => _chatRepository.postTextToChat(
-        hero: _hero,
+        hero: hero,
         chat: chat,
         text: text,
       );
