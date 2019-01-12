@@ -50,7 +50,11 @@ class _SignedInState extends State<SignedIn> {
         navigatorKey: _navigatorKey,
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primaryColor: Color(0xff54a0ff),
+          primaryTextTheme:
+              ThemeData.fallback().textTheme.apply(bodyColor: Colors.white),
+          accentColor: Color(0xff54a0ff),
+          scaffoldBackgroundColor: Color(0xfff0f4f8),
         ),
         initialRoute: '/',
         routes: {

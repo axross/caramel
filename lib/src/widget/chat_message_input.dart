@@ -40,7 +40,7 @@ class _ChatMessageInputState extends State<ChatMessageInput> {
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    fillColor: Colors.grey[200],
+                    fillColor: Theme.of(context).scaffoldBackgroundColor,
                     filled: true,
                     contentPadding: const EdgeInsets.symmetric(
                       vertical: 10,
