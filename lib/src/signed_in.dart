@@ -40,7 +40,7 @@ class _SignedInState extends State<SignedIn> {
         .listen((notification) {
       _navigatorKey.currentState.push(ChatRoute(
         hero: widget._hero,
-        chatId: notification.chat.substanceId,
+        chatId: notification.chat.id,
       ));
     });
   }

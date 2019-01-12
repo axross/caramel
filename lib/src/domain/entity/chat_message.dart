@@ -1,7 +1,7 @@
 import 'package:caramel/domains.dart';
 
 /// An entity expressing a posted message in a [Chat].
-abstract class ChatMessage with IdentifiableById<ChatMessage> {
+abstract class ChatMessage with Entity {
   /// The user who posted the message.
   UserReference get sender;
 

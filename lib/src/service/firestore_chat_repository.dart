@@ -36,10 +36,7 @@ class FirestoreChatRepository implements ChatRepository {
     @required ChatReference chat,
     @required String text,
   }) =>
-      _firestore
-          .collection('chats/${chat.substanceId}/messages')
-          .document()
-          .setData({
+      _firestore.collection('chats/${chat.id}/messages').document().setData({
         'type': 'TEXT',
         'from': _firestore.document('users/${hero.id}'),
         'sentAt': FieldValue.serverTimestamp(),
@@ -47,7 +44,7 @@ class FirestoreChatRepository implements ChatRepository {
       });
 }
 
-class FirestoreChat with IdentifiableById<Chat> implements Chat {
+class FirestoreChat with Entity, IdentifiableById<Chat> implements Chat {
   factory FirestoreChat(DocumentSnapshot document) {
     final id = document.documentID;
     final maybeParticipantReferences = document.data['members'];
@@ -60,8 +57,8 @@ class FirestoreChat with IdentifiableById<Chat> implements Chat {
 
     final List<DocumentReference> list = List.from(maybeParticipantReferences);
 
-    final participants = StatefulFuture(Future.wait(list
-        .map((ref) => ref.get().then((document) => FirestoreUser(document)))));
+    final participants = StatefulFuture(Future.wait(list.map(
+        (ref) => ref.get().then((document) => FirestoreOtherUser(document)))));
     final lastChatMessage = maybeLastChatMessageReference == null
         ? null
         : FirestoreChatMessageReference(maybeLastChatMessageReference);
@@ -101,21 +98,21 @@ class FirestoreChat with IdentifiableById<Chat> implements Chat {
 }
 
 class FirestoreChatReference extends StatefulFuture<Chat>
-    with IdentifiableBySubstanceId<ChatReference, Chat>
+    with ReferenceEntity, IdentifiableBySubstanceId<ChatReference, Chat>
     implements ChatReference {
   FirestoreChatReference(DocumentReference documentReference)
       : assert(documentReference != null),
-        substanceId = documentReference.documentID,
+        id = documentReference.documentID,
         super(documentReference
             .get()
             .then((document) => FirestoreChat(document)));
 
   @override
-  final String substanceId;
+  final String id;
 }
 
 class FirestoreChatMessage
-    with IdentifiableById<ChatMessage>
+    with Entity, IdentifiableById<ChatMessage>
     implements ChatMessage {
   factory FirestoreChatMessage(DocumentSnapshot document) {
     final maybeSender = document.data['from'];
@@ -128,13 +125,13 @@ class FirestoreChatMessage
     assert(maybeType is String);
     assert(maybeType != null);
 
-    final sender = FirestoreUserReference(maybeSender);
+    final sender = FirestoreOtherUserReference(maybeSender);
     final sentAt = maybeSentAt ?? DateTime.now();
     final readBy = StatefulStream(document.reference
         .collection('readers')
         .snapshots()
         .map((snapshot) => snapshot.documents
-            .map((document) => FirestoreUser(document))
+            .map((document) => FirestoreOtherUser(document))
             .toList()));
     final String type = maybeType;
 
@@ -217,15 +214,17 @@ class _FirestoreTextChatMessage extends FirestoreChatMessage
 }
 
 class FirestoreChatMessageReference extends StatefulFuture<ChatMessage>
-    with IdentifiableBySubstanceId<ChatMessageReference, ChatMessage>
+    with
+        ReferenceEntity,
+        IdentifiableBySubstanceId<ChatMessageReference, ChatMessage>
     implements ChatMessageReference {
   FirestoreChatMessageReference(DocumentReference documentReference)
       : assert(documentReference != null),
-        substanceId = documentReference.documentID,
+        id = documentReference.documentID,
         super(documentReference
             .get()
             .then((document) => FirestoreChatMessage(document)));
 
   @override
-  final String substanceId;
+  final String id;
 }

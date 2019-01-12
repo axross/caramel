@@ -71,7 +71,7 @@ class _ChatMessageListItem extends StatelessWidget {
             ? const EdgeInsets.only(top: 16)
             : const EdgeInsets.only(top: 4),
         child: Row(
-          children: hero.isSameWithReference(chatMessage.sender)
+          children: chatMessage.sender.isSameWithUser(hero)
               ? [
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.15 + 40,
@@ -165,7 +165,7 @@ class _TextChatMessageContent extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: hero.isSameWithReference(chatMessage.sender)
+          color: chatMessage.sender.isSameWithUser(hero)
               ? Colors.white
               : Theme.of(context).accentColor,
           borderRadius: BorderRadius.vertical(
@@ -180,7 +180,7 @@ class _TextChatMessageContent extends StatelessWidget {
         child: Text(
           chatMessage.body,
           style: TextStyle(
-            color: hero.isSameWithReference(chatMessage.sender)
+            color: chatMessage.sender.isSameWithUser(hero)
                 ? Theme.of(context).textTheme.body1.color
                 : Theme.of(context).accentTextTheme.body1.color,
             height: 1.333,

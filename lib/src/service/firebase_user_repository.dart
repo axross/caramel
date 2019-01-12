@@ -44,7 +44,7 @@ class FirebaseUserRepository implements UserRepository {
 
     final DocumentReference userRef = friendCodeDoc.data['user'];
 
-    return Future.value(FirestoreUserReference(userRef));
+    return Future.value(FirestoreOtherUserReference(userRef));
   }
 
   @override
@@ -125,10 +125,10 @@ class FirebaseUserRepository implements UserRepository {
       });
 }
 
-class FirestoreUser
-    with IdentifiableById<User>, ComparableWithReference<User, UserReference>
-    implements User {
-  factory FirestoreUser(DocumentSnapshot document) {
+class FirestoreOtherUser
+    with Entity, IdentifiableById<User>
+    implements OtherUser {
+  factory FirestoreOtherUser(DocumentSnapshot document) {
     final maybeName = document.data['name'];
     final maybeImageUrlString = document.data['imageUrl'];
 
@@ -139,14 +139,14 @@ class FirestoreUser
 
     final imageUrl = Uri.parse(maybeImageUrlString);
 
-    return FirestoreUser._(
+    return FirestoreOtherUser._(
       id: document.documentID,
       name: maybeName,
       imageUrl: imageUrl,
     );
   }
 
-  FirestoreUser._({
+  FirestoreOtherUser._({
     @required this.id,
     @required this.name,
     @required this.imageUrl,
@@ -165,7 +165,7 @@ class FirestoreUser
 }
 
 class FirestoreSignedInUser
-    with IdentifiableById<User>, ComparableWithReference<User, UserReference>
+    with Entity, IdentifiableById<User>
     implements SignedInUser {
   factory FirestoreSignedInUser(DocumentSnapshot document) {
     final maybeName = document.data['name'];
@@ -203,35 +203,49 @@ class FirestoreSignedInUser
   final Uri imageUrl;
 }
 
-class FirestoreUserReference extends StatefulFuture<User>
-    with IdentifiableBySubstanceId<UserReference, User>
-    implements UserReference {
-  FirestoreUserReference(DocumentReference documentReference)
+class FirestoreOtherUserReference extends StatefulFuture<FirestoreOtherUser>
+    with
+        ReferenceEntity,
+        IdentifiableBySubstanceId<FirestoreOtherUserReference,
+            FirestoreOtherUser>,
+        ComparableWithSubstance<FirestoreOtherUser>,
+        ComparableWithUser
+    implements
+        OtherUserReference<FirestoreOtherUser> {
+  FirestoreOtherUserReference(DocumentReference documentReference)
       : assert(documentReference != null),
-        substanceId = documentReference.documentID,
+        id = documentReference.documentID,
         super(documentReference
             .get()
-            .then((document) => FirestoreUser(document)));
+            .then((document) => FirestoreOtherUser(document)));
 
   @override
-  final String substanceId;
+  final String id;
 }
 
-class FirestoreSignedInUserReference extends StatefulFuture<SignedInUser>
-    implements SignedInUserReference {
+class FirestoreSignedInUserReference
+    extends StatefulFuture<FirestoreSignedInUser>
+    with
+        ReferenceEntity,
+        IdentifiableBySubstanceId<FirestoreSignedInUserReference,
+            FirestoreSignedInUser>,
+        ComparableWithSubstance<FirestoreSignedInUser>,
+        ComparableWithUser
+    implements
+        SignedInUserReference<FirestoreSignedInUser> {
   FirestoreSignedInUserReference(DocumentReference documentReference)
       : assert(documentReference != null),
-        substanceId = documentReference.documentID,
+        id = documentReference.documentID,
         super(documentReference
             .get()
             .then((document) => FirestoreSignedInUser(document)));
 
   @override
-  final String substanceId;
+  final String id;
 }
 
 class FirestoreFriendship
-    with IdentifiableById<Friendship>
+    with Entity, IdentifiableById<Friendship>
     implements Friendship {
   factory FirestoreFriendship(DocumentSnapshot document) {
     final maybeFriend = document.data['user'];
@@ -240,7 +254,7 @@ class FirestoreFriendship
     assert(maybeFriend is DocumentReference);
     assert(maybeChat is DocumentReference);
 
-    final user = FirestoreUserReference(maybeFriend);
+    final user = FirestoreOtherUserReference(maybeFriend);
     final oneOnOneChat = FirestoreChatReference(maybeChat);
 
     return FirestoreFriendship._(
@@ -265,7 +279,7 @@ class FirestoreFriendship
   String get id => _document.documentID;
 
   @override
-  final UserReference user;
+  final OtherUserReference user;
 
   @override
   final ChatReference oneOnOneChat;

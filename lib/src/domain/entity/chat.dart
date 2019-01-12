@@ -1,7 +1,7 @@
 import 'package:caramel/domains.dart';
 
 /// An entity expressing a chat room.
-abstract class Chat with IdentifiableById<Chat> {
+abstract class Chat with Entity {
   /// The users participating in the chat.
   StatefulFuture<List<User>> get participants;
 

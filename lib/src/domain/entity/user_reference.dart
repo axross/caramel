@@ -1,10 +1,17 @@
 import 'package:caramel/domains.dart';
 
-/// An entity of reference to [User].
-abstract class UserReference
-    with IdentifiableBySubstanceId<UserReference, User>
-    implements StatefulFuture<User> {}
+abstract class UserReference<T extends User>
+    with ReferenceEntity, ComparableWithSubstance<T>, ComparableWithUser
+    implements StatefulFuture<T> {}
 
-abstract class SignedInUserReference
-    with IdentifiableBySubstanceId<SignedInUserReference, SignedInUser>
-    implements StatefulFuture<SignedInUser> {}
+abstract class OtherUserReference<T extends OtherUser>
+    with ReferenceEntity, ComparableWithSubstance<T>, ComparableWithUser
+    implements UserReference<T> {}
+
+abstract class SignedInUserReference<T extends SignedInUser>
+    with ReferenceEntity, ComparableWithSubstance<T>, ComparableWithUser
+    implements UserReference<T> {}
+
+mixin ComparableWithUser on ReferenceEntity {
+  bool isSameWithUser(User entity) => id == entity.id;
+}
