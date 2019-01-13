@@ -55,6 +55,7 @@ class _SignedInState extends State<SignedIn> {
               ThemeData.fallback().textTheme.apply(bodyColor: Colors.white),
           accentColor: Color(0xff54a0ff),
           scaffoldBackgroundColor: Color(0xfff0f4f8),
+          textTheme: ThemeData.fallback().textTheme.apply(fontFamily: 'Rubik'),
         ),
         initialRoute: '/',
         routes: {

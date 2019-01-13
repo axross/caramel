@@ -42,7 +42,27 @@ class ChatListScreen extends StatelessWidget {
                     color: Colors.black,
                   ),
               elevation: 2,
-              title: const Text('Wind'),
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/images/icon.png',
+                      width: 32,
+                      height: 32,
+                    ),
+                  ),
+                  Container(width: 8),
+                  Text(
+                    'Postman',
+                    style: Theme.of(context)
+                        .textTheme
+                        .title
+                        .apply(fontWeightDelta: 2),
+                  ),
+                ],
+              ),
               actions: [
                 IconButton(
                   icon: const Icon(CustomIcons.qr),

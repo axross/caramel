@@ -94,7 +94,19 @@ class _AppState extends State<App> {
                             notificationManager: widget.notificationManager,
                           )
                         : Container(
-                            decoration: const BoxDecoration(color: Colors.red),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                            ),
+                            child: Center(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(128),
+                                child: Image.asset(
+                                  'assets/images/icon.png',
+                                  width: 256,
+                                  height: 256,
+                                ),
+                              ),
+                            ),
                           ),
                   ),
                 ),

@@ -29,6 +29,7 @@ dependencies:
   firebase_auth: ^0.6.6
   firebase_storage: ^1.0.4
   firebase_storage_image: ^0.2.0
+  flutter_launcher_icons: ^0.7.0
   image_picker: ^0.4.10
   intl: ^0.15.7
   meta: ^1.1.6
@@ -64,6 +65,7 @@ flutter:
   # https://flutter.io/assets-and-images/#from-packages
   assets:
     - assets/images/avatar-loading.gif
+    - assets/images/icon.png
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -88,3 +90,30 @@ flutter:
     - family: CustomIcons
       fonts:
         - asset: assets/fonts/custom-icons.ttf
+    - family: Rubik
+      fonts:
+        - asset: assets/fonts/Rubik-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Rubik-BlackItalic.ttf
+          weight: 900
+          style: italic
+        - asset: assets/fonts/Rubik-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Rubik-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Rubik-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Rubik-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Rubik-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Rubik-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Rubik-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Rubik-LightItalic.ttf
+          weight: 300
+          style: italic
