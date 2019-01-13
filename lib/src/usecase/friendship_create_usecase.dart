@@ -3,9 +3,9 @@ import 'package:caramel/services.dart';
 import 'package:meta/meta.dart';
 
 /// A callable usecase to make [User]s to be friends.
-class FriendCreateUsecase {
-  /// Creates a [FriendCreateUsecase].
-  FriendCreateUsecase({
+class FriendshipCreateUsecase {
+  /// Creates a [FriendshipCreateUsecase].
+  FriendshipCreateUsecase({
     @required FriendCodeScanner friendCodeScanner,
     @required UserRepository userRepository,
   })  : assert(friendCodeScanner != null),

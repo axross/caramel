@@ -38,9 +38,6 @@ void main() {
     authenticator: authenticator,
     userRepository: userRepository,
   );
-  final deleteFriendship = FriendshipDeleteUsecase(
-    userRepository: userRepository,
-  );
   final listChat = ChatListUsecase(chatRepository: chatRepository);
   final participateChat = ChatParticipateUsecase(
     chatRepository: chatRepository,
@@ -48,7 +45,7 @@ void main() {
   final getFriendCode = FriendCodeGetUsecase(
     friendCodeRepository: friendCodeRepository,
   );
-  final createFriend = FriendCreateUsecase(
+  final createFriendship = FriendshipCreateUsecase(
     friendCodeScanner: friendCodeScanner,
     userRepository: userRepository,
   );
@@ -61,11 +58,10 @@ void main() {
       notificationManager: notificationManager,
       userRepository: userRepository,
       authenticate: authenticate,
-      deleteFriendship: deleteFriendship,
       listChat: listChat,
       participateChat: participateChat,
       getFriendCode: getFriendCode,
-      createFriend: createFriend,
+      createFriendship: createFriendship,
       listFriend: listFriend,
     ),
   );

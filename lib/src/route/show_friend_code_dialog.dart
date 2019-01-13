@@ -8,7 +8,7 @@ Future<dynamic> showFriendCodeDialog(
   @required SignedInUser hero,
 }) {
   final getFriendCode = Provider.of<FriendCodeGetUsecase>(context);
-  final createFriend = Provider.of<FriendCreateUsecase>(context);
+  final createFriendship = Provider.of<FriendshipCreateUsecase>(context);
   final friendCode = getFriendCode(hero: hero);
 
   showDialog(
@@ -16,7 +16,7 @@ Future<dynamic> showFriendCodeDialog(
     builder: (context) => FriendCodeDialog(
           hero: hero,
           friendCode: friendCode,
-          createFriend: createFriend,
+          createFriendship: createFriendship,
         ),
   );
 }

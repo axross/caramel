@@ -1,5 +1,4 @@
 import 'package:caramel/domains.dart';
-import 'package:caramel/usecases.dart';
 import 'package:firebase_storage_image/firebase_storage_image.dart';
 import 'package:flutter/material.dart';
 
@@ -7,18 +6,14 @@ class FriendProfileDialog extends StatelessWidget {
   const FriendProfileDialog({
     @required this.hero,
     @required this.friendship,
-    @required this.deleteFriendship,
     Key key,
   })  : assert(hero != null),
         assert(friendship != null),
-        assert(deleteFriendship != null),
         super(key: key);
 
   final SignedInUser hero;
 
   final Friendship friendship;
-
-  final FriendshipDeleteUsecase deleteFriendship;
 
   @override
   Widget build(BuildContext context) => FutureBuilder<User>(
@@ -59,10 +54,7 @@ class FriendProfileDialog extends StatelessWidget {
                                     ),
                                   ],
                               onSelected: (_) {
-                                deleteFriendship(
-                                  hero: hero,
-                                  friendship: friendship,
-                                );
+                                hero.deleteFriendship(friendship);
 
                                 Navigator.of(context).pop();
                               },

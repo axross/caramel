@@ -18,12 +18,6 @@ abstract class UserRepository {
     @required FriendCode friendCode,
   });
 
-  /// Deletes a friendship.
-  Future<void> deleteFriendship({
-    @required SignedInUser hero,
-    @required Friendship friendship,
-  });
-
   Future<void> createUser({@required String id});
 
   Future<void> setDevice({

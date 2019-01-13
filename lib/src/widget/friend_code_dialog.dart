@@ -8,7 +8,7 @@ class FriendCodeDialog extends StatelessWidget {
   const FriendCodeDialog({
     @required this.hero,
     @required this.friendCode,
-    @required this.createFriend,
+    @required this.createFriendship,
     Key key,
   })  : assert(hero != null),
         assert(friendCode != null),
@@ -18,7 +18,7 @@ class FriendCodeDialog extends StatelessWidget {
 
   final StatefulStream<FriendCode> friendCode;
 
-  final FriendCreateUsecase createFriend;
+  final FriendshipCreateUsecase createFriendship;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -37,7 +37,7 @@ class FriendCodeDialog extends StatelessWidget {
                 ),
                 _ScanButton(
                   hero: hero,
-                  createFriend: createFriend,
+                  createFriendship: createFriendship,
                 ),
               ],
             ),
@@ -65,22 +65,22 @@ class FriendCodeDialog extends StatelessWidget {
 class _ScanButton extends StatelessWidget {
   const _ScanButton({
     @required this.hero,
-    @required this.createFriend,
+    @required this.createFriendship,
     Key key,
   })  : assert(hero != null),
-        assert(createFriend != null),
+        assert(createFriendship != null),
         super(key: key);
 
   final SignedInUser hero;
 
-  final FriendCreateUsecase createFriend;
+  final FriendshipCreateUsecase createFriendship;
 
   @override
   Widget build(BuildContext context) => IconButton(
         icon: const Icon(CustomIcons.scan),
         onPressed: () async {
           try {
-            await createFriend();
+            await createFriendship();
           } on InvalidFriendCodeScanned {
             return Scaffold.of(context).showSnackBar(
               SnackBar(

@@ -182,6 +182,7 @@ class FirestoreSignedInUser
       id: document.documentID,
       name: maybeName,
       imageUrl: imageUrl,
+      userRef: document.reference,
     );
   }
 
@@ -189,9 +190,14 @@ class FirestoreSignedInUser
     @required this.id,
     @required this.name,
     @required this.imageUrl,
+    @required DocumentReference userRef,
   })  : assert(id != null),
         assert(name != null),
-        assert(imageUrl != null);
+        assert(imageUrl != null),
+        assert(userRef != null),
+        _userRef = userRef;
+
+  final DocumentReference _userRef;
 
   @override
   final String id;
@@ -201,6 +207,10 @@ class FirestoreSignedInUser
 
   @override
   final Uri imageUrl;
+
+  @override
+  Future<void> deleteFriendship(Friendship friendship) =>
+      _userRef.collection('friendships').document(friendship.id).delete();
 }
 
 class FirestoreOtherUserReference extends StatefulFuture<FirestoreOtherUser>

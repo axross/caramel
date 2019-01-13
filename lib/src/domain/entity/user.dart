@@ -13,4 +13,6 @@ abstract class OtherUser extends User {}
 
 /// Another version of [User] which is signed-in user (the hero) of the
 /// application.
-abstract class SignedInUser extends User {}
+abstract class SignedInUser extends User {
+  Future<void> deleteFriendship(Friendship friendship);
+}

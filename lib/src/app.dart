@@ -14,11 +14,10 @@ class App extends StatefulWidget {
     @required this.notificationManager,
     @required this.userRepository,
     @required this.authenticate,
-    @required this.deleteFriendship,
     @required this.listChat,
     @required this.participateChat,
     @required this.getFriendCode,
-    @required this.createFriend,
+    @required this.createFriendship,
     @required this.listFriend,
     Key key,
   })  : assert(analytics != null),
@@ -26,11 +25,10 @@ class App extends StatefulWidget {
         assert(notificationManager != null),
         assert(userRepository != null),
         assert(authenticate != null),
-        assert(deleteFriendship != null),
         assert(listChat != null),
         assert(participateChat != null),
         assert(getFriendCode != null),
-        assert(createFriend != null),
+        assert(createFriendship != null),
         assert(listFriend != null),
         super(key: key);
 
@@ -39,11 +37,10 @@ class App extends StatefulWidget {
   final NotificationManager notificationManager;
   final UserRepository userRepository;
   final AuthenticateUsecase authenticate;
-  final FriendshipDeleteUsecase deleteFriendship;
   final ChatListUsecase listChat;
   final ChatParticipateUsecase participateChat;
   final FriendCodeGetUsecase getFriendCode;
-  final FriendCreateUsecase createFriend;
+  final FriendshipCreateUsecase createFriendship;
   final FriendListUsecase listFriend;
 
   @override
@@ -73,42 +70,39 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) => Provider(
-        value: widget.deleteFriendship,
+        value: widget.listChat,
         child: Provider(
-          value: widget.listChat,
+          value: widget.participateChat,
           child: Provider(
-            value: widget.participateChat,
+            value: widget.getFriendCode,
             child: Provider(
-              value: widget.getFriendCode,
+              value: widget.createFriendship,
               child: Provider(
-                value: widget.createFriend,
-                child: Provider(
-                  value: widget.listFriend,
-                  child: StreamBuilder<User>(
-                    stream: _hero,
-                    initialData: _hero.latest,
-                    builder: (_, snapshot) => snapshot.hasData
-                        ? SignedIn(
-                            hero: snapshot.requireData,
-                            analytics: widget.analytics,
-                            notificationManager: widget.notificationManager,
-                          )
-                        : Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                            ),
-                            child: Center(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(128),
-                                child: Image.asset(
-                                  'assets/images/icon.png',
-                                  width: 256,
-                                  height: 256,
-                                ),
+                value: widget.listFriend,
+                child: StreamBuilder<User>(
+                  stream: _hero,
+                  initialData: _hero.latest,
+                  builder: (_, snapshot) => snapshot.hasData
+                      ? SignedIn(
+                          hero: snapshot.requireData,
+                          analytics: widget.analytics,
+                          notificationManager: widget.notificationManager,
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                          ),
+                          child: Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(128),
+                              child: Image.asset(
+                                'assets/images/icon.png',
+                                width: 256,
+                                height: 256,
                               ),
                             ),
                           ),
-                  ),
+                        ),
                 ),
               ),
             ),
