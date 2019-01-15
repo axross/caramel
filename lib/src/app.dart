@@ -56,6 +56,10 @@ class _AppState extends State<App> {
 
     _hero = widget.authenticate()
       ..listen((signedInUser) async {
+        if (signedInUser == null) {
+          return;
+        }
+
         final deviceInformation = await widget.deviceService.deviceInformation;
         final pushNotificationDestinationId =
             await widget.notificationManager.pushNotificationDestinationId;
