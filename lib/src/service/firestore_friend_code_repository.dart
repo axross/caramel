@@ -14,7 +14,10 @@ class FirestoreFriendCodeRepository implements FriendCodeRepository {
   }) =>
       _firestore
           .collection('friendCodes')
-          .where('user', isEqualTo: _firestore.document('users/${hero.id}'))
+          .where(
+            'user',
+            isEqualTo: _firestore.collection('users').document(hero.id),
+          )
           .orderBy('issuedAt', descending: true)
           .limit(1)
           .snapshots()

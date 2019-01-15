@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_analytics/firebase_analytics.dart'
     show FirebaseAnalytics;
 import 'package:flutter/material.dart';
-import 'package:onesignal/onesignal.dart';
 import './src/app.dart';
 
 void main() {
@@ -24,11 +23,7 @@ void main() {
   final deviceService = DeviceService();
   final friendCodeRepository = FirestoreFriendCodeRepository(firestore);
   final friendCodeScanner = FriendCodeScanner();
-  final notificationManager = OnesignalFirestoreNotificationManager(
-    onesignal: OneSignal(),
-    appId: 'b7b4abd6-7ce0-44a9-af56-00e80125779e',
-    firestore: firestore,
-  );
+  final notificationManager = DummyNotificationManager();
   final userRepository = FirebaseUserRepository(
     firestore: firestore,
     functions: functions,

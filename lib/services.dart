@@ -1,6 +1,7 @@
 export './src/service/authenticator.dart';
 export './src/service/chat_repository.dart';
 export './src/service/device_service.dart';
+export './src/service/dummy_notification_manager.dart';
 export './src/service/firebase_authenticator.dart';
 export './src/service/firebase_user_repository.dart';
 export './src/service/firestore_chat_repository.dart';
@@ -8,5 +9,4 @@ export './src/service/firestore_friend_code_repository.dart';
 export './src/service/friend_code_repository.dart';
 export './src/service/friend_code_scanner.dart';
 export './src/service/notification_manager.dart';
-export './src/service/onesignal_firestore_notification_manager.dart';
 export './src/service/user_repository.dart';
