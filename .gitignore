@@ -76,3 +76,10 @@ build/
 
 # Firebase functions config
 **/functions/.runtimeconfig.json
+
+# Generated application icon files
+**/android/app/src/main/res/drawable-*dpi/ic_launcher_foreground.png
+**/android/app/src/main/res/mipmap-*dpi/ic_launcher.png
+**/android/app/src/main/res/mipmap-anydpi-v*/ic_launcher.xml
+**/android/app/src/main/res/values/colors.xml
+**/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-*x*@*.png
