@@ -1,0 +1,104 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+    	allow get: if
+        isAuthenticated();
+
+      match /friendships/{friendshipId} {
+      	allow list, get, delete: if
+          isMine();
+      }
+
+      match /devices/{deviceId} {
+        allow create: if
+          isMine() &&
+          request.resource.data.size() == 5 &&
+          request.resource.data.keys().hasAll(['manufacturer', 'model', 'os', 'osVersion', 'pushNotificationDestinationId']) &&
+          request.resource.data.manufacturer is string && 
+          request.resource.data.manufacturer.trim().size() >= 1 &&
+          request.resource.data.model is string &&
+          request.resource.data.model.trim().size() >= 1 &&
+          request.resource.data.os is string &&
+          request.resource.data.os.trim().size() >= 1 &&
+          request.resource.data.osVersion is string &&
+          request.resource.data.osVersion.trim().size() >= 1 &&
+          request.resource.data.pushNotificationDestinationId is string &&
+          request.resource.data.pushNotificationDestinationId.trim().size() >= 1;
+        allow update: if
+          isMine() &&
+          request.resource.data.size() >= 1 &&
+          request.resource.data.keys().hasOnly(['manufacturer', 'model', 'os', 'osVersion', 'pushNotificationDestinationId']) &&
+          request.resource.data.manufacturer is string && 
+          request.resource.data.manufacturer.trim().size() >= 1 &&
+          request.resource.data.model is string &&
+          request.resource.data.model.trim().size() >= 1 &&
+          request.resource.data.os is string &&
+          request.resource.data.os.trim().size() >= 1 &&
+          request.resource.data.osVersion is string &&
+          request.resource.data.osVersion.trim().size() >= 1 &&
+          request.resource.data.pushNotificationDestinationId is string &&
+          request.resource.data.pushNotificationDestinationId.trim().size() >= 1;
+      }
+
+      function isMine() {
+        return request.auth.uid == userId;
+      }
+    }
+
+    match /friendCodes/{fcId} {
+    	allow list: if
+        isAuthenticated() &&
+        request.query.limit == 1 &&
+        resource.data.user == selfUserPath();
+      allow delete: if
+        isAuthenticated() &&
+        resource.data.user == selfUserPath();
+    }
+
+    match /chats/{chatId} {
+      allow list, get: if
+        isAuthenticated() &&
+        selfUserPath() in resource.data.members;
+
+      match /messages/{messageId} {
+        allow list, get: if
+          isAuthenticated() &&
+          isChatMember();
+
+        allow create: if
+          isAuthenticated() &&
+          isChatMember() &&
+          request.resource.data.keys().hasAll(['type', 'from', 'sentAt']) &&
+          request.resource.data.type in ['TEXT'] &&
+          request.resource.data.from == selfUserPath() &&
+          request.resource.data.sentAt is timestamp &&
+          // for text-type chat messages
+          (
+            request.resource.data.type == 'TEXT' &&
+            request.resource.data.size() == 4 &&
+            request.resource.data.keys().hasAll(['text']) &&
+            request.resource.data.text is string &&
+            request.resource.data.text.trim().size() >= 1
+          );
+
+        match /readers/{readerId} {
+          allow list: if
+            isAuthenticated() &&
+            isChatMember();
+        }
+
+        function isChatMember() {
+          return selfUserPath() in get(/databases/$(database)/documents/chats/$(chatId)).data.members;
+        }
+      }
+    }
+
+    function isAuthenticated() {
+      return request.auth.uid != null;
+    }
+
+    function selfUserPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+  }
+}

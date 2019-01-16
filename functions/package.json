@@ -1,6 +1,9 @@
 {
   "name": "functions",
   "scripts": {
+    "lint": "prettier --list-different ./src/**/*.ts ./src/**/*.tsx",
+    "format": "prettier --write ./src/**/*.ts ./src/**/*.tsx",
+    "check": "tsc --noEmit --pretty",
     "build": "tsc",
     "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase functions:shell",

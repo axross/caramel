@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "lint": "prettier --list-different './**/*.js'",
+    "format": "prettier --write './**/*.js'",
+    "test-serve": "firebase serve --only firestore",
+    "test": "jest",
+    "deploy": "firebase deploy --only firestore"
+  },
+  "devDependencies": {
+    "@firebase/testing": "^0.5.3",
+    "firebase-tools": "^6.2.2",
+    "jest": "^23.6.0",
+    "prettier": "^1.15.3"
+  }
+}

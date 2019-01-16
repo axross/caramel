@@ -9,7 +9,7 @@ class DummyNotificationManager implements NotificationManager {
       _onChatMessageNotificationOpened;
 
   @override
-  Future<String> get pushNotificationDestinationId => Future.value('');
+  Future<String> get pushNotificationDestinationId => Future.value('dummy');
 
   @override
   Stream<ChatMessageNotification> get onChatMessageNotificationOpened =>
